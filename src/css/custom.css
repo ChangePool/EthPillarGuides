@@ -1,0 +1,712 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* August 21, 2025 - Load the Ubuntu font for use throughout the Guide */
+/* For details on the Ubuntu font, see https://fonts.google.com/specimen/Ubuntu */
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500&amp;display=swap');
+
+/* You can override the default Infima variables here. */
+/* September 24, 2025 - For more details, see https://gist.github.com/abhigyantrips/b828ca46b2460c6699c73e0162f6be80 */
+:root {
+  /* February 11, 2026 - In the DocSearch modal dialog, set the color for hit heading text, highlighted text and highlighted hit background to match the h1 style */
+  /* --ifm-color-primary: #2e8555; */
+  --ifm-color-primary: #0033ad;
+  --ifm-color-primary-dark: #29784c;
+  --ifm-color-primary-darker: #277148;
+  --ifm-color-primary-darkest: #205d3b;
+  --ifm-color-primary-light: #33925d;
+  --ifm-color-primary-lighter: #359962;
+  --ifm-color-primary-lightest: #3cad6e;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  /* August 21, 2025 - Set the Ubuntu font as the default font for the Guide */
+  --ifm-font-family-base: 'Ubuntu', sans-serif; /* For general text */
+  --ifm-heading-font-family: 'Ubuntu', sans-serif; /* For headings */
+  --ifm-font-family-monospace: 'Courier New', monospace; /* For code blocks (optional) */
+  /* September 24, 2025 - Set the Infima CSS variable indicating the height of the fixed header at the top of the page to the default value. The variable is used to calculate the scroll-margin-top property for bookmark links. */
+  --ifm-navbar-height: 3.75rem;
+}
+
+/* For readability concerns, you should choose a lighter palette in dark mode. */
+[data-theme='dark'] {
+  /* February 11, 2026 - In the DocSearch modal dialog, set the color for hit heading text, highlighted text and highlighted hit background to match the h1 style */
+  /* --ifm-color-primary: #25c2a0; */
+  --ifm-color-primary: #629ddc;
+  --ifm-color-primary-dark: #21af90;
+  --ifm-color-primary-darker: #1fa588;
+  --ifm-color-primary-darkest: #1a8870;
+  --ifm-color-primary-light: #29d5b0;
+  --ifm-color-primary-lighter: #32d8b4;
+  --ifm-color-primary-lightest: #4fddbf;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* Ensure that clicking a bookmark link scrolls into view, not hidden under the fixed header at the top of the page */
+a
+{
+  scroll-margin-top: calc(var(--ifm-navbar-height) + 0.5rem);
+}
+
+/* Set the color for hyperlinks in the content of the Guide, excluding hyperlinks in the sidebar, header and footer */
+a:not(.menu__link, .navbar__link, .footer__link-item, .footer__copyright)
+{
+  /* April 24, 2026 - In Docusaurus 3.10.0 the development server supports the light-dark attribute, but static sites do not. */
+  /* color: light-dark(#0033ad,#0033dd); */
+  /* color: light-dark(#0033ad,#629ddc); */
+  color: #0033ad;
+}
+
+[data-theme='dark'] a:not(.menu__link, .navbar__link, .footer__link-item, .footer__copyright)
+{
+  /* color: light-dark(#0033ad,#0033dd); */
+  color: #629ddc;
+}
+
+/* Style hyperlinks in the header */
+a.navbar__link
+{
+  /* Set the same color that items in the left navigation use */
+  color: var(--ifm-menu-color);
+}
+
+a.navbar__link:hover
+{
+  /* color: light-dark(#BF9004,#BF9004); */
+  color: #BF9004;
+}
+
+[data-theme='dark'] a.navbar__link:hover
+{
+  color: #BF9004;
+}
+
+/* September 2, 2025 - Style the Typesense Search bar */
+[data-theme='light'] .DocSearch {
+  /* --docsearch-primary-color: var(--ifm-color-primary); */
+  /* --docsearch-text-color: var(--ifm-font-color-base); */
+  --docsearch-muted-color: var(--ifm-color-secondary-darkest);
+  --docsearch-container-background: rgba(94, 100, 112, 0.7);
+  /* Modal */
+  --docsearch-modal-background: var(--ifm-color-secondary-lighter);
+  /* Search box */
+  --docsearch-searchbox-background: var(--ifm-color-secondary);
+  --docsearch-searchbox-focus-background: var(--ifm-color-white);
+  /* September 2, 2025 - Set the color of the Search bar border when hovering */
+  /* --docsearch-searchbox-shadow: inset 0 0 0 2px var(--docsearch-primary-color); */
+  --docsearch-searchbox-shadow: inset 0 0 0 2px rgba(191, 144, 4, 0.7);
+  /* Hit */
+  /* NOTE: Set the hover background color for hits using the --ifm-color-primary variable */
+  /* February 11, 2026 - Set the text color for hits */
+  /* --docsearch-hit-color: var(--ifm-font-color-base); */
+  --docsearch-hit-color: var(--ifm-menu-color);
+  --docsearch-hit-active-color: var(--ifm-color-white);
+  --docsearch-hit-background: var(--ifm-color-white);
+  /* Footer */
+  --docsearch-footer-background: var(--ifm-color-white);
+}
+
+/* February 11, 2026 - Set the color for the Light Mode / Dark Mode button in the header */
+#__docusaurus > nav > div.navbar__inner > div.theme-layout-navbar-right.navbar__items.navbar__items--right > div.toggle_vylO.colorModeToggle_DEke
+{
+  color: var(--ifm-menu-color);
+}
+
+/* February 11, 2026 - Set the color of the magnifying glass in the Search field in the header */
+#__docusaurus > nav > div.navbar__inner > div.theme-layout-navbar-right.navbar__items.navbar__items--right > div.navbarSearchContainer_Bca1 > button > span.DocSearch-Button-Container > svg
+{
+  color: var(--ifm-menu-color);
+}
+
+/* February 11, 2026 - Set the color for hovering over the magnifying glass in the Search field in the header */
+/*
+#__docusaurus > nav > div.navbar__inner > div.theme-layout-navbar-right.navbar__items.navbar__items--right > div.navbarSearchContainer_Bca1 > button > span.DocSearch-Button-Container > svg:hover
+{
+  color: #ff0000;
+}
+*/
+
+/* September 2, 2025 - Set the color of the magnifying glass in the Typesense modal dialog */
+.DocSearch-Search-Icon
+{
+  color: rgba(191, 144, 4, 0.7);
+}
+
+/* September 24, 2025 - Set the font for the Search placeholder text */
+.DocSearch-Button-Placeholder
+{
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: 400; /* Regular */
+}
+
+/* February 11, 2026 - Set the color for hovering over the Search placeholder text */
+/*
+.DocSearch-Button-Placeholder:hover
+{
+  color: var(--ifm-menu-color);
+}
+*/
+
+/* February 11, 2026 - Set the color for hovering over the Search placeholder text */
+#__docusaurus > nav > div.navbar__inner > div.theme-layout-navbar-right.navbar__items.navbar__items--right > div.navbarSearchContainer_Bca1 > button:hover
+{
+  color: var(--ifm-menu-color);
+}
+
+[data-theme='dark'] .DocSearch {
+  --docsearch-text-color: var(--ifm-font-color-base);
+  --docsearch-muted-color: var(--ifm-color-secondary-darkest);
+  --docsearch-container-background: rgba(47, 55, 69, 0.7);
+  /* Modal */
+  --docsearch-modal-background: var(--ifm-background-color);
+  /* Search box */
+  --docsearch-searchbox-background: var(--ifm-background-color);
+  --docsearch-searchbox-focus-background: var(--ifm-color-black);
+  /* October 19, 2025 - Set the color of the Search bar border when hovering */
+  --docsearch-searchbox-shadow: inset 0 0 0 2px rgba(191, 144, 4, 0.7);
+  /* Hit */
+  --docsearch-hit-color: var(--ifm-font-color-base);
+  --docsearch-hit-active-color: var(--ifm-color-white);
+  --docsearch-hit-background: var(--ifm-color-emphasis-100);
+  /* Footer */
+  --docsearch-footer-background: var(--ifm-background-surface-color);
+  --docsearch-key-gradient: linear-gradient(
+    -26.5deg,
+    var(--ifm-color-emphasis-200) 0%,
+    var(--ifm-color-emphasis-100) 100%
+  );
+}
+
+/* Style hyperlinks in the footer */
+a.footer__link-item:hover
+{
+  /* color: light-dark(#BF9004,#BF9004); */
+  color: #BF9004;
+}
+
+[data-theme='dark'] a.footer__link-item:hover
+{
+  color: #BF9004;
+}
+
+/* Style hyperlinks in the copyright text */
+#__docusaurus > footer > div > div > div > a
+/* .footer__copyright a */
+{
+  /* color: light-dark(#BF9004,#BF9004); */
+  color: #BF9004;
+}
+
+[data-theme='dark'] #__docusaurus > footer > div > div > div > a
+/* .footer__copyright a */
+{
+  color: #BF9004;
+}
+
+/* Style sidebar hyperlinks */
+a.menu__link--active
+{
+  /* color: light-dark(#BF9004,#BF9004); */
+  color: #BF9004;
+}
+
+[data-theme='dark'] a.menu__link--active
+{
+  color: #BF9004;
+}
+
+b
+{
+  font-weight: 500; /* Medium */
+}
+
+/* Style the breadcrumbs that display at the top of each topic */
+.breadcrumbs__item--active .breadcrumbs__link
+{
+  /* color: light-dark(#0033ad,#629ddc); */
+  color: #0033ad;
+}
+
+[data-theme='dark'] .breadcrumbs__item--active .breadcrumbs__link
+{
+  color: #629ddc;
+}
+
+b.navbar__title
+{
+  /* color: dimgrey; */
+  font-weight: 700; /* Bold */
+}
+
+/* For inline code, use the code tag */
+code
+{
+  font-weight: 400; /* Normal */
+}
+
+/* For code blocks, use the pre tag
+code.block
+{
+  display: inline-block;
+  margin-top: 0pt;
+  margin-bottom: 14pt;
+}
+*/
+
+div.pagination-nav__label
+{
+  font-weight: 500; /* Medium */
+}
+
+figcaption
+{
+  text-align: center;
+  font-weight: 300; /* Light */
+  font-style: italic;
+  margin-top: 6pt;
+}
+
+/* Center figures horizontally */
+figure img
+{
+  display:block;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+header h1
+{
+  /* color: light-dark(#0033ad,#629ddc); */
+  color: #0033ad;
+  font-weight: 500; /* Medium */
+  scroll-margin-top: 100pt;
+}
+
+[data-theme='dark'] header h1
+{
+  color: #629ddc;
+}
+
+h1
+{
+  /* color: #0033ad; */
+  /* color: light-dark(#0033ad,#629ddc); */
+  color: #0033ad;
+  font-weight: 500; /* Medium */
+}
+
+[data-theme='dark'] h1
+{
+  color: #629ddc;
+}
+
+h2
+{
+  /* color: light-dark(#0033ad,#629ddc); */
+  color: #0033ad;
+  font-weight: 500; /* Medium */
+}
+
+[data-theme='dark'] h2
+{
+  color: #629ddc;
+}
+
+h3
+{
+  /* color: light-dark(#0033ad,#629ddc); */
+  color: #0033ad;
+  font-weight: 500; /* Medium */
+}
+
+[data-theme='dark'] h3
+{
+  color: #629ddc;
+}
+
+h4
+{
+  /* color: light-dark(#0033ad,#629ddc); */
+  color: #0033ad;
+  font-size: 13pt;
+  font-style: italic;
+  font-weight: 500; /* Medium */
+}
+
+[data-theme='dark'] h4
+{
+  color: #629ddc;
+}
+
+ol
+{
+  margin-top: -5pt;
+}
+
+/* The sidebar uses an unordered list, so do NOT set the font weight for all list (li) items */
+ol li
+{
+  font-weight: 300; /* Light */
+}
+
+/* Use a counter for all ordered lists */
+ol
+{
+  list-style-type: none;
+  counter-reset: item;
+  margin-top: 3pt;
+}
+
+/* Create a hanging indent for all ordered list items */
+ol li
+{
+  text-indent: -4pt;
+}
+
+/* Set the numbering style for first-level ordered lists */
+ol li:not(ul li, ol ol li):before
+{
+  content: counter(item, decimal) ". ";
+  counter-increment: item;
+  display: inline-block; /* Required for applying width to pseudo-elements */
+  width: 4pt; /* Set your desired fixed width for item numbers */
+  text-indent: -15pt; /* Set a hanging indent for item numbers */
+}
+
+/* Set the numbering style for second-level ordered lists */
+ol ol li:before
+{
+  content: counter(item, lower-alpha) ") ";
+  counter-increment: item;
+  display: inline-block; /* Required for applying width to pseudo-elements */
+  width: 4pt; /* Set your desired fixed width for item numbers */
+  text-indent: -11pt; /* Set a hanging indent for item numbers */
+}
+
+/* Set the numbering style for third-level ordered lists */
+ol ol ol li:before
+{
+  content: counter(item, lower-roman) ". ";
+  counter-increment: item;
+  display: inline-block; /* Required for applying width to pseudo-elements */
+  width: 4pt; /* Set your desired fixed width for item numbers */
+  text-indent: -11pt; /* Set a hanging indent for item numbers */
+}
+
+/* Exclude the unordered list that the sidebar uses */
+ul:not(.theme-doc-sidebar-menu, .menu__list)
+{
+  margin-top: -5pt;
+}
+
+ul:not(.theme-doc-sidebar-menu) ul
+{
+  margin-top: 4pt;
+}
+
+/* Style unordered lists appearing in ordered list items */
+ol li ul:not(.theme-doc-sidebar-menu)
+{
+  margin-top: 4pt;
+  list-style-type: disc;
+}
+
+ol li ul:not(.theme-doc-sidebar-menu) li
+{
+  /* padding-left: 4pt; */
+  text-indent: 0pt;
+}
+
+ul:not(.menu__list) li
+{
+  font-weight: 300; /* Light */
+}
+
+/* Style tabs used in Markdown */
+ul.tabs li.tabs__item--active
+{
+  /* color: light-dark(#0033ad,#629ddc);
+  border-bottom-color: light-dark(#0033ad,#629ddc); */
+  color: #0033ad;
+  border-bottom-color: #0033ad;
+}
+
+[data-theme='dark'] ul.tabs li.tabs__item--active
+{
+  color: #629ddc;
+  border-bottom-color: #629ddc;
+}
+
+/* Style single-step procedures */
+[data-theme='light'] ul.ss
+{
+  list-style-image: url("/static/img/SSBulletLight.png");
+  /* In case the image fails to load, set a fallback list-style-type */
+  list-style-type: disc;
+}
+
+[data-theme='dark'] ul.ss
+{
+  list-style-image: url("/static/img/SSBulletDark.png");
+  /* In case the image fails to load, set a fallback list-style-type */
+  list-style-type: disc;
+}
+
+/* In the DocSearch results page, increase the space between the heading and breadcrumbs for each search result */
+nav[aria-label="breadcrumbs"]
+{
+  margin-top: 6pt;
+}
+
+/* In the DocSearch results page, set the color for the text informing the user how many documents the search returned */
+#__docusaurus_skipToContent_fallback > div > div > div.col.col--8.searchResultsColumn_EPg1
+{
+  color: var(--ifm-menu-color);
+}
+
+p
+{
+  font-weight: 300; /* Light */
+  margin-bottom: 9pt;
+}
+
+p.pi
+{
+  font-weight: 500; /* Medium */
+}
+
+pre
+{
+  font-weight: 400; /* Normal */
+  text-indent: 0pt; /* Required explicitly when pre tags appear inside ordered list items */
+  margin-top: 12pt;
+  margin-bottom: 12pt;
+}
+
+/* August 21, 2025 - Note, Important and Credit snippets use the table.box, p.boxLabel and p.boxText styles */
+table.box
+{
+        width: 100%;
+
+        border-top-width: 2pt;
+        border-top-style: solid;
+        border-top-color: grey;
+
+        border-right-width: 0pt;
+        border-right-style: solid;
+        border-right-color: grey;
+
+        border-bottom-width: 2pt;
+        border-bottom-style: solid;
+        border-bottom-color: grey;
+
+        border-left-width: 0pt;
+        border-left-style: solid;
+        border-left-color: grey;
+
+        border-spacing: 0pt;
+        border-collapse: collapse;
+
+        margin-top: 12pt;
+        margin-bottom: 10.5pt;
+}
+
+td
+{
+  font-weight: 300; /* Light */
+}
+
+table.box td
+{
+        padding: 6pt 0pt 6pt 0pt;
+        border-width: 0px;
+        border-style: solid;
+        border-color: grey;
+        vertical-align: top;
+}
+
+table.box td.boxLabel
+{
+  width: 85pt;
+}
+
+table.box td.boxText
+{
+  vertical-align: middle;
+}
+
+p.boxLabel
+{
+  color: #bf9004;
+  font-weight: 500; /* Medium */
+}
+
+p.boxLabel img
+{
+  margin-top: 2pt;
+  margin-bottom: -9pt;
+}
+
+p.boxText
+{
+  margin-bottom: 1pt;
+}
+
+p.center
+{
+  text-align: center;
+}
+
+/* August 21, 2025 - The Table snippet uses the table.center style */
+table.center
+{
+
+  display: table;
+  width: initial;
+  margin: 0 auto;
+
+  width: 100%;
+
+  border-top-width: 0pt;
+  border-top-style: solid;
+  border-top-color: black;
+
+  border-right-width: 0pt;
+  border-right-style: solid;
+  border-right-color: black;
+
+  border-bottom-width: 0pt;
+  border-bottom-style: solid;
+  border-bottom-color: black;
+
+  border-left-width: 0pt;
+  border-left-style: solid;
+  border-left-color: black;
+
+  border-spacing: 0pt;
+  border-collapse: collapse;
+
+  margin-bottom: 21pt;
+}
+
+table.center caption
+{
+  text-align: left;
+  font-weight: 500; /* Medium */
+  margin-bottom: 8pt;
+}
+
+table.center caption.center
+{
+  text-align: center;
+}
+
+table.center th
+{
+  border-width: 1pt;
+  border-style: solid;
+  border-color: black;
+  background-color: grey;
+}
+
+table.center th p
+{
+  font-weight: 500; /* Medium */
+}
+
+table.center td
+{
+  border-width: 1pt;
+  border-style: solid;
+  border-color: black;
+  vertical-align: top;
+}
+
+td.center
+{
+  text-align: center;
+}
+
+table.center p
+{
+  margin-top: 6pt;
+  margin-bottom: 6pt;
+}
+
+/* September 2, 2025 - Style the Next and Previous buttons that display at the bottom of topics */
+.pagination-nav__label
+{
+  /* color: light-dark(#0033ad,#629ddc); */
+  color: #0033ad;
+}
+
+[data-theme='dark'] .pagination-nav__label
+{
+  color: #629ddc;
+}
+
+/*
+.pagination-nav__sublabel
+{
+  color: light-dark(#0033ad,#629ddc);
+}
+*/
+
+a.pagination-nav__link:hover
+{
+  /* border-color: light-dark(#0033ad,#629ddc); */
+  border-color: #0033ad;
+}
+
+[data-theme='dark'] a.pagination-nav__link:hover
+{
+  border-color: #629ddc;
+}
+
+/* Style the hyperlinks to topics that display on Category pages listed in the sidebar */
+a.card:hover
+{
+  /* border-color: light-dark(#0033ad,#629ddc); */
+  border-color: #0033ad;
+}
+
+[data-theme='dark'] a.card:hover
+{
+  border-color: #629ddc;
+}
+
+/* Style markdown */
+strong, th
+{
+  font-weight: 500; /* Medium */
+}
+
+/* Hide the default Sidebar Collapse icon */
+.collapseSidebarButtonIcon_kv0_
+{
+  display: none;
+}
+
+/* Set a background image for the Sidebar Collapse button */
+.button.button--secondary.button--outline.collapseSidebarButton_PEFL
+{
+  background: url("/static/img/SidebarCollapse.svg") center/contain no-repeat;
+  background-size: 27px;
+  padding: 12px 149px;
+}
+
+/* Hide the default Sidebar Expand icon */
+.expandButtonIcon_i1dp
+{
+  display: none;
+}
+
+/* Set a background image for the Sidebar Expand button */
+.expandButton_TmdG
+{
+  background: url("/static/img/SidebarExpand.svg") center/contain no-repeat;
+  background-size: 27px;
+}
+

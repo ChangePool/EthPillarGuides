@@ -1,0 +1,33 @@
+---
+title: "Getting Started"
+sidebar_label: "Getting Started"
+slug: /GettingStarted
+hide_title: false
+hide_table_of_contents: true
+sidebar_position: 5
+description: ""
+---
+
+import React from 'react';
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+export function HTMLContent() {
+  return (
+    <div>
+
+       <p>Cardano is a decentralized, public blockchain platform and cryptocurrency project aiming to provide a secure and scalable infrastructure for the development of decentralized applications (DApps) and smart contracts. A focus on sustainability, security, interoperability and a research-driven approach to development differentiate Cardano. The native cryptocurrency, ADA, is used for transactions as well as staking, enabling users to earn a return on investments and participate in the governance of the ecosystem.</p>
+
+      <p>Every Cardano stake pool requires one node configured as a block producer. To preserve network security, stake pools operating on Mainnet also implement one or more relay nodes, as illustrated in <i>Figure 1</i>.</p>
+
+      <a id="topology" />
+      <figure>
+        <img src={useBaseUrl('img/NetworkTopology.png')} />
+        <figcaption>Figure 1 Cardano Network Topology</figcaption>
+      </figure>
+
+    </div>
+  );
+}
+
+<HTMLContent />

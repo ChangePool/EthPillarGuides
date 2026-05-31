@@ -1,0 +1,127 @@
+---
+title: "Installing GHC and Cabal"
+sidebar_label: "Installing GHC and Cabal"
+slug: /GHC
+hide_title: false
+hide_table_of_contents: true
+sidebar_position: 20
+description: ""
+---
+
+import React from 'react';
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+import CodeBlock from '@theme/CodeBlock';
+import nodeReleaseDate from '!!raw-loader!/txt/nodeReleaseDate.txt';
+import nodeVersionNumber from '!!raw-loader!/txt/nodeVersionNumber.txt';
+import cliVersionNumber from '!!raw-loader!/txt/cliVersionNumber.txt';
+import tracerVersionNumber from '!!raw-loader!/txt/tracerVersionNumber.txt';
+import ghcVersionNumber from '!!raw-loader!/txt/ghcVersionNumber.txt';
+import cabalVersionNumber from '!!raw-loader!/txt/cabalVersionNumber.txt';
+
+export function HTMLContent() {
+  return (
+    <div>
+      
+      <p>To compile Cardano Node using source code, you must install the Glasgow Haskell Compiler (GHC) and Cabal for building applications and libraries.</p>
+
+      <p>For each Cardano Node release, Input-Output recommends compiling binaries using specific versions of GHC and Cabal. For example, refer to the <a href="https://github.com/IntersectMBO/cardano-node/releases" target="_blank">Releases</a> page in the Cardano Node GitHub repository to determine the GHC and Cabal versions required for the current Cardano Node release. <i>Table 1</i> lists GHC and Cabal version requirements for the current Cardano Node release.</p>
+
+      <table class="center">
+        <caption>Table 1 Current Cardano Node Versions</caption>
+        <tbody>
+          <tr>
+            <th width="16%"><p>Release Date</p></th>
+            <th width="17%"><p>Cardano Node Version</p></th>
+            <th width="17%"><p>Cardano CLI Version</p></th>
+            <th width="17%"><p>Cardano Tracer Version</p></th>
+            <th width="17%"><p>GHC Version</p></th>
+            <th width="16%"><p>Cabal Version</p></th>
+          </tr>
+          <tr>
+            <td class="center"><p>{nodeReleaseDate}</p></td>
+            <td class="center"><p>{nodeVersionNumber}</p></td>
+            <td class="center"><p>{cliVersionNumber}</p></td>
+            <td class="center"><p>{tracerVersionNumber}</p></td>
+            <td class="center"><p>{ghcVersionNumber}</p></td>
+            <td class="center"><p>{cabalVersionNumber}</p></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="pi">To install GHC and Cabal:</p>
+
+      <ol>
+        <li>Using a terminal window on the computer designated to host your block-producing node, to install the latest versions of all previously installed packages assuming the answer <code>yes</code> to all prompts, type:
+          <CodeBlock language="bash">
+            {`sudo apt-get update -y
+sudo apt-get upgrade -y`}
+          </CodeBlock>
+        </li>
+        <li>To install packages and tools required for downloading and compiling Cardano Node source code, type:
+          <CodeBlock language="bash">
+            {`sudo apt-get install autoconf automake build-essential curl g++ git jq libffi-dev libgmp-dev libncurses-dev libssl-dev libsystemd-dev libtool make pkg-config tmux wget zlib1g-dev liblmdb-dev libsnappy-dev protobuf-compiler liburing-dev -y`}
+          </CodeBlock>
+          <table class="box">
+            <tbody>
+              <tr>
+                <td class="boxLabel"><p class="boxLabel">Note<br /><img src={useBaseUrl('img/BoxNote.png')} alt="Note" /></p></td>
+                <td class="boxText"><p class="boxText">To list all packages installed on your computer, type <code>apt list --installed</code></p></td>
+              </tr>
+            </tbody>
+          </table>
+        </li>
+        <li>To use the GHCup installer to install GHC and Cabal, type:
+          <CodeBlock language="bash">
+            {`curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh`}
+          </CodeBlock>
+        </li>
+        <li>During the installation, when prompted:
+          <ol>
+            <li>Press ENTER to proceed.</li>
+            <li>To prepend the required PATH variable to <code>$HOME/.bashrc</code>, type <b>P</b></li>
+            <li>When prompted to install haskell-language-server (HLS), type <b>N</b></li>
+            <li>When prompted to install stack, type <b>N</b></li>
+            <li>Press ENTER to proceed.</li>
+          </ol>
+        </li>
+        <li>When GHCup finishes installing GHC and Cabal, type the following commands to reload your shell profile, and then confirm that GHCup installed correctly:
+          <CodeBlock language="bash">
+            {`source $HOME/.bashrc
+ghcup --version`}
+          </CodeBlock>
+          <table class="box">
+            <tbody>
+              <tr>
+                <td class="boxLabel"><p class="boxLabel">Note<br /><img src={useBaseUrl('img/BoxNote.png')} alt="Note" /></p></td>
+                <td class="boxText"><p class="boxText">If GHCup is installed correctly, then the <code>ghcup --version</code> command displays <code>The GHCup Haskell installer, version &lt;GHCupVersionNumber&gt;</code> where <code>&lt;GHCupVersionNumber&gt;</code> is the version number of GHCup installed on your computer.</p></td>
+              </tr>
+            </tbody>
+          </table>
+        </li>
+        <li>To set the Glasgow Haskell Compiler to the version required for compiling the current Cardano Node release, type the following commands where <code>&lt;GHCVersionNumber&gt;</code> is the GHC version that you need to install and use:
+          <CodeBlock language="bash">
+            {`ghcup install ghc <GHCVersionNumber>
+ghcup set ghc <GHCVersionNumber>
+ghc --version`}
+          </CodeBlock>
+        </li>
+        <li>To set Cabal to the version required for compiling the current Cardano Node release, type the following commands where <code>&lt;CabalVersionNumber&gt;</code> is the Cabal version that you need to install and use:
+          <CodeBlock language="bash">
+            {`ghcup install cabal <CabalVersionNumber>
+ghcup set cabal <CabalVersionNumber>
+cabal --version`}
+          </CodeBlock>
+        </li>
+        <li>On each computer hosting a relay or block-producing node in your stake pool configuration, repeat steps 1 to 7</li>
+      </ol>
+    
+    </div>
+  
+  );
+
+}
+
+<HTMLContent />
+
