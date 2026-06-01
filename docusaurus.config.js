@@ -176,7 +176,7 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       // Replace with your project's social card
-      image: 'img/CCSocialCard.png',
+      image: 'img/EthPillarSocialCard.png',
       navbar: {
         title: 'EthPillar Guides',
         logo: {

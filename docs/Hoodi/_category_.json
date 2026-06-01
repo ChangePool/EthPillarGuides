@@ -1,0 +1,12 @@
+{
+  "label": "ETHEREUM STAKING ON HOODI TESTNET",
+  "position": 40,
+  "collapsible": true,
+  "collapsed": true,
+  "link": {
+    "type": "generated-index",
+    "title": "Ethereum Staking on Hoodi Testnet",
+    "slug": "/Hoodi",
+    "description": "The Ethereum Staking on Hoodi Testnet guide explains how to set up a validator on the Hoodi Testnet automatically using EthPillar, as well as manually using the command line:"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "label": "INSTALLING ETHPILLAR",
+  "position": 30,
+  "collapsible": true,
+  "collapsed": true,
+  "link": {
+    "type": "generated-index",
+    "title": "Installing EthPillar",
+    "slug": "/EthPillar",
+    "description": "EthPillar provides a quick, automated way to set up an Ethereum validator. The Installing EthPillar guide outlines EthPillar features and explains how to start running your own node:"
+  }
+}
