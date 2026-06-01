@@ -14,23 +14,23 @@ import {themes as prismThemes} from 'prism-react-renderer';
 //
 // May 24, 2026 - Construct the value for the baseUrl key using the contents of the file named nodeVersionNumber.txt
 //
-const nodeVersionFS = require('fs');
-const nodeVersionPath = require('path');
+//const nodeVersionFS = require('fs');
+//const nodeVersionPath = require('path');
 
-const nodeVersionFilePath = nodeVersionPath.resolve(__dirname, 'static/txt/nodeVersionNumber.txt');
-const nodeVersionNumber = nodeVersionFS.readFileSync(nodeVersionFilePath, 'utf8');
+//const nodeVersionFilePath = nodeVersionPath.resolve(__dirname, 'static/txt/nodeVersionNumber.txt');
+//const nodeVersionNumber = nodeVersionFS.readFileSync(nodeVersionFilePath, 'utf8');
 
-const baseURLPath = `/Content/SPO/${nodeVersionNumber}/`;
+//const baseURLPath = `/Content/SPO/${nodeVersionNumber}/`;
 
 //
 // May 24, 2026 - Using the nodeVersionNumber variable, construct the value for the typesenseCollectionName key
 //
-const nodeVersionNumberNoPeriods = nodeVersionNumber.replaceAll('.', '');
-const typesenseCollectionNameValue = `CCSPOGuide${nodeVersionNumberNoPeriods}`;
+//const nodeVersionNumberNoPeriods = nodeVersionNumber.replaceAll('.', '');
+//const typesenseCollectionNameValue = `CCSPOGuide${nodeVersionNumberNoPeriods}`;
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'How to Set Up a Cardano Stake Pool',
+  title: 'EthPillar Guides',
   tagline: '',
   favicon: 'img/favicon.ico',
 
@@ -40,18 +40,18 @@ const config = {
   },
 
   // Set the production url of your site here
-  url:  'https://coincashew.io',
+  url:  'https://ethpillar.coincashew.io/',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  //baseUrl: '/',
+  baseUrl: '/',
   //baseUrl: '/spo/',
   //baseUrl: '/Content/SPO/10.7.1/',
-  baseUrl: baseURLPath,
+  //baseUrl: baseURLPath,
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'ChangePool', // Usually your GitHub org/user name.
-  projectName: 'CardanoSPOGuide', // Usually your repo name.
+  projectName: 'EthPillarGuides', // Usually your repo name.
 
   onBrokenLinks: 'throw',
   // September 26, 2025 - The onBrokenMarkdownLinks configuration option is deprecated in Docusaurus v4
@@ -116,7 +116,7 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           //editUrl:
-          //  'https://github.com/ChangePool/CardanoSPOGuide',
+          //  'https://github.com/ChangePool/EthPillarGuides',
           // August 17, 2025 - Enable docs-only mode to remove the default landing page
           routeBasePath: '/',
         },
@@ -178,7 +178,7 @@ const config = {
       // Replace with your project's social card
       image: 'img/CCSocialCard.png',
       navbar: {
-        title: 'How to Set Up a Cardano Stake Pool',
+        title: 'EthPillar Guides',
         logo: {
           alt: 'Logo',
           src: 'img/CCLogoLarge.png',
@@ -205,17 +205,17 @@ const config = {
           // August 17, 2025 - Remove the Blog link from the navbar
           //{to: '/blog', label: 'Blog', position: 'left'},
           {
-            href: 'mailto:doc@coincashew.io?subject=CoinCashew Guide',
+            href: 'mailto:doc@coincashew.io?subject=EthPillar Guides',
             label: 'E-mail',
             position: 'right',
           },
           {
-            href: 'https://github.com/ChangePool/CardanoSPOGuide',
+            href: 'https://github.com/ChangePool/EthPillarGuides',
             label: 'GitHub',
             position: 'right',
           },
           {
-            href: 'https://discord.gg/NyN8JEMPv',
+            href: 'https://discord.gg/Hz3PrkcR5W',
             label: 'Discord',
             position: 'right',
           },
@@ -275,7 +275,7 @@ const config = {
               //},
               //{
                 //label: 'GitHub',
-                //href: 'https://github.com/ChangePool/CardanoSPOGuide',
+                //href: 'https://github.com/ChangePool/EthPillarGuides',
               //},
             //],
           //},
@@ -306,8 +306,8 @@ const config = {
       typesense: {
         // Replace this with the name of your index/collection.
         // It should match the "index_name" entry in the scraper's "config.json" file.
-        //typesenseCollectionName: 'CCSPOGuide1071',
-        typesenseCollectionName: typesenseCollectionNameValue,
+        typesenseCollectionName: 'EthPillarGuides',
+        //typesenseCollectionName: typesenseCollectionNameValue,
         typesenseServerConfig: {
           nodes: [
             {
