@@ -26,7 +26,7 @@ export function HTMLContent() {
 ## :question: Introduction
 
 * 👍 **WHO**: If you are an Ethereum validator experiencing errors due to a problematic secret recovery phrase or mnemonic, this guide can help you fix the majority of common errors.
-* :chains: **WHAT**: Using the script named `seedrecover.py` available for download from [BTCRecover](https://github.com/3rdIteration/btcrecover) you can fix the majority of simple "invalid mnemonic" or "invalid seed" type errors. This commonly occurs when you have a valid seed backup that simply has a typo in it or missing word(s).
+* :chains: **WHAT**: Using the script named `seedrecover.py` available for download from [BTCRecover](https://github.com/3rdIteration/btcrecover) you can fix the majority of simple "invalid mnemonic" or "invalid seed" type errors. This commonly occurs when you have a valid seed backup that simply contains a typo, or one or more missing words.
 * :hourglass: **WHEN**: Typical scenarios include attempting to **set withdrawal credentials** or **re-generate keystore files**.
 
 ## 🔧 How to Recover?
@@ -82,7 +82,7 @@ Ping result should say **Network is unreachable**.
 ## Step 4: Run the Recovery Process
 
 :::info
-Recovery for Ethereum Validator seeds is the same as a standard seed recovery, but uses the validators public key (Also known as Signing Key) in the place of an address.
+Recovery for Ethereum Validator seeds is the same as a standard seed recovery, but uses the public key for a validator (also known as the signing key) instead of an address.
 
 `seedrecover.py` will automatically run through four search phases that should take a few hours at most. The four search phases include:
 
@@ -92,7 +92,7 @@ Recovery for Ethereum Validator seeds is the same as a standard seed recovery, b
 * Two typos that could be completely different words
 :::
 
-Here's the command to recover your ETH validator's secret recovery phase. Update accordingly.
+The following command recovers the seed phrase for your ETH validator. Update the command as needed:
 
 ```bash
 python3 seedrecover.py --mnemonic "<secret recovery phrase>" --addrs <pubkey of validator> --wallet-type ethereumvalidator --addr-limit <number of validators created> --mnemonic-length 24
@@ -100,7 +100,7 @@ python3 seedrecover.py --mnemonic "<secret recovery phrase>" --addrs <pubkey of 
 
 ### :question: About the Flags
 
-* **--mnemonic**—Enter your best guess for your seed/mnemonic/secret recovery phrase
+* **--mnemonic**—Enter your best guess for the seed/mnemonic/secret recovery phrase
 * **--addrs**—This is your validator's public key without the `0x` prefix. For example, if you have the keystore files the pubkey can be found inside `keystore-m_12381_3600_0_0_0-xxxxxxx.json` Without keystore files, you can look up your validator's pubkey online at [beaconcha.in](https://beaconcha.in/) or [etherscan.io](https://etherscan.io/) by following the validator's 32ETH deposit transaction.
 * **--addr-limit**—Adjust this to the number of validators you created on this mnemonic.
 
