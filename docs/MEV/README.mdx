@@ -1,6 +1,6 @@
 ---
 title: "Boosting Maximal Extractable Value"
-sidebar_label: "BOOSTING MAXIMAL EXTRACTABLE VALUE"
+sidebar_label: "Boosting Maximal Extractable Value"
 slug: /BoostingMEV
 hide_title: false
 hide_table_of_contents: true
@@ -32,19 +32,20 @@ Maximal Extractable Value (MEV) refers to the maximum value that can be extracte
 The following steps align with our Ethereum guides. You may need to adjust file names and directory locations where appropriate. The core concepts remain the same.
 :::
 
-[Flashbots](https://github.com/flashbots) offers [MEV-Boost](https://github.com/flashbots/mev-boost)
-
 ## :question: What is MEV-Boost?
+
+[Flashbots](https://github.com/flashbots) offers [MEV-Boost](https://github.com/flashbots/mev-boost), which:
 
 * Enables solo and home stakers access to MEV
 * Enables validators to earn higher block rewards
-* Optional and not required for ETH staking
-* Open source middleware run by validators to access a competitive block-building market
-* Built by Flashbots as an implementation of [proposer-builder separation (PBS)](https://ethresear.ch/t/proposer-block-builder-separation-friendly-fee-market-designs/9725) for proof-of-stake (PoS) Ethereum
-* `home-staker (you) >> MEV-Boost >> relay >> builder >> searcher +/-  frontrun/sandwich += efficient markets :)`
+* Is optional and not required for ETH staking
+* Is open source middleware run by validators to access a competitive block-building market
+* Is built as an implementation of [proposer-builder separation (PBS)](https://ethresear.ch/t/proposer-block-builder-separation-friendly-fee-market-designs/9725) for proof-of-stake (PoS) Ethereum
+
+`home-staker (you) >> MEV-Boost >> relay >> builder >> searcher +/-  frontrun/sandwich += efficient markets :)`
 
 :::info
-**tldr**: As of August 2023, MEV is estimated be 24% of a validator rewards. Other estimates suggest it can [boost staking rewards by over 60%.](https://hackmd.io/@flashbots/mev-in-eth2)
+**TLDR**: As of August 2023, MEV is estimated be 24% of a validator rewards. Other estimates suggest it can [boost staking rewards by over 60%.](https://hackmd.io/@flashbots/mev-in-eth2)
 :::
 <img src="/img/mev24.png" alt=""/>
 
@@ -53,7 +54,7 @@ Source: [ultra sound money](https://ultrasound.money/)
 ## 🔧 How to MEV?
 
 :::warning
-**Prerequisite:** You run a full Ethereum node (Execution Layer client \[e.g. geth/besu/nethermind/erigon] + Consensus Layer client \[e.g. prysm/lighthouse/teku/lodestar/nimbus]) and a validator.
+**Prerequisite:** You run a full Ethereum node including an execution Layer client such as Geth, Besu, Nethermind or Erigon; consensus Layer client such as Prysm, Lighthouse, Teku, Lodestar or Nimbus; and, a validator.
 :::
 
 ### Step 1: Create MEV-Boost Service Account
@@ -67,13 +68,13 @@ sudo useradd --no-create-home --shell /bin/false mevboost
 ### Step 2: Install MEV-Boost
 
 * Downloading binaries is often faster and more convenient.
-* Building from source code can offer better compatibility and is more aligned with the spirit of FOSS (free open source software).
+* Building from source code can offer better compatibility and is more aligned with the spirit of free open source software (FOSS).
 
 <details>
 
-<summary>Option 1 - Download binaries</summary>
+<summary>Option 1 - Download Binaries</summary>
 
-Run the following to automatically download the latest linux release, un-tar and cleanup.
+Run the following commands to download the latest linux release automatically, extract the archive and clean up.
 
 ```bash
 RELEASE_URL="https://api.github.com/repos/flashbots/mev-boost/releases/latest"
@@ -100,7 +101,7 @@ sudo mv $HOME/mev-boost /usr/local/bin
 
 <details>
 
-<summary>Option 2 - Build from source code</summary>
+<summary>Option 2 - Build from Source Code</summary>
 
 Install build dependencies.
 
@@ -108,7 +109,7 @@ Install build dependencies.
 sudo apt -y install build-essential
 ```
 
-Install Go and removing any previous Go installations.
+Install Go and remove any previous Go installations.
 
 ```bash
 cd $HOME
@@ -119,13 +120,13 @@ echo export PATH=$PATH:/usr/local/go/bin >> $HOME/.bashrc
 source $HOME/.bashrc
 ```
 
-Verify that you've installed Go 1.18+ by printing the version information.
+To verify that Go 1.18+ is installed, print the version information.
 
 ```bash
 go version
 ```
 
-Install mev-boost with `go install`
+Install MEV-Boost
 
 ```bash
 CGO_CFLAGS="-O -D__BLST_PORTABLE__" go install github.com/flashbots/mev-boost@latest
@@ -145,7 +146,7 @@ Create a systemd unit file for MEV-Boost
 sudo nano /etc/systemd/system/mevboost.service
 ```
 
-The `ExecStart` line lists relays: **Flashbots, UltraSound, Aestus, bloXroute Max Profit, WenMerge**. Remove or add other relays according to your preferences. Add as many or as few relays as you wish.
+In the `mevboost.service` file below, the `ExecStart` line lists relays: **Flashbots, UltraSound, Aestus, bloXroute Max Profit, WenMerge**. Remove or add other relays according to your preferences. Add as many or as few relays as you need.
 
 :::info
 Find relay endpoints at:
@@ -163,11 +164,11 @@ Example:
 -relay https://RELAY2.COM \
 -relay https://RELAY3.COM
 
-Important: Ensure each relay line ends with \ except the last relay line.
+Important: Ensure that each relay line ends with \ except the last relay line.
 ```
 :::
 
-Paste the following into your `mevboost.service` file. To exit and save from the `nano` editor, press `Ctrl` + `X`, then `Y`, then`Enter`.
+Paste the following into your `mevboost.service` file. In the nano text editor, to save and exit press `Ctrl+X`, then `Y`, and then `ENTER`
 
 <Tabs>
 <TabItem label="Ethereum Mainnet" value="mainnet" default>
@@ -176,7 +177,7 @@ Paste the following into your `mevboost.service` file. To exit and save from the
 Description=MEV-Boost Service for Ethereum Mainnet
 Wants=network-online.target
 After=network-online.target
-Documentation=https://docs.coincashew.com
+Documentation=https://ethpillar.coincashew.io
 
 [Service]
 User=mevboost
@@ -203,7 +204,7 @@ WantedBy=multi-user.target
 Description=MEV-Boost Service for HOODI testnet
 Wants=network-online.target
 After=network-online.target
-Documentation=https://docs.coincashew.com
+Documentation=https://ethpillar.coincashew.io
 
 [Service]
 User=mevboost
@@ -231,12 +232,12 @@ WantedBy=multi-user.target
 
 **Installation location**: MEV-Boost communicates with the consensus client and should be installed on the same machine as your consensus client.
 
-`-addr`: set this to `0.0.0.0:18550` if you install MEV-Boost on a different machine than your consensus client. Update firewall rules if needed.
+`-addr`—If you install MEV-Boost on a different machine than your consensus client, then set to `0.0.0.0:18550` and update firewall rules as needed.
 
-`-min-bid`: you can set a minimum bid value in ETH.&#x20;
+`-min-bid`—Set a minimum bid value in ETH
 
-* If all relays cannot bid higher than your minimum value, then your local execution client will produce the block.&#x20;
-* By setting this value, you can capture MEV opportunities for higher value blocks and maintain a degree of control for local block production which helps strengthen censorship resistance and a neutral Ethereum network.&#x20;
+* If no relay can bid higher than your minimum value, then your local execution client produces the block.
+* By setting this value, you can capture MEV opportunities for higher-value blocks and maintain a degree of control for local block production which helps strengthen censorship resistance and a neutral Ethereum network.
 :::
 
 Reload systemctl to pickup the new service file.
@@ -246,7 +247,7 @@ sudo systemctl daemon-reload
 ```
 
 :::info
-**Good to know**: If you add or remove relay endpoints, you'll need to re-run this systemctl`daemon-reload` command and restart the MEV-Boost services.
+**Good to know**: If you add or remove relay endpoints, then you need to refresh the systemd manager configuration, and then restart the MEV-Boost service.
 
 ```bash
 sudo systemctl daemon-reload
@@ -254,7 +255,7 @@ sudo systemctl restart mevboost
 ```
 :::
 
-Enable MEV-Boost to automatically startup at system reboots and start the service.
+Enable MEV-Boost to start automaticaly when the computer boots, and then start the service.
 
 ```bash
 sudo systemctl enable mevboost
@@ -280,7 +281,7 @@ Sample of systemd logs showing MEV-Boost running nominally.
              └─12321 /usr/local/bin/mev-boost -mainnet -relay-check -relays https://0xac6e77dfe25ecd6110b8e780608cce0dab71fdd5ebea22a16c0205200f2f8e2e3ad3b71d3499c54ad14d6c21b41a37ae@boost-relay.flashbots.net,https://0xad0a8bb54565c2211cee576363f3>
 ```
 
-View Logs with the following command:
+Follow logs using the following command:
 
 ```bash
 sudo journalctl -fu mevboost
@@ -310,7 +311,7 @@ Add the appropriate flag to the `ExecStart` line of your **consensus** **client*
 
 Select the tab appropriate to your staking setup.
 
-To exit and save from the `nano` editor, press `Ctrl` + `X`, then `Y`, then`Enter`.
+In the nano text editor, to save and exit press `Ctrl+X`, then `Y`, and then `ENTER`
 
 <Tabs>
 <TabItem value="2" label="V2 Staking Setup (Current)" >
@@ -344,7 +345,7 @@ If your Teku client is configured by --parameters in the **systemd service file,
 
 #### Option 2: TOML Configuration - Use for V1 Teku staking setup
 
-If your Teku client is configured by passing in a **TOML file (i.e. teku.yaml),** edit `teku.yaml` with nano.
+If your Teku client is configured by passing in a **TOML file (i.e. teku.yaml),** edit `teku.yaml` using nano
 
 ```bash
 sudo nano /etc/teku/teku.yaml
@@ -386,7 +387,7 @@ For example, here is the expected result of an updated `ExecStart` line of a **V
 
 Flag is added on the last line.
 
-When adding a new line, notice that previous lines require a backslash `\`
+When adding a new line, notice that the last character in the previous lines must be a backslash (`\`)
 
 ```bash
 ExecStart=/usr/local/bin/beacon-chain \
@@ -402,7 +403,7 @@ ExecStart=/usr/local/bin/beacon-chain \
 
 **Validator Client Changes**
 
-If required, add the appropriate flag to the `ExecStart` line of your **validator** **client** service file. To exit and save from the `nano` editor, press `Ctrl` + `X`, then `Y`, then`Enter`.
+If required, add the appropriate flag to the `ExecStart` line of your **validator** **client** service file. In the nano text editor, to save and exit press `Ctrl+X`, then `Y`, and then `ENTER`
 
 ```bash
 sudo nano /etc/systemd/system/validator.service
