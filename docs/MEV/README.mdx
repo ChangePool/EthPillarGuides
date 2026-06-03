@@ -307,7 +307,7 @@ Both the consensus layer client and validator will require additional **Builder 
 
 **Consensus Client Layer Changes (beacon chain)**
 
-Add the appropriate flag to the `ExecStart` line of your **consensus** **client** service file.&#x20;
+Add the appropriate flag to the `ExecStart` line of your **consensus** **client** service file.
 
 Select the tab appropriate to your staking setup.
 
@@ -335,17 +335,17 @@ sudo nano /etc/systemd/system/beacon-chain.service
 </TabItem>
 
 <TabItem value="t" label="Teku" >
-#### Option 1: Systemd service file configuration - Use for V2 Teku staking setup
+#### Option 1: Systemd Service File Configuration - Use for V2 Teku Staking Setup
 
-If your Teku client is configured by --parameters in the **systemd service file,** add the following changes.
+If your Teku client is configured by `--parameters` in the systemd service file, then add the following changes.
 
 ```bash
 --validators-builder-registration-default-enabled=true --builder-endpoint=http://127.0.0.1:18550
 ```
 
-#### Option 2: TOML Configuration - Use for V1 Teku staking setup
+#### Option 2: TOML Configuration - Use for V1 Teku Staking Setup
 
-If your Teku client is configured by passing in a **TOML file (i.e. teku.yaml),** edit `teku.yaml` using nano
+If your Teku client is configured by passing in a TOML file (i.e. teku.yaml), edit `teku.yaml` using nano
 
 ```bash
 sudo nano /etc/teku/teku.yaml
@@ -359,8 +359,8 @@ validators-builder-registration-default-enabled: true
 builder-endpoint: "http://127.0.0.1:18550"
 ```
 
-:::info
-Use one configuration or the other but not both!
+:::warning
+Use one configuration or the other, but not both!
 :::
 </TabItem>
 
@@ -383,11 +383,11 @@ Use one configuration or the other but not both!
 </TabItem>
 </Tabs>
 
-For example, here is the expected result of an updated `ExecStart` line of a **V2 Staking Setup Prysm consensus** **client** service file.&#x20;
+For example, here is the expected result of an updated `ExecStart` line of a **V2 Staking Setup Prysm consensus** **client** service file.
 
 Flag is added on the last line.
 
-When adding a new line, notice that the last character in the previous lines must be a backslash (`\`)
+When adding a new line, the last character in the previous lines must be a backslash (`\`)
 
 ```bash
 ExecStart=/usr/local/bin/beacon-chain \
@@ -417,13 +417,13 @@ sudo nano /etc/systemd/system/validator.service
 </TabItem>
 
 <TabItem value="t" label="Teku" >
-For Teku running in standalone validator configuration,
+For Teku running in standalone validator configuration:
 
 ```bash
 --validators-builder-registration-default-enabled=true
 ```
 
-For Teku running in combined BN+VC configuration, there is no extra configuration needed.
+For Teku running in combined BN+VC configuration, no extra configuration is needed.
 </TabItem>
 
 <TabItem value="o" label="Lodestar" >
@@ -433,13 +433,13 @@ For Teku running in combined BN+VC configuration, there is no extra configuratio
 </TabItem>
 
 <TabItem value="n" label="Nimbus" >
-For Nimbus running in standalone validator configuration,
+For Nimbus running in standalone validator configuration:
 
 ```
 --payload-builder=true
 ```
 
-For Nimbus running in combined BN+VC configuration, there is no extra configuration needed.
+For Nimbus running in combined BN+VC configuration, no extra configuration is needed.
 </TabItem>
 
 <TabItem value="p" label="Prysm" >
@@ -449,11 +449,11 @@ For Nimbus running in combined BN+VC configuration, there is no extra configurat
 </TabItem>
 </Tabs>
 
-For example, here is the expected result of an updated `ExecStart` line of a **V2 Staking Setup Prysm validator client** service file.&#x20;
+For example, here is the expected result of an updated `ExecStart` line of a **V2 Staking Setup Prysm validator client** service file.
 
 Flag is added on the last line.
 
-When adding a new line, notice that previous lines require a backslash `\`
+When adding a new line, the last character in the previous lines must be a backslash (`\`)
 
 ```bash
 ExecStart=/usr/local/bin/validator \
@@ -468,7 +468,7 @@ ExecStart=/usr/local/bin/validator \
   --enable-builder
 ```
 
-After configuring your consensus client and validator to enable MEV-Boost, reload and restart your services. Finally, verify your logs look error-free and show use of the new MEV configurations.
+After configuring your consensus client and validator to enable MEV-Boost, reload and restart the services. Finally, verify that logs confirm using the new MEV configurations and display no error messages.
 
 <Tabs>
 <TabItem value="2" label="V2 Staking Setup (Current)" >
@@ -514,7 +514,7 @@ sudo journalctl -fu beacon-chain
 </Tabs>
 
 :::success
-Congrats! Your validator with mev-boost will earn more rewards when proposing a block.
+Congratulations! When proposing a block, with MEV-Boost your validator earns more rewards.
 :::
 
 ## :dart: How to Update MEV-Boost
@@ -525,9 +525,9 @@ Review the latest MEV-Boost [release notes](https://github.com/flashbots/mev-boo
 
 <details>
 
-<summary>Option 1 - Download binaries</summary>
+<summary>Option 1 - Download Binaries</summary>
 
-Run the following to automatically download the latest linux release, un-tar and cleanup.
+Run the following commands to download the latest linux release automatically, extract the archive and clean up.
 
 ```bash
 RELEASE_URL="https://api.github.com/repos/flashbots/mev-boost/releases/latest"
@@ -562,7 +562,7 @@ Verify the new version number.
 
 <details>
 
-<summary>Option 2 - Build from source code</summary>
+<summary>Option 2 - Build from Source Code</summary>
 
 Compile new binaries and stop the service.
 
@@ -596,7 +596,7 @@ sudo rm /usr/local/bin/mev-boost
 sudo userdel mevboost
 ```
 
-Finally, remove the Builder API changes made in step 3 to your consensus client and validator.
+Finally, remove the Builder API changes made to your consensus client and validator in [step 3](/BoostingMEV#Step-3-Update-Consensus-Client-and-Validator)
 
 ## :question: FAQ
 
@@ -606,18 +606,18 @@ Finally, remove the Builder API changes made in step 3 to your consensus client 
 
 Verify that your validator is registered with a particular relay by making a request to the relay's API.
 
-You can either manually query the relay's API or use [dabauxi's Check MEV-Boost Relay Registration script](https://github.com/dabauxi/check-mevboost-registration).
+You can either manually query the relay's API or use dabauxi's [Check MEV-Boost Relay Registration](https://github.com/angerrp/check-mevboost-registration) script, requiring Python
 
 #### Check MEV-Boost Relay Registration by dabauxi
 
-Review notes and source code [here](https://github.com/dabauxi/check-mevboost-registration). Requires python.
+After reviewing notes and source code as needed, type:
 
 ```
 # Install python
 sudo apt install python3
 
 # Download the script
-wget https://raw.githubusercontent.com/dabauxi/check-mevboost-registration/main/check_mevboost_registration.py
+wget https://github.com/angerrp/check-mevboost-registration/raw/refs/heads/main/check_mevboost_registration.py
 
 # Assign execution permissions
 chmod +x check_mevboost_registration.py
@@ -648,7 +648,7 @@ Relay: 'agnostic-relay.net', ✔️ registered
 
 #### Check Manually
 
-For example, to verify that your validator is registered with the flashbots relay, enter the following URL into your browser. Replace `<myPubKey>` with the public key of your validator and you will see registration data such as your fee recipient address.
+For example, to verify that your validator is registered with the Flashbots relay, type the following URL in your browser. Replace `<myPubKey>` with the public key of your validator and you will see registration data such as your fee recipient address.
 
 ```
 https://boost-relay.flashbots.net/relay/v1/data/validator_registration?pubkey=<myPubKey>
@@ -674,13 +674,13 @@ Sample output:
 
 When a block is produced using MEV-Boost, you may receive your payment in 1 of 3 ways.
 
-Specifically, your MEV payment may arrive as:
+Specifically, your MEV payment may arrive:
 
-1\) by setting you as the block's Fee Recipient&#x20;
+1\) By setting you as the block's Fee Recipient
 
-2\) an internal transaction
+2\) As an internal transaction, or
 
-3\) or a normal transaction
+3\) As a normal transaction
 
 </details>
 
@@ -688,7 +688,7 @@ Specifically, your MEV payment may arrive as:
 
 <summary>Why run MEV-Boost?</summary>
 
-Refer to [this article by Stephane Gosslin](https://writings.flashbots.net/writings/why-run-mevboost), which explains the benefits of MEV-Boost to the network and you, as a validator.
+Refer to the article [Why Run MEV-Boost?](https://writings.flashbots.net/why-run-mevboost) by Stephane Gosselin, which explains the benefits of MEV-Boost to the network as well as to you, as a validator.
 
 </details>
 
@@ -697,11 +697,10 @@ Refer to [this article by Stephane Gosslin](https://writings.flashbots.net/writi
 <summary>How does MEV-Boost work?</summary>
 
 * Ethereum stakers must run three pieces of software: a validator client, consensus client, and an execution client.
-* MEV-Boost is a separate piece of open source software, which queries and outsources block-building to a network of builders.
-* Block builders prepare full blocks, optimizing for MEV extraction and fair distribution of rewards.
-* They then submit their blocks to relays.
-* Relays aggregate blocks from **multiple** builders in order to select the block with the highest fees.
-* One instance of MEV-Boost can be configured by a validator to connect to **multiple** relays.
+* MEV-Boost is a separate open source software that queries and outsources block-building to a network of builders.
+* Block builders prepare full blocks, optimizing for MEV extraction and fair distribution of rewards, and then submit the blocks to relays.
+* Relays aggregate blocks from **multiple** builders in order to select the block resulting in the highest fees.
+* One instance of MEV-Boost can be configured by a validator to connect to multiple relays.
 * The Consensus Layer client of a validator proposes the most profitable block received from MEV-Boost to the Ethereum network for attestation and block inclusion.
 
 <img src="/img/mev-boost-integration-overview.png" alt="" data-size="original"/>
@@ -712,12 +711,12 @@ Refer to [this article by Stephane Gosslin](https://writings.flashbots.net/writi
 
 <summary>What are the risks of running MEV-Boost?</summary>
 
-* Adding more relays increases risk of adding a "bad" relay (hacked, withholds bid, performance issues) and causes your validator to miss a proposal.
-* More relays = more chance of getting a high-bid block however this also increases chance of getting rugged by "bad" relays and missing a proposal.Requires trust that relays and block builders will act honestly. MEV is not yet a trust-less process until there is protocol-level proposer-builder-separation (PBS).
+* Adding more relays increases the risk of adding a "bad" relay (hacked, withholds bid, performance issues) and causes your validator to miss a proposal.
+* More relays = more chance of getting a high-bid block. However, the chance of getting rugged by "bad" relays and missing a proposal also increases. Requires trust that relays and block builders will act honestly. MEV is not yet a trust-less process until there is protocol-level proposer-builder-separation (PBS).
 
-Detailed explanation: [https://writings.flashbots.net/writings/understanding-mev-boost-liveness-risks](https://writings.flashbots.net/writings/understanding-mev-boost-liveness-risks/)
+The article [Understanding Liveness Risks from MEV-Boost](https://writings.flashbots.net/understanding-mev-boost-liveness-risks) provides a detailed explanation.
 
-Summary of risks: Only add relays you trust.
+Summary of risks: Only add relays that you trust.
 
 </details>
 
@@ -725,7 +724,11 @@ Summary of risks: Only add relays you trust.
 
 <summary>What's the real-time status of MEV?</summary>
 
-Track network participation, recent MEV blocks, top relays and block builders at [https://www.mevboost.org](https://www.mevboost.org/)
+Track network participation, recent MEV blocks, top relays and block builders at:
+
+* [payload](https://payload.de/data/)
+* [relayscan](https://www.relayscan.io/)
+* [mevboost.pics](https://mevboost.pics/)
 
 </details>
 
@@ -733,19 +736,19 @@ Track network participation, recent MEV blocks, top relays and block builders at
 
 <summary>I'm using multiple relays. Which one is chosen?</summary>
 
-If multiple relays are available, the relay bidding highest MEV reward will be chosen. If all relays are not available, the local execution client builds the block without MEV.
+If multiple relays are available, then the relay bidding highest MEV reward is chosen. If all relays are not available, then the local execution client builds the block without MEV.
 
 </details>
 
 <details>
 
-<summary>What's makes a MEV relay ethical or not?</summary>
+<summary>What makes an MEV relay ethical or not?</summary>
 
-Based on varying degrees of profit or censorship, MEV relays can decide on what transactions to bundle in a block.
+Based on varying degrees of profit or censorship, MEV relays can decide on what transactions to bundle in a block:
 
-* Ethical relays: will not censor transactions or profit from front running / sandwich attacks, which is harmful to everyday users on Ethereum.
-* OFAC relays: will censor transactions according to the OFAC list.
-* Maximal profit relays: profit is all that matters, ethics have no meaning.
+* **Ethical relays** will not censor transactions or profit from front running / sandwich attacks, which is harmful to everyday users on Ethereum.
+* **OFAC relays** will censor transactions according to the OFAC list.
+* **Maximal profit relays** operate without considering ethics. Only profit matters.
 
 </details>
 
@@ -753,7 +756,7 @@ Based on varying degrees of profit or censorship, MEV relays can decide on what 
 
 <summary>Do I need to open any incoming ports on the firewall?</summary>
 
-No changes needed. MEV-Boost only makes outgoing tcp calls.
+No. MEV-Boost only makes outgoing TCP calls.
 
 </details>
 
