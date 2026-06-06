@@ -29,7 +29,7 @@ export function HTMLContent() {
 You can create a graphical dashboard to monitor an Ethereum node that you operate using the following open source software solutions:
 
 * [Prometheus](https://prometheus.io/docs/introduction/overview/) collects time-series data—metrics—from applications and infrastructure using a pull model, facilitating continuous system monitoring as well as alerting.
-* [Prometheus Node Exporter](https://github.com/prometheus/node_exporter) enables exporting system hardware and operating system metrics for a host computer using Prometheus. Additionally, enabling a textfile collector allows you to export any custom metrics that you may generate.
+* [Prometheus Node Exporter](https://github.com/prometheus/node_exporter) enables exporting system hardware and operating system metrics for a host computer using Prometheus.
 * [Grafana](https://grafana.com/docs/grafana/latest/) is an observability platform that facilitates visualizing data Prometheus collects.
 
 ### 1. Install Prometheus and Node Exporter
@@ -57,7 +57,7 @@ sudo apt-get update && sudo apt-get install -y grafana
 sudo systemctl enable grafana-server prometheus prometheus-node-exporter
 ```
 
-### 4. Create the **prometheus.yml** config file
+### 4. Create a Prometheus Configuration File
 
 Remove the default **prometheus.yml** configuration file and edit a new one.
 
@@ -66,7 +66,7 @@ sudo rm /etc/prometheus/prometheus.yml
 sudo nano /etc/prometheus/prometheus.yml
 ```
 
-Choose the tab for your consensus client. Paste the following configuration into the file.
+Choose the tab for your consensus client. Paste the following configuration into the new `prometheus.yml` file.
 
 <Tabs>
 <TabItem value="l" label="Lighthouse">
@@ -80,8 +80,7 @@ global:
   external_labels:
     monitor: 'codelab-monitor'
 
-# A scrape configuration containing exactly one endpoint to scrape:
-# Here it's Prometheus itself.
+# The list of scrape configurations
 scrape_configs:
    - job_name: 'node_exporter'
      static_configs:
@@ -108,8 +107,7 @@ global:
   external_labels:
     monitor: 'codelab-monitor'
 
-# A scrape configuration containing exactly one endpoint to scrape:
-# Here it's Prometheus itself.
+# The list of scrape configurations
 scrape_configs:
    - job_name: 'node_exporter'
      static_configs:
@@ -136,8 +134,7 @@ global:
   external_labels:
     monitor: 'codelab-monitor'
 
-# A scrape configuration containing exactly one endpoint to scrape:
-# Here it's Prometheus itself.
+# The list of scrape configurations
 scrape_configs:
    - job_name: 'node_exporter'
      static_configs:
@@ -164,8 +161,7 @@ global:
   external_labels:
     monitor: 'codelab-monitor'
 
-# A scrape configuration containing exactly one endpoint to scrape:
-# Here it's Prometheus itself.
+# The list of scrape configurations
 scrape_configs:
    - job_name: 'node_exporter'
      static_configs:
@@ -183,15 +179,14 @@ scrape_configs:
 
 ```sh
 global:
-scrape_interval:     15s # By default, scrape targets every 15 seconds.
+  scrape_interval:     15s # By default, scrape targets every 15 seconds.
 
   # Attach these labels to any time series or alerts when communicating with
   # external systems (federation, remote storage, Alertmanager).
   external_labels:
     monitor: 'codelab-monitor'
 
-# A scrape configuration containing exactly one endpoint to scrape:
-# Here it's Prometheus itself.
+# The list of scrape configurations
 scrape_configs:
    - job_name: 'node_exporter'
      static_configs:
@@ -208,13 +203,14 @@ scrape_configs:
 </TabItem>
 </Tabs>
 
-### 5. Setup prometheus for your execution client
+### 5. Set Up Prometheus for Your Execution Client
 
-Append the applicable job snippet for your execution client to the end of **prometheus.yml**.
+Append the applicable job snippet for your execution client to the end of the `prometheus.yml` file.
 
 :::warning
-**Spacing matters**. Ensure all `job_name` snippets are in alignment.
+**Spacing matters**. Ensure all `job_name` snippets are aligned.
 :::
+
 <Tabs>
 
 <TabItem value="g" label="Geth" >
@@ -278,7 +274,7 @@ Append the applicable job snippet for your execution client to the end of **prom
 </TabItem>
 </Tabs>
 
-Here's an example of a Lighthouse-Nethermind config:
+Here is an example of a Lighthouse-Nethermind config:
 
 ```bash
 global:
@@ -289,8 +285,7 @@ global:
   external_labels:
     monitor: 'codelab-monitor'
 
-# A scrape configuration containing exactly one endpoint to scrape:
-# Here it's Prometheus itself.
+# The list of scrape configurations
 scrape_configs:
    - job_name: 'node_exporter'
      static_configs:
@@ -308,7 +303,7 @@ scrape_configs:
        - targets: ['localhost:6060']
 ```
 
-To exit and save, press `Ctrl` + `X`, then `Y`, then `Enter`.
+To save the `prometheus.yml` file and exit nano, press `Ctrl+X`, then press `Y`, and then press `ENTER`
 
 Update file permissions.
 
@@ -328,13 +323,13 @@ Verify that the services are running.
 sudo systemctl status grafana-server prometheus prometheus-node-exporter
 ```
 
-### 6. Create a SSH Tunnel to Grafana
+### 6. Create an SSH Tunnel to Grafana
 
-Each time you want to access Grafana, create a SSH tunnel with port 3000 forwarded.
+Each time you want to access Grafana, create an SSH tunnel with port 3000 forwarded.
 
 <Tabs>
 <TabItem value="x" label="Linux or MacOS" >
-Example of how to create a SSH tunnel in Linux or MacOS:
+Example creating an SSH tunnel in Linux or MacOS:
 
 ```bash
 ssh -N -v <user>@<staking.node.ip.address> -L 3000:localhost:3000
@@ -345,46 +340,80 @@ ssh -N -v ethereum@192.168.1.69 -L 3000:localhost:3000
 </TabItem>
 
 <TabItem value="w" label="Windows" >
-Example of how to create a SSH tunnel in Windows with [Putty](https://putty.org/):
+Example creating an SSH tunnel in Windows using [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html):
 
-Navigate to Connection > SSH > Tunnels > Enter Source Port `3000` > Enter Destination `localhost:3000` > Click Add
+In the left pane, expand the **Connection** branch, then expand the **SSH** branch, and then click **Tunnels**. In the right pane, type **3000** in the **Source Port** field, then type **localhost:3000** in the **Destination** field, and then click the **Add** button.
 
 ![](/img/PuTTY.png)
 
-Now save your configuration. Navigate to Session > Enter a session name > Save
+To save your configuration, in the left pane click the **Session** branch. In the right pane, type a unique descriptive name in the **Saved Sessions** field, and then click the **Save** button.
 
-Click Open to open a connection
+To open a connection, click to select the session to open in the list of saved sessions, and then click the **Open** button.
+
 </TabItem>
 </Tabs>
 
-Now you can access Grafana on your local machine by pointing a web browser to [http://localhost:3000](http://localhost:3000/)
+Now you can access Grafana on your local machine by pointing a Web browser to [http://localhost:3000](http://localhost:3000/)
 
-### 7. Setup Grafana Dashboards
+### 7. Set Up Grafana Dashboards
 
-1. Open [http://localhost:3000](http://localhost:3000)
-2. Login with **admin** / **admin**
-3. Change password
-4. Click the **configuration gear** icon, then **Add data Source**
-5. Select **Prometheus**
-6. Set **Name** to **"Prometheus**"
-7. Set **URL** to [http://localhost:9090](http://localhost:9090)
-8. Click **Save & Test**
-9. **Download and save** your consensus client's json file. More json dashboard options available below. \[ [Lighthouse](https://raw.githubusercontent.com/Yoldark34/lighthouse-staking-dashboard/main/Yoldark_ETH_staking_dashboard.json) | [Teku ](https://grafana.com/api/dashboards/13457/revisions/2/download)| [Nimbus ](https://raw.githubusercontent.com/status-im/nimbus-eth2/master/grafana/beacon_nodes_Grafana_dashboard.json)| [Prysm ](https://raw.githubusercontent.com/GuillaumeMiralles/prysm-grafana-dashboard/master/less_10_validators.json)| [Prysm > 10 Validators](https://raw.githubusercontent.com/GuillaumeMiralles/prysm-grafana-dashboard/master/more_10_validators.json) | [Lodestar](https://raw.githubusercontent.com/ChainSafe/lodestar/unstable/dashboards/lodestar_summary.json) ]
-10. **Download and save** your execution client's json file \[ [Geth](https://github.com/ethereum/go-ethereum/files/14211070/Geth-Cancun-Prometheus.json) | [Besu ](https://grafana.com/api/dashboards/10273/revisions/5/download)| [Nethermind](https://raw.githubusercontent.com/NethermindEth/metrics-infrastructure/master/grafana/provisioning/dashboards/nethermind.json) | [Erigon](https://raw.githubusercontent.com/ledgerwatch/erigon/devel/cmd/prometheus/dashboards/erigon.json) | [Reth](https://raw.githubusercontent.com/paradigmxyz/reth/main/etc/grafana/dashboards/overview.json) ]
-11. **Download and save** a [node-exporter dashboard](https://grafana.com/api/dashboards/11074/revisions/9/download) for general system monitoring
-12. Click **Create +** icon > **Import**
-13. Add the consensus client dashboard via **Upload JSON file**
-14. If needed, select Prometheus as **Data Source**.
-15. Click the **Import** button.
-16. Repeat steps 12-15 for the execution client dashboard.
-17. Repeat steps 12-15 for the node-exporter dashboard.
+1\. Using a Web browser, navigate to [http://localhost:3000](http://localhost:3000)
+
+2\. To log in to Grafana for the first time, type **admin** in the **Email or Username** field, then type **admin** in the **Password** field, and then click the **Log In** button.
+
+3\. When prompted, change your password.
+
+4\. Click the **configuration gear** icon, then **Add data Source**
+
+5\. Select **Prometheus**
+
+6\. Set **Name** to **"Prometheus**"
+
+7\. Set **URL** to [http://localhost:9090](http://localhost:9090)
+
+8\. Click **Save & Test**
+
+9\. Download and save the JSON file supporting your consensus client:
+
+* [Lighthouse](https://raw.githubusercontent.com/Yoldark34/lighthouse-staking-dashboard/main/Yoldark_ETH_staking_dashboard.json)
+* [Teku ](https://grafana.com/api/dashboards/13457/revisions/2/download)
+* [Nimbus ](https://raw.githubusercontent.com/status-im/nimbus-eth2/master/grafana/beacon_nodes_Grafana_dashboard.json)
+* [Prysm ](https://raw.githubusercontent.com/GuillaumeMiralles/prysm-grafana-dashboard/master/less_10_validators.json)
+* [Prysm Using More Than 10 Validators](https://raw.githubusercontent.com/GuillaumeMiralles/prysm-grafana-dashboard/master/more_10_validators.json)
+* [Lodestar](https://raw.githubusercontent.com/ChainSafe/lodestar/unstable/dashboards/lodestar_summary.json)
+
+:::info
+Links to more JSON dashboard options you can download are available below.
+:::
+
+10\. Download and save the JSON file supporting your execution client:
+
+* [Geth](https://github.com/ethereum/go-ethereum/files/14211070/Geth-Cancun-Prometheus.json)
+* [Besu ](https://grafana.com/api/dashboards/10273/revisions/5/download)
+* [Nethermind](https://raw.githubusercontent.com/NethermindEth/metrics-infrastructure/master/grafana/provisioning/dashboards/nethermind.json)
+* [Erigon](https://raw.githubusercontent.com/ledgerwatch/erigon/devel/cmd/prometheus/dashboards/erigon.json)
+* [Reth](https://raw.githubusercontent.com/paradigmxyz/reth/main/etc/grafana/dashboards/overview.json)
+
+11\. For general system monitoring, download and save a [Node Exporter dashboard](https://grafana.com/api/dashboards/11074/revisions/9/download)
+
+12\. Click **Create +** icon > **Import**
+
+13\. Add the consensus client dashboard via **Upload JSON file**
+
+14\. If needed, select Prometheus as **Data Source**
+
+15\. Click the **Import** button
+
+16\. Repeat steps 12 to 15 for the execution client dashboard
+
+17\. Repeat steps 12 to 15 for the Node Exporter dashboard
 
 :::warning
 :fire: **Troubleshooting common Grafana issues**
 
-**Symptom 1**: Your dashboard is missing some data\_.\_
+**Symptom 1**: Your dashboard is missing some data.
 
-**Solution 1**_:_ Ensure that the execution or consensus client has enabled the appropriate metrics flag.
+**Solution 1**: Ensure that the execution or consensus client has enabled the appropriate metrics flag.
 
 ```bash
 cat /etc/systemd/system/execution.service
@@ -401,16 +430,16 @@ cat /etc/systemd/system/consensus.service
 * **Teku**: --metrics-enabled=true --metrics-port=8008
 * **Lodestar**: --metrics true
 
-**Symptom 2**: Don't want to use SSH tunnels and you want to expose port 3000 to access Grafana, but understand the security concerns.
+**Symptom 2**: You do not want to use SSH tunnels. You want to expose port 3000 to access Grafana, but understand the security concerns.
 
-**Solution 2**: Open port 3000 in your ufw firewall. Access grafana at http://\<node ipaddress>:3000
+**Solution 2**: Open port 3000 in your UFW firewall. Access grafana at **http://\<NodeIPAddress>:3000**
 
 ```
 sudo ufw allow 3000
 ```
 :::
 
-#### Example of Grafana Dashboards for each consensus client.
+#### Grafana Dashboard Examples for Consensus Clients
 
 <Tabs>
 <TabItem value="l" label="Lighthouse" >
@@ -438,8 +467,6 @@ Credits: [https://github.com/status-im/nimbus-eth2/](https://github.com/status-i
 
 ![Nimbus dashboard by metanull-operator](/img/ETH2GrafanaDashboardPrysm.jpg)
 
-JSON download link:
-
 Credits: [https://github.com/metanull-operator/eth2-grafana/](https://github.com/metanull-operator/eth2-grafana/)
 </TabItem>
 
@@ -462,21 +489,19 @@ Credits: [https://github.com/metanull-operator/eth2-grafana/](https://github.com
 </TabItem>
 
 <TabItem value="o" label="Lodestar" >
-<img src="/img/lode-dash.png" alt=""/>
+<img src="/img/LodestarDashboard.png" alt=""/>
 
 Credits: [https://raw.githubusercontent.com/ChainSafe/lodestar/unstable/dashboards/lodestar\_summary.json](https://raw.githubusercontent.com/ChainSafe/lodestar/unstable/dashboards/lodestar_summary.json)
 </TabItem>
 </Tabs>
 
-#### Example of Grafana Dashboards for each execution client.
+#### Grafana Dashboards Examples for Execution Clients
 
 <Tabs>
 <TabItem value="g" label="Geth" >
 ![Dashboard by karalabe](/img/GethDashboard.png)
 
 Credits: [https://gist.github.com/karalabe/e7ca79abdec54755ceae09c08bd090cd](https://gist.github.com/karalabe/e7ca79abdec54755ceae09c08bd090cd)
-
-
 
 Blob enabled dashboard: [https://github.com/ethereum/go-ethereum/files/14211070/Geth-Cancun-Prometheus.json](https://github.com/ethereum/go-ethereum/files/14211070/Geth-Cancun-Prometheus.json)
 </TabItem>
@@ -500,15 +525,13 @@ Credits: [https://github.com/ledgerwatch/erigon/tree/devel/cmd/prometheus/dashbo
 </TabItem>
 
 <TabItem value="r" label="Reth" >
-<img src="/img/reth.png" alt=""/>
+<img src="/img/RethDashboard.png" alt=""/>
 Credits: [https://github.com/paradigmxyz/reth/blob/main/etc/grafana/dashboards/overview.json](https://github.com/paradigmxyz/reth/blob/main/etc/grafana/dashboards/overview.json)
 </TabItem>
 </Tabs>
 
-#### Example of Node-Exporter Dashboard
+#### Prometheus Node Exporter Dashboard Example
 
-<Tabs>
-<TabItem value="x" label="Node-Exporter Dashboard by starsliao" >
 **General system monitoring**
 
 Includes: CPU, memory, disk IO, network, temperature and other monitoring metrics。
@@ -517,21 +540,15 @@ Includes: CPU, memory, disk IO, network, temperature and other monitoring metric
 
 ![](/img/NodeExporterDashboard2.png)
 
-Credits: [starsliao](https://grafana.com/grafana/dashboards/11074)
-</TabItem>
-</Tabs>
+Credit: [StarsL.cn](https://grafana.com/grafana/dashboards/11074-node-exporter-for-prometheus-dashboard-en-v20201010/)
 
-### 8. Setup Alert Notifications
+### 8. Set Up Alert Notifications
 
-:::info
-Setup alerts to get notified if your validators go offline.
-:::
-
-Get notified of problems with your validators. Choose between email, telegram, discord or slack.
+Get notified of problems with your validators. Choose between e-mail, Telegram, Discord or Slack.
 
 <details>
 
-<summary>Option 1: Email Notifications</summary>
+<summary>Option 1: E-mail Notifications</summary>
 
 1. Visit [https://beaconcha.in/](https://beaconcha.in)
 2. Sign up for an account
@@ -545,23 +562,39 @@ Get notified of problems with your validators. Choose between email, telegram, d
 
 <summary>Option 2: Telegram Notifications</summary>
 
-1. On the menu of Grafana, select **Alerting.**
-2. Click on **Contact points menu,** then **+Create contact point** butto&#x6E;**.**
-3. Give the contact point a **name**.
-4. Select **Telegram** from the Integration list.
-5. To complete the **Telegram API settings**, a **Telegram channel** and \*\*bot \*\*are required. For instructions on setting up a bot with `@Botfather`, see [this section](https://core.telegram.org/bots#6-botfather) of the Telegram documentation. You need to create a BOT API token.
-6. Create a new telegram group.
-7. Invite the bot to your new group.
-8. Type at least 1 message into the group to initialize it.
-9. Visit [`https://api.telegram.org/botXXX:YYY/getUpdates`](https://api.telegram.org/botXXX:YYY/getUpdates) where `XXX:YYY` is your BOT API Token.
-10. In the JSON response, find and copy the **Chat ID**. Find it between \*\*chat \*\*and **title**. _Example of Chat ID_: `-1123123123`
+1\. In Grafana, click the **Alerting** menu
+
+2\. Click the **Contact Points** menu, and then click the **+Create contact point** button
+
+3\. Give the contact point a **name**
+
+4\. Select **Telegram** from the Integration list
+
+5\. To complete the **Telegram API settings**, a Telegram channel and bot are required. For instructions on setting up a bot with `@Botfather`, see the topic [Bots: An introduction for Developers](https://core.telegram.org/bots#6-botfather). You need to create a bot API token.
+
+6\. Create a new telegram group.
+
+7\. Invite the bot to your new group.
+
+8\. To initialize the group, type at least one message into the group.
+
+9\. Visit [`https://api.telegram.org/botXXX:YYY/getUpdates`](https://api.telegram.org/botXXX:YYY/getUpdates) where `XXX:YYY` is your bot API Token.
+
+10\. In the JSON response, find and copy the **Chat ID**. Find the **Chat ID** between **chat** and **title**
+
+:::info
+_Example of Chat ID_: `-1123123123`
 
     ```
     "chat":{"id":-123123123,"title":
     ```
-11. Paste the **Chat ID** into the corresponding field in **Grafana**.
-12. **Save and test** the notification channel for your alerts.
-13. Now you can create custom alerts from your dashboards. [Visit here to learn how to create alerts.](https://grafana.com/docs/grafana/latest/alerting/create-alerts/)
+:::
+
+11\. Paste the **Chat ID** into the corresponding field in **Grafana**.
+
+12\. **Save and test** the notification channel for your alerts.
+
+13\. Now you can create custom alerts from your dashboards. For more details, visit the topic [Configure Alert Rules](https://grafana.com/docs/grafana/latest/alerting/create-alerts/).
 
 </details>
 
@@ -569,14 +602,14 @@ Get notified of problems with your validators. Choose between email, telegram, d
 
 <summary>Option 3: Discord Notifications</summary>
 
-1. On the menu of Grafana, select **Alerting.**
-2. Click on **Contact points menu,** then **+Create contact point** butto&#x6E;**.**
+1. In Grafana, click the **Alerting** menu
+2. Click the **Contact Points** menu, and then click the **+Create contact point** button.
 3. Give the contact point a **name**.
 4. Select **Discord** from the Integration list.
-5. To complete the set up, a Discord server (and a text channel available) as well as a Webhook URL are required. For instructions on setting up a Discord's Webhooks, see [this section](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks) of their documentation.
-6. Enter the Webhook **URL** in the Discord notification settings panel.
-7. Click **Send Test**, which will push a confirmation message to the Discord channel.
-8. Now you can create custom alerts from your dashboards. [Visit here to learn how to create alerts.](https://grafana.com/docs/grafana/latest/alerting/create-alerts/)
+5. To complete the set up, a Discord server with an available text channel, as well as a Webhook URL are required. For instructions on setting up a Discord Webhook, see the topic [Intro to Webhooks](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks).
+6. Copy and paste the Webhook URL into the Discord notification settings panel.
+7. To push a confirmation message to the Discord channel, click **Send Test**
+8. Now you can create custom alerts from your dashboards. For more details, visit the topic [Configure Alert Rules](https://grafana.com/docs/grafana/latest/alerting/create-alerts/).
 
 </details>
 
@@ -584,13 +617,14 @@ Get notified of problems with your validators. Choose between email, telegram, d
 
 <summary>Option 4: Slack Notifications</summary>
 
-1. On the menu of Grafana, select **Alerting.**
-2. Click on **Contact points menu,** then **+Create contact point** butto&#x6E;**.**
+1. In Grafana, click the **Alerting** menu
+2. Click the **Contact Points** menu, and then click the **+Create contact point** button.
 3. Give the contact point a **name**.
 4. Select **Slack** from the Integration list.
-5. For instructions on setting up a Slack's Incoming Webhooks, see [this section](https://api.slack.com/messaging/webhooks) of their documentation.
-6. Enter the Slack Incoming Webhook URL in the **URL** field.
-7. Click **Send Test**, which will push a confirmation message to the Slack channel.
-8. Now you can create custom alerts from your dashboards. [Visit here to learn how to create alerts.](https://grafana.com/docs/grafana/latest/alerting/create-alerts/)
+5. For instructions on setting up a Slack's Incoming Webhooks, see the topic [Sending Messages Using Incoming Webhooks](https://api.slack.com/messaging/webhooks).
+6. Copy and paste the Slack Incoming Webhook URL in the **URL** field.
+7. To push a confirmation message to the Slack channel, click **Send Test**
+8. Now you can create custom alerts from your dashboards. For more details, visit the topic [Configure Alert Rules](https://grafana.com/docs/grafana/latest/alerting/create-alerts/).
 
 </details>
+
