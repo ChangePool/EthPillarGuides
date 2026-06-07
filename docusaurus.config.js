@@ -210,9 +210,19 @@ const config = {
             position: 'right',
           },
           {
-            href: 'https://github.com/ChangePool/EthPillarGuides',
+            type: 'dropdown',
             label: 'GitHub',
             position: 'right',
+            items: [
+              {
+                href: 'https://github.com/mjkeating/EthPillar',
+                label: 'EthPillar',
+              },
+              {
+                href: 'https://github.com/ChangePool/EthPillarGuides',
+                label: 'Guides',
+              },
+            ]
           },
           {
             href: 'https://discord.gg/Hz3PrkcR5W',
