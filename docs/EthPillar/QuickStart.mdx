@@ -5,12 +5,15 @@ slug: /EthPillar/QuickStart
 hide_title: false
 hide_table_of_contents: true
 sidebar_position: 20
-description: ""
+description: "Run your own Ethereum node in minutes"
 ---
 
 import React from 'react';
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 export function HTMLContent() {
 
@@ -23,5 +26,50 @@ export function HTMLContent() {
 
 {/* <!-- <HTMLContent /> --> */}
 
-## Quick Start
+## :triangular_ruler: Option 1: Automated One-Liner Install
+
+1\. Open a terminal window from anywhere by typing `Ctrl+Alt+T`.
+
+To install, paste the following:
+
+```sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/mjkeating/EthPillar/main/install.sh)"
+```
+
+2\. Launch EthPillar:
+```sh
+ethpillar
+```
+
+3\. Use the TUI menu to:
+- Set up validators
+- Configure network settings
+- Enable security
+- Enable monitoring
+- Manage services
+
+## :handshake: Option 2: Manual Install
+
+1\. Install updates and packages:
+
+```bash
+sudo apt-get update && sudo apt-get install git curl ccze bc tmux jq nano btop whiptail ufw
+```
+
+2\. Clone the EthPillar repo and install:
+
+```bash
+mkdir -p ~/git/ethpillar
+git clone https://github.com/mjkeating/EthPillar.git ~/git/ethpillar
+sudo ln -s ~/git/ethpillar/ethpillar.sh /usr/local/bin/ethpillar
+```
+
+3\. Run EthPillar:
+
+```bash
+ethpillar
+```
+:::tip
+Congratulations on installing a EthPillar and thank you for making Ethereum more decentralized by running a node!
+:::
 
