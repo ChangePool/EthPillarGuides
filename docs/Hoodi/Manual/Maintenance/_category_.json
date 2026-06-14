@@ -1,0 +1,11 @@
+{
+  "label": "Performing Maintenance",
+  "position": 70,
+  "collapsible": true,
+  "collapsed": true,
+  "link": {
+    "type": "generated-index",
+    "title": "Performing Maintenance",
+    "slug": "/Hoodi/Manual/Maintenance"
+  }
+}
