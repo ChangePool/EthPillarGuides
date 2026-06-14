@@ -1,0 +1,12 @@
+{
+  "label": "Manual Installation",
+  "position": 20,
+  "collapsible": true,
+  "collapsed": true,
+  "link": {
+    "type": "generated-index",
+    "title": "Manual Installation",
+    "slug": "/Staking/Manual",
+    "description": "For the advanced user who wants customization and is comfortable with CLI commands, the Manual Installation section walks you through the details of setting up a validator:"
+  }
+}

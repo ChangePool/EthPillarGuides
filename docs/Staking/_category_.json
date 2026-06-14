@@ -1,0 +1,12 @@
+{
+  "label": "Staking Ethereum",
+  "position": 40,
+  "collapsible": true,
+  "collapsed": true,
+  "link": {
+    "type": "generated-index",
+    "title": "Staking Ethereum",
+    "slug": "/Staking",
+    "description": "The Staking Ethereum guide explains how to create a staking node automatically on the Hoodi long-term testnet or Mainnet using EthPillar, as well as manually using the command line. For most users, the automated setup using EthPillar described in the Quick Start topic is sufficient:"
+  }
+}
