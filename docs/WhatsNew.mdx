@@ -1,0 +1,41 @@
+---
+title: "What's New?"
+sidebar_label: "What's New?"
+slug: /WhatsNew
+hide_title: false
+hide_table_of_contents: true
+sidebar_position: 25
+description: ""
+---
+
+import React from 'react';
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+export function HTMLContent() {
+  return (
+    <div>
+
+      <p><i>Table 1</i> lists updates to <i>EthPillar Guides</i> in reverse chronological order.</p>
+
+      <table class="center">
+        <caption>Table 1 Change Log</caption>
+        <tbody>
+          <tr>
+            <th width="20%"><p>Date</p></th>
+            <th width="25%"><p>Topic</p></th>
+            <th width="55%"><p>Change</p></th>
+          </tr>
+          <tr>
+            <td class="center"><p>June 8, 2026</p></td>
+            <td class="center"><p><a href={useBaseUrl('/')}>Welcome</a></p></td>
+            <td><p>Initial release</p></td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  );
+}
+
+<HTMLContent />
