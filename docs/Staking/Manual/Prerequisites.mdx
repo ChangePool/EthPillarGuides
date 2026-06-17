@@ -23,3 +23,143 @@ export function HTMLContent() {
 
 {/* <!-- <HTMLContent /> --> */}
 
+## :rocket: How Ethereum Staking Works
+
+1. Acquire some hardware (laptop, desktop, server) or rent a VPS (cloud server): To stake, you need to run a node.
+2. Synchronize an execution layer client.
+3. Synchronize a consensus layer client.
+4. Generate validator keys, and then import the keys into your validator client.
+5. Monitor and maintain your node.
+
+An Ethereum node consists of the Execution Layer and Consensus Layer.
+
+An Ethereum Staking node is the previous plus a Validator client.
+
+<figure>
+  <img src={useBaseUrl('img/ClientStack.png')} />
+  <figcaption>Figure 1 Client Stack</figcaption>
+</figure>
+
+<figure>
+  <img src={useBaseUrl('img/EthereumValidator.png')} />
+  <figcaption>Figure 2 The Big Picture</figcaption>
+</figure>
+
+## :wave: Introduction
+
+Tested using Ubuntu LTS client, the _Staking Ethereum_ guide is written for aspiring Ethereum stakers who have basic familiarity with command line tools. Preferably, set up a dedicated cloud VPS or local desktop/server/laptop running a clean install of Ubuntu.
+
+## :blue_book: Terminology
+
+Your Ethereum staking node may be
+
+* **Local**—On a laptop, PC or NUC where you can physically connect using a keyboard, mouse and monitor
+* **Remote**—On a virtual private server (VPS) hosted in the cloud
+
+If your staking node is **remote**, then setting up secure shell (SSH) is recommended.
+
+**To install and start the SSH client for your operating system:**
+
+* **Windows**—[PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)
+* **MacOS and Linux** : Using a terminal window, type the following command where `<UserName>` is your user name on the remote computer, and `<SSHServer>` is the IP address or domain name of the remote computer:
+
+```
+ssh <UserName>@<SSHServer>
+```
+
+For more details on connecting to a **remote node** using SSH, see [How to Set Up SSH on Linux and Test Your Setup: A Beginner's Guide](https://www.makeuseof.com/tag/beginners-guide-setting-ssh-linux-testing-setup/).
+
+## ⚒️ How to Run Commands
+
+* Run commands using a terminal window or ssh terminal.
+* To elevate your account privileges temporarily, type `sudo` preceding commands. When prompted, type your password.
+
+## :woman_technologist: Skills for Operating a Staking Node
+
+As a validator for Ethereum, you need the following abilities:
+
+* Operational knowledge of how to set up, run continuously and maintain an Ethereum consensus client, execution client and validator
+* A long-term commitment to maintain your validator 24/7/365
+* Basic operating system skills
+
+## :man_technologist: Experience Required for Successful Ethereum Staking
+
+* Study [A Beginner's Guide to Staking](https://www.reddit.com/r/ethstaker/wiki/staking_for_beginners/)
+* Peruse the vast tomes of the [EthStaker Knowledge Base](https://docs.ethstaker.org/)
+
+## 🏋️‍♂️ Recommended Node Setup Requirements
+
+* **Operating system**—Ubuntu LTS Server or Desktop
+* **Processor**—4 CPU Cores or more
+* **Memory**—32GB RAM
+* **Storage**—Testnet: 300GB, Mainnet: 4TB NVME (not quad-level cell)
+* **Internet**—Stable broadband Internet connections with speeds at least 20 Mbps without data limit
+* **Data Plan**—At least 2 TB per month, ideally unlimited
+* **Power**—Reliable electrical power with a [Uninterruptible Power Supply](https://www.lifewire.com/best-uninterrupted-power-supplies-4142625) (UPS)
+* **Ethereum Balance**—2.4 ETH for [Lido CSM](https://csm.testnet.fi/?ref=ethpillar) or at least 32 ETH for solo staking with 1 validator
+* **Wallet**—[Rabby Wallet](https://rabby.io/) installed
+
+:::info
+For examples of actual staking **hardware builds**, check out RocketPool's [Example Setups](https://github.com/rocket-pool/docs.rocketpool.net/blob/main/docs/en/node-staking/local/hardware.md#example-setups) and EthStaker's [Hardware Examples](https://docs.ethstaker.org/hardware/hardware-examples/nuc-eridian/).
+:::
+
+:::info
+Check out the following resources to find your ideal NVME or SSD drive:
+
+* Refer to Yorick's [Overview](https://gist.github.com/yorickdowne/f3a3e79a573bf35767cd002cc977b038) of good, bad and ugly SSDs for Ethereum nodes
+* In the [Top SSD List](https://docs.google.com/spreadsheets/d/1B27_j9NDPU3cNlj2HKcrfpJKHkOf-Oi1DbuuQva2gT4/edit), drives identified in the **Mid-Range** category or better are suitable.
+:::
+
+<figure>
+  <img src={useBaseUrl('img/EthereumInside.png')} />
+  <figcaption>Figure 3 Ethereum Staking Node</figcaption>
+</figure>
+
+:::success
+:sparkles: Starting with a brand new instance of an operating system, virtual machine and/or computer is highly recommended. Avoid headaches by NOT reusing testnet keys, wallets or databases for your validator.
+:::
+
+## 🖥️ Local Node vs Remote Node
+
+How do I decide whether to run my Ethereum staking node locally at home or to rent a VPS cloud server operating remotely? The following list of criteria is designed to help you decide.
+
+|       Criteria       | Local Node                                                                                                                                       | Remote Node                                                                                                                                                               |
+| :------------------: | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|     Ongoing Costs    | **Plus**—No fees, besides Internet bill and electricity                                                                                          | **Minus**—Monthly or annual recurring rental fees                                                                                                                         |
+| Hardware Maintenance | **Minus**—If hardware issues arise, do it yourself                                                                                               | **Plus**—Included, covered by hosting provider                                                                                                                            |
+|       Internet       | **Minus**—Can slow down home Internet and use up data plan (if not unlimited). Budget for at least 2TB per month data plan.                      | **Plus**—Often plans are generous and more than sufficient for an Ethereum node                                                                                           |
+|      Reliability     | **Minus**—Do it yourself with UPS, redundant Internet connections, computer issues                                                               | **Plus**—Hosted in a data center with multiple power and Internet backups                                                                                                 |
+|   Barrier to Entry   | **Plus**—Can reuse or repurpose existing hardware<br />**Minus**—Initial cost to purchase new computer equipment                                 | **Plus**—Renting a VPS might require a lower initial investment as you can pay monthly                                                                                    |
+|   Decentralization   | **Plus**—Home staking is the **gold standard** for Ethereum decentralization. Nothing is better!                                                 | **Minus**—VPS cloud hosts like [Netcup](https://www.netcup.com) or [Amazon Web Services](https://aws.amazon.com) are more centralized by nature                           |
+|     Customization    | **Plus**—More fine control over hardware configuration                                                                                           | **Minus**—May be limited choices and hardware can be shared. For example, a common issue is insufficient disk storage I/O speeds (IOPS)                                   |
+|       Security       | **Plus**—As secure as your home and personal [operational security](https://en.wikipedia.org/wiki/Operational_security)                          | **Plus**—Enterprise-grade, professional data centers<br />**Minus**—Not your hardware, not your node. The hosting provider may be able to view the contents of your node. |
+|        Freedom       | **Plus**—Do whatever you want. Plan your own upgrades.<br />**Minus**—With great freedom and power, you are solely responsible for your node.    | **Plus**—Professionally managed.<br />**Minus**—You are at the mercy of the host. Data center outages are possible.                                                       |
+
+## 🧰 How to Set Up Ubuntu
+
+Next, you need to install an operating system on your local or remote. The _Staking Ethereum_ guide is designed for Ubuntu LTS.
+
+To install Ubuntu Server or Desktop, refer to [Installing Linux](https://docs.ethstaker.org/tutorials/installing-linux/).
+
+:::info
+A headless—no monitor—install of Ubuntu Server on a dedicated physical computer or virtual machine is best for ease of reliability and security. :fire: Do NOT use the computer hosting your staking node for e-mail, Web browsing, gaming or social media, for example. :fire:
+:::
+
+:::warning
+By default, installing Ubuntu Server uses only 200 GB of disk space. On the **Guided Storage Configuration** screen, select **Use an Entire Disk**. Then, on the **Storage Configuration** screen, ensure that the installation uses all available disk storage.
+:::
+
+## :performing_arts: How to Set Up Rabby Wallet
+
+To make the 32 ETH deposit(s) required for your validator, you need a wallet to transfer funds to the beacon chain deposit contract.
+
+To set up Rabby Wallet, visit the [Rabby](https://rabby.io/) Web site.
+
+## :jigsaw: High-level Validator Node Overview
+
+The _Staking Ethereum_ guide shows you how to build a staking validator node that hosts three main components in two layers. The consensus layer consists of a consensus client, also known as a validator client with a beacon chain client. The execution layer consists of an execution client, formerly an eth1 node.
+
+* **Validator client**—Responsible for producing new blocks and attestations in the beacon chain and shard chains
+* **Consensus client**—Responsible for managing the state of the beacon chain, validator shuffling and more
+* **Execution client**—Supplies incoming validator deposits from the Ethereum chain to the beacon chain client
+
