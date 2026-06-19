@@ -12,6 +12,8 @@ import React from 'react';
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
+import CodeBlock from '@theme/CodeBlock';
+
 export function HTMLContent() {
 
   return (
@@ -22,4 +24,477 @@ export function HTMLContent() {
 }
 
 {/* <!-- <HTMLContent /> --> */}
+
+## ⚒️ Node Configuration
+
+### Logging In to the Node
+
+**Using Ubuntu Server**—Begin by connecting with your SSH client:
+
+```bash
+ssh username@<StakingNodeIPAddress>
+```
+
+**Using Ubuntu Desktop**—You're likely in-front of your **local** node. To open a terminal window, type `Ctrl+Alt+T`
+
+### Updating the Node
+
+Ensure that all the latest packages, tools and patches are installed, and then reboot:
+
+```bash
+sudo apt-get update -y && sudo apt dist-upgrade -y
+sudo apt-get install git ufw curl ccze jq -y
+sudo apt-get autoremove
+sudo apt-get autoclean
+sudo reboot
+```
+
+## :key: Security Configuration
+
+### Creating a Non-root User Having Superuser Privileges
+
+<details>
+
+<summary>Creating a user named `ethereum`</summary>
+
+```bash
+sudo useradd -m -s /bin/bash ethereum
+```
+
+Setting the password for the user `ethereum`
+
+```bash
+sudo passwd ethereum
+```
+
+Adding the `ethereum` user to the `sudo` group
+
+```bash
+sudo usermod -aG sudo ethereum
+```
+
+Logging out, and then logging in as the new `ethereum` user
+
+**Using Ubuntu Server**—Use the following commands:
+
+```bash
+exit
+ssh ethereum@<StakingNodeIPAddress>
+```
+
+**Using Ubuntu Desktop**—To log out, click the Power icon in the top right corner. To log in, click the **ethereum** user account, and then type your password when prompted.
+
+</details>
+
+:::important
+:fire: Ensure you are logged in and execute all steps in the _Staking Ethereum_ guide using the non-root `ethereum` user.
+:::
+
+### Hardening SSH Access
+
+:::info
+If you operate a **local node**, then you can skip the _Hardening SSH Access_ section.
+:::
+
+<details>
+
+<summary>Creating a new SSH key pair</summary>
+
+On the computer that you use to connect to your **remote node**, create a new SSH key pair using the following command where `<Comment>` is your e-mail address or a descriptive comment.
+
+```
+ssh-keygen -t ed25519 -C "<Comment>"
+```
+
+You'll see this next:
+
+```
+Generating public/private ed25519 key pair.
+Enter file in which to save the key (/home/<myUserName>/.ssh/id_ed25519):
+```
+
+Here you're asked to type a file name in which to save the SSH private key. If you press enter, you can use the default file name `id_ed25519`
+
+Next, you're prompted to enter a passphrase.
+
+```
+Enter passphrase (empty for no passphrase):
+```
+
+:information_source: A **passphrase** adds an extra layer of protection to your SSH private key. Every time you connect to your remote node using SSH, type the passphrase to unlock your SSH private key.
+
+:fire: Setting a passphrase is highly recommended! Do NOT set an empty passphrase.
+
+:bulb: Do not forget or lose your passphrase. Save your passphrase to a password manager.
+
+**Location**: The SSH key pair that you create is located in the `~/.ssh` folder.
+
+**File name:** If your default keyname is`id_ed25519`, then
+
+* your **private SSH key** is stored in the file named `id_ed25519`
+* your **public SSH key** is stored in the file named `id_ed25519.pub`
+
+:fire: **IMPORTANT:** Make multiple backup copies of your **private SSH key file** to external storage, such as a USB backup key, for recovery purposes. Also back up your **passphrase**.
+
+Verify the contents of your private SSH key file before moving on.
+
+```
+cat ~/.ssh/id_ed25519
+```
+
+The contents of a private SSH key file are similar to the following example:
+
+```
+-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+QyNTUxOQAAACBAblzWLb7/0o62FZf9YjLPCV4qFhbqiSH3TBvZXBiYNgAAAJCWunkulrp5
+LgAAAAtzc2gtZWQyNTUxOQAAACBAblzWLb7/0o62FZf9YjLPCV4qFhbqiSH3TBvZXBiYNg
+AAAEAxT+yCmifGWgbFnkauf0HyOAJANhYY5EElEX8fI+M4B0BuXNYtvv/SjrYVl/1iMs8J
+XioWFuqJIfdMG9lcGJg2AAAACWV0aDJAZXRoMgECAwQ=
+-----END OPENSSH PRIVATE KEY-----
+```
+
+</details>
+
+#### Transferring the SSH Public Key to the Remote Node
+
+<details>
+
+<summary>Option 1: Transferring with `ssh-copy-id`</summary>
+
+Works with Linux or MacOS.
+
+```bash
+ssh-copy-id -i ~/.ssh/id_ed25519 ethereum@<StakingNodeIPAddress>
+```
+
+:::info
+For Windows, see option 2
+:::
+
+</details>
+
+<details>
+
+<summary>Option 2: Copying the key manually</summary>
+
+To obtain your SSH public key:
+
+* In Linux or MacOS, type:
+```bash
+  cat ~/.ssh/id_ed25519.pub
+```
+
+<center><strong>OR</strong></center>
+
+* In Windows, open a command prompt, and then type:
+```bash
+  type %USERPROFILE%\.ssh\id_ed25519.pub
+```
+
+The SSH public key looks similar to:
+
+```
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAoc78lv+XDh2znunKXUF/9zBNJrM4Nh67yut9RN14SX name@email.com
+```
+
+Copy the SSH public key to the clipboard.
+
+On the **remote node**, type the following commands:
+
+```
+mkdir -p ~/.ssh
+nano ~/.ssh/authorized_keys
+```
+
+In the `authorized_keys` file, right-click to paste the public SSH key.
+
+To save and exit the nano text editor, press `CTRL+X`, then press `Y`, and then press `ENTER`
+
+To verify that the `authorized_keys` file includes your public SSH key, type:
+
+```
+cat ~/.ssh/authorized_keys
+```
+
+</details>
+
+#### Disabling Password Authentication
+
+<details>
+
+<summary>Disabling root login as well as  password-based login</summary>
+
+:information_source: Even though key authentication is enabled, SSH still allows you to connect to your remote node using a password, which is much less secure, opening a brute force-able attack vector.
+
+Login via ssh using the new `ethereum` user
+
+```
+ssh ethereum@<StakingNodeIPAddress>
+```
+
+Edit the ssh configuration file
+
+```
+sudo nano /etc/ssh/sshd_config
+```
+
+Locate the `PubkeyAuthentication` keyword, then delete the `#` character in front, and then update the argument to `yes`
+
+```
+PubkeyAuthentication yes
+```
+
+Locate the `PasswordAuthentication` keyword, then delete the `#` character in front, and then update the argument to `no`
+
+```
+PasswordAuthentication no
+```
+
+Locate the `PermitRootLogin` keyword, then delete the `#` character in front, and then update the argument to `prohibit-password`
+
+```
+PermitRootLogin prohibit-password
+```
+
+Locate the `PermitEmptyPasswords` keyword, then delete the `#` character in front, and then update the argument to `no`
+
+```
+PermitEmptyPassword no
+```
+
+To save the `sshd_config` file and exit nano, press `CTRL+X`, then press `Y`, and then press `ENTER`
+
+To validate the syntax of the new SSH configuration, type:
+
+```
+sudo sshd -t
+```
+
+If the `sshd` command displays no errors with the syntax validation, then restart the SSH process.
+
+```
+sudo systemctl restart sshd
+```
+
+Verify that the login still works.
+
+```
+ssh ethereum@<StakingNodeIPAddress>
+```
+
+**Optional**: Make logging in easier by updating your local ssh config.
+
+To simplify the `ssh` command needed to log in to your server, consider updating the `$HOME/myUserName/.ssh/config` file located on your local client machine:
+
+```bash
+Host ethereum-server
+  User ethereum
+  HostName <StakingNodeIPAddress>
+  Port 22
+```
+
+Now you can log in using the command `ssh ethereum-server` instead of passing all ssh parameters explicitly.
+
+</details>
+
+### Synchronizing Time Using Chrony
+
+Chrony is an implementation of the Network Time Protocol (NTP), synchronizing the system time on a computer with NTP.
+
+:::info
+The consensus client relies on accurate times to perform attestations and produce blocks. Therefore, the system time on the computer hosting your node must be accurate to real NTP time within 0.5 seconds.
+:::
+
+To install chrony:
+
+```bash
+sudo apt-get install chrony -y
+```
+
+To see the source of synchronization data.
+
+```
+chronyc sources
+```
+
+To view the current status of chrony.
+
+```
+chronyc tracking
+```
+
+### Setting the Time Zone
+
+To set the time zone for a computer, type:
+
+```bash
+sudo dpkg-reconfigure tzdata
+```
+
+Find your region using the simple text-based user interface.
+
+:::info
+Your location may use a national system. For example, in India selecting `Asia/Kolkata` is appropriate for all locales in the country (`IST`, `GMT+0530`).
+:::
+
+### Creating the `jwtsecret` File
+
+You need to create a file named `jwtsecret` containing a hexadecimal string that is passed to both Execution Layer client and Consensus Layer clients to ensure authenticated communications between the clients.
+
+```bash
+#store the jwtsecret file at /secrets
+sudo mkdir -p /secrets
+
+#create the jwtsecret file
+openssl rand -hex 32 | tr -d "\n" | sudo tee /secrets/jwtsecret
+
+#enable read access
+sudo chmod 644 /secrets/jwtsecret
+```
+
+## :link: Network Configuration
+
+You can use Uncomplicated Firewall (UFW) to control network access to your node and protect against unwelcome intruders.
+
+### Configure UFW Defaults
+
+By default, deny all incoming traffic and allow outgoing traffic.
+
+```bash
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+```
+
+### Configure SSH Port 22
+
+If your node is remote in the cloud, or at home but on a different headless server, then you need to enable SSH port 22 in order to connect.
+
+```bash
+# Allow ssh access for remote node
+sudo ufw allow 22/tcp comment 'SSH Server'
+```
+
+If your node is local at home and you have direct keyboard access, then denying port 22 is good practice.
+
+```bash
+# Deny ssh access for local node
+sudo ufw deny 22/tcp comment 'SSH Server'
+```
+
+### Allow Access for the Execution Client
+
+Execution clients use port 30303 for communicating with network peers.
+
+```bash
+sudo ufw allow 30303 comment 'Execution Client'
+```
+
+### Allow Access for the Consensus Client
+
+Most consensus clients use port 9000 for communicating with network peers.
+
+:::info
+Prysm uses TCP port 13000 and UDP port 12000 instead.
+:::
+
+```bash
+# Lighthouse, Lodestar, Nimbus, Teku
+sudo ufw allow 9000 comment 'Consensus Client'
+
+# Lighthouse QUIC Port https://sigmaprime.io/blog/quic-networking/
+sudo ufw allow 9001/udp comment 'Lighthouse Client QUIC'
+
+# Prysm
+sudo ufw allow 13000/tcp comment 'Prysm Client'
+sudo ufw allow 12000/udp comment 'Prysm Client'
+```
+
+### Enable the Firewall
+
+Finally, enable the firewall, and then review the configuration.
+
+```bash
+sudo ufw enable
+sudo ufw status numbered 
+```
+
+The following example lists managed rules for a remote staking node using the Prysm consensus client.
+
+> ```csharp
+>      To                         Action      From
+>      --                         ------      ----
+> [ 1] 22/tcp                     ALLOW IN    Anywhere
+> [ 2] 9000                       ALLOW IN    Anywhere
+> [ 3] 30303                      ALLOW IN    Anywhere
+> [ 4] 22/tcp (v6)                ALLOW IN    Anywhere (v6)
+> [ 5] 9000 (v6)                  ALLOW IN    Anywhere (v6)
+> [ 6] 30303 (v6)                 ALLOW IN    Anywhere (v6)
+> ```
+
+### Configure Port Forwarding
+
+If you operate your staking node at home, then your router must direct incoming Internet traffic to the validator on your private local network.
+
+To configure port forwarding, see [The Ultimate Guide to Port Forwarding Your Router](https://portforward.com/how-to-port-forward/).
+
+<p class="pi">To verify that ports are reachable from the Internet:</p>
+
+<ul class="ss">
+  <li>Using a terminal window on the computer hosting your staking node, type the command corresponding to your consensus client:</li>
+    <CodeBlock language="bash">
+      {`# Lighthouse, Lodestar, Nimbus, Teku
+curl https://eth2-client-port-checker.vercel.app/api/checker?ports=30303,9000
+
+# Prysm
+curl https://eth2-client-port-checker.vercel.app/api/checker?ports=30303,12000,13000`}
+    </CodeBlock>
+</ul>
+
+Alternately, using a Web browser visit [you get signal](https://www.yougetsignal.com/tools/open-ports/) or [CanYouSeeMe.org](https://canyouseeme.org/), and then verify that the ports your consensus client uses are reachable.
+
+### Whitelisting Connections
+
+As needed, permit connections from specific IP addresses.
+
+```bash
+sudo ufw allow from <ClientIPAddress>
+# For example
+sudo ufw allow from 192.168.50.22
+```
+
+### :chains: Install Fail2ban
+
+Fail2ban is an intrusion-prevention system that monitors log files and searches for particular patterns that correspond to failed login attempts. If a certain number of failed logins are detected from a specific IP address within a specified amount of time, then Fail2ban blocks access from the IP address.
+
+To install fail2ban:
+
+```bash
+sudo apt-get install fail2ban -y
+```
+
+Configure monitoring SSH logins.
+
+```bash
+sudo nano /etc/fail2ban/jail.local
+```
+
+Add the following lines to the bottom of the file.
+
+```bash
+[sshd]
+enabled = true
+port = 22
+filter = sshd
+logpath = /var/log/auth.log
+maxretry = 3
+```
+
+To save and exit nano, press `CTRL+X`, then press `Y`, and then press `ENTER`
+
+For settings to take effect, restart Fail2ban
+
+```bash
+sudo systemctl restart fail2ban
+```
 
