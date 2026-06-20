@@ -23,3 +23,73 @@ export function HTMLContent() {
 
 {/* <!-- <HTMLContent /> --> */}
 
+The _Staking Ethereum_ guide supports the following execution clients:
+
+* Besu
+* Nethermind
+* Geth
+* Reth
+* Erigon
+
+Only one execution client is required per node.
+<!-- Running multiple Ethereum execution clients on the same machine is safe and perfectly acceptable. -->
+
+## Execution Client Diversity
+
+To strengthen the resilience of Ethereum against potential attacks or consensus bugs, best practices include running a minority client in order to increase client diversity. To find the latest distribution of execution clients, visit [Diversify Now](https://clientdiversity.org/).
+
+<figure>
+  <img src={useBaseUrl('img/ExecutionClientDiversity.png')} />
+  <figcaption>Figure 1 Execution Client Diversity in December 2024</figcaption>
+</figure>
+
+## Overview of Execution Clients
+
+Using Nethermind or Besu is recommended.
+
+### Nethermind
+
+* **Open Source**—Ethereum client written in .NET Core
+* **Fast Synchronization**—Boasts the quickest Execution client syncing performance and is designed so you can start following the chain and attesting while history downloads in the background
+* **Flexible Configuration**—Rich set of options tailored for node operators
+* **Online Pruning**—Allows database pruning while still online, no need to turn off client
+* **Resource-intensive Pruning Process**—May result in noticeable performance degradation for low-power nodes during the process
+
+### Hyperledger Besu
+
+* **Open Source**—Ethereum client under Apache 2.0 license, written in Java
+* **Distinctive Features**—Uses Bonsai Tries for state storage, enhancing performance and benefits
+* **Maintenance-Free Operation**—Does not require pruning, making operation effectively maintenance free
+
+### Geth
+
+* **Go Ethereum**—One of the original Ethereum protocol implementations, written in Go and fully open source under GNU LGPL v3 license
+* **Stable and Reliable**—Oldest and most widely-used Execution Client with a strong reputation
+* **Multithreaded**—Utilizes the entire CPU for enhanced performance
+* **Adjustable RAM Usage**—Configurable down to 4 GB minimum for Mainnet, accommodating various system specifications
+
+### Erigon
+
+* **High Performance**—Born as a Geth fork, completely rewritten in Go for enhanced speed and storage savings, focused on efficiency, faster synchronization and optimized experience
+* **Faster Archive Node Synchronization**—Achieves full node synchronization in under three days with less than 2TB of storage
+* **Multiple Protocols and Networks**—Supports several popular EVM-compatible blockchains and testnets
+* **Efficient State Storage**—Utilizes a key-value database for improved performance
+* **Separate JSON RPC Daemon**—Enables read-only calls without requiring the same system as the main Erigon binary, even from a database snapshot
+
+### Reth
+
+* **Compatible**—Execution layer (EL) Ethereum client, written in Rust, compatible with all consensus layer (CL) implementations
+* **Well Regarded**—Developed by [Paradigm](https://www.paradigm.xyz/), licensed under Apache and MIT licenses
+* **Feature Rich**—Sending and receiving transactions; querying logs and traces; and, accessing and interacting with smart contracts
+* **Powerful**—Prioritizes security, efficiency and ease-of-use for consumer hardware
+
+## Comparison of Execution Clients
+
+<table><thead><tr><th>Client</th><th width="111">RAM Use</th><th>Minimum Database Size</th><th>Database Growth</th><th>Minimum Time to Sync</th></tr></thead><tbody><tr><td>Nethermind</td><td>8 GB</td><td>0.80 TB</td><td>18 GB/week</td><td>2 hours (fastest)</td></tr><tr><td>Besu</td><td>12 GB</td><td>0.80 TB</td><td>10 GB/week</td><td>16 hours (medium)</td></tr><tr><td>Geth</td><td>8 GB</td><td>0.85 TB</td><td>8 GB/week</td><td>8 hours (fast)</td></tr><tr><td>Erigon 3</td><td>8 GB</td><td>0.70 TB</td><td>8 GB/week</td><td>16 hours (medium)</td></tr><tr><td>Reth</td><td>10 GB</td><td>1.0 TB</td><td>4GB/week</td><td>16 hours (medium)</td></tr></tbody></table>
+
+Also, consider that:
+
+* The time to synchronize to a state capable beginning attestations depends on the speed of your storage drive.
+* Initial sync is always resource intensive. Synchronized operations use relatively light resources.
+* Nethermind, Besu and Geth support the ability to prune the database.
+
