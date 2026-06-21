@@ -12,6 +12,9 @@ import React from 'react';
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 export function HTMLContent() {
 
   return (
@@ -22,4 +25,223 @@ export function HTMLContent() {
 }
 
 {/* <!-- <HTMLContent /> --> */}
+
+## Overview
+
+Hyperledger Besu is an open-source Ethereum client designed for demanding enterprise applications requiring secure, high-performance transaction processing in a private network. Besu is developed under the Apache 2.0 license and written in [Java](https://www.java.com).
+
+For more details, see:
+
+* **Web Site**—[LF Decentralized Trust](https://www.lfdecentralizedtrust.org/projects/besu)
+* **Documentation**—[Besu Ethereum Client](https://docs.besu-eth.org/)
+* **Releases**—[GitHub](https://github.com/besu-eth/besu/releases)
+
+### 1. Initial Configuration
+
+Create a service user for the execution service, create a data directory and assign ownership.
+
+```bash
+sudo adduser --system --no-create-home --group execution
+sudo mkdir -p /var/lib/besu
+sudo chown -R execution:execution /var/lib/besu
+```
+
+Install dependencies.
+
+```bash
+sudo apt install -y openjdk-21-jdk libjemalloc-dev jq
+```
+
+### 2. Install Binaries
+
+While downloading binaries is often faster and more convenient, building from source code can offer better compatibility and is more aligned with the spirit of free open source software (FOSS).
+
+<details>
+
+<summary>Option 1 - Download binaries</summary>
+
+To download the latest Besu release for Linux, extract the archive and clean up, run the following commands:
+
+```bash
+RELEASE_URL="https://api.github.com/repos/besu-eth/besu/releases/latest"
+TAG=$(curl -s ${RELEASE_URL} | jq -r .tag_name)
+BINARIES_URL="https://github.com/besu-eth/besu/releases/download/${TAG}/besu-${TAG}.tar.gz"
+
+echo Downloading URL: ${BINARIES_URL}
+
+cd ${HOME}
+wget -O besu.tar.gz ${BINARIES_URL}
+tar -xzvf besu.tar.gz -C ${HOME}
+rm besu.tar.gz
+sudo mv ${HOME}/besu-${TAG} besu
+```
+
+Install the binaries.
+
+```bash
+sudo mv ${HOME}/besu /usr/local/bin/besu
+```
+
+</details>
+
+<details>
+
+<summary>Option 2 - Build from source code</summary>
+
+Build the binaries.
+
+```bash
+mkdir -p ~/git
+cd ~/git
+# Clone the repo
+git clone https://github.com/besu-eth/besu.git
+cd besu
+# Get new tags
+git fetch --tags
+# Get latest tag name
+latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
+# Checkout latest tag
+git checkout ${latestTag}
+# Build
+./gradlew installDist
+```
+
+To verify that Besu compiled, check the version.
+
+```shell
+./build/install/besu/bin/besu --version
+```
+
+The `besu --version` command displays output similar to the following:
+
+```
+besu/v23.4.0/linux-x86_64/openjdk-java-17
+```
+
+Install the binaries.
+
+```bash
+sudo cp -a $HOME/git/besu/build/install/besu /usr/local/bin/besu
+```
+
+</details>
+
+### 3. Set Up and Configure Automatic Startup
+
+To configure a service, create a systemd unit file named `execution.service`
+
+```bash
+sudo nano /etc/systemd/system/execution.service
+```
+
+In the `execution.service` file, paste the following lines where `<NetworkName>` is the value `hoodi` if you are creating a staking node on Hoodi testnet, or `mainnet` if you are creating a staking node on Mainnet.
+
+```shell
+[Unit]
+Description=Besu Execution Layer Client service
+Wants=network-online.target
+After=network-online.target
+Documentation=https://docs.coincashew.com
+
+[Service]
+Type=simple
+User=execution
+Group=execution
+Restart=on-failure
+RestartSec=3
+KillSignal=SIGINT
+TimeoutStopSec=900
+Environment="JAVA_OPTS=-Xmx5g"
+ExecStart=/usr/local/bin/besu/bin/besu \
+  --network=<NetworkName> \
+  --p2p-port=30303 \
+  --rpc-http-port=8545 \
+  --engine-rpc-port=8551 \
+  --max-peers=25 \
+  --metrics-enabled=true \
+  --metrics-port=6060 \
+  --rpc-http-enabled=true \
+  --sync-mode=SNAP \
+  --data-storage-format=BONSAI \
+  --data-path="/var/lib/besu" \
+  --engine-jwt-secret=/secrets/jwtsecret
+  
+[Install]
+WantedBy=multi-user.target
+```
+
+To save and exit nano, press `CTRL+X`, then press `Y`, and then press `ENTER`
+
+To enable the service to start automatically when the computer boots, type the following commands:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable execution.service
+```
+
+Lastly, start your execution layer client and check the status.
+
+```bash
+sudo systemctl start execution.service
+sudo systemctl status execution.service
+```
+
+To exit the status display, press `CTRL+C`
+
+### 4. Helpful Execution Client Commands
+
+<Tabs>
+<TabItem value="x" label="View Logs" >
+```bash
+sudo journalctl -fu execution | ccze
+```
+
+A properly functioning Besu execution client includes `fork-choice-update` entries in logs. For example,
+
+```
+2022-03-19 04:09:36.315+00:00 | vert.x-worker-thread-0 | INFO  | EngineForkchoiceUpdated | Consensus fork-choice-update: head: 0xcd2a_8b32..., finalized: 0xfa22_1142...
+2022-03-19 04:09:48.328+00:00 | vert.x-worker-thread-0 | INFO  | EngineForkchoiceUpdated | Consensus fork-choice-update: head: 0xff1a_f12a..., finalized: 0xfa22_1142...
+```
+
+:::warning
+Warnings or errors that logs display normally resolve when both the execution and consensus clients are fully synchronized with Ethereum network.
+:::
+</TabItem>
+
+<TabItem value="a" label="Stop" >
+```bash
+sudo systemctl stop execution.service
+```
+</TabItem>
+
+<TabItem value="b" label="Start" >
+```bash
+sudo systemctl start execution.service
+```
+</TabItem>
+
+<TabItem value="c" label="View Status" >
+```bash
+sudo systemctl status execution.service
+```
+</TabItem>
+
+<TabItem value="d" label="Reset Database" >
+Common reasons to reset the database include:
+
+* Recovering from a corrupted database due to power outage or hardware failure
+* Resynchronizing to reduce disk space usage
+* Upgrading to a new storage format
+
+```bash
+sudo systemctl stop execution.service
+sudo rm -rf /var/lib/besu/*
+sudo systemctl restart execution.service
+```
+
+The execution client may resychronize for a few hours, up to a day.
+</TabItem>
+</Tabs>
+
+Now that your execution client is configured and running, the next step involves [Installing a Consensus Client](/Staking/Manual/ConsensusClient).
 
