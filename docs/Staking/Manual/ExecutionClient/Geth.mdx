@@ -12,6 +12,9 @@ import React from 'react';
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 export function HTMLContent() {
 
   return (
@@ -22,4 +25,226 @@ export function HTMLContent() {
 }
 
 {/* <!-- <HTMLContent /> --> */}
+
+
+## Overview
+
+Go Ethereum—also known as Geth—is one of the three original implementations (along with C++ and Python) of the Ethereum protocol. Geth is written in [Go](https://go.dev/), fully open source and licensed under the GNU LGPL v3.
+
+For more details, see:
+
+* **Web Site**—[go-ethereum](https://geth.ethereum.org/)
+* **Documentation**—[Welcome to go-ethereum](https://geth.ethereum.org/docs)
+* **Releases**—[GitHub](https://github.com/ethereum/go-ethereum/releases)
+
+## 1. Initial Configuration
+
+To create a user for the execution service, create a data directory and assign ownership, type:
+
+```bash
+sudo adduser --system --no-create-home --group execution
+sudo mkdir -p /var/lib/geth
+sudo chown -R execution:execution /var/lib/geth
+```
+
+## 2. Install Binaries
+
+While downloading binaries is often faster and more convenient, building from source code can offer better compatibility and is more aligned with the spirit of free open source software (FOSS).
+
+<details>
+
+<summary>Option 1 - Download binaries</summary>
+
+To download the latest Geth release for Linux, extract the archive and clean up, type the following commands:
+
+```bash
+RELEASE_URL="https://geth.ethereum.org/downloads"
+FILE="https://gethstore.blob.core.windows.net/builds/geth-linux-amd64[a-zA-Z0-9./?=_%:-]*.tar.gz"
+BINARIES_URL="$(curl -s $RELEASE_URL | grep -Eo $FILE | head -1)"
+
+echo Downloading URL: $BINARIES_URL
+
+cd $HOME
+wget -O geth.tar.gz $BINARIES_URL
+tar -xzvf geth.tar.gz -C $HOME
+rm geth.tar.gz
+sudo mv $HOME/geth-* geth
+```
+
+To install the binary, type:
+
+```bash
+sudo mv $HOME/geth/geth /usr/local/bin
+```
+
+</details>
+
+<details>
+
+<summary>Option 2 - Build from source code</summary>
+
+To install Go dependencies, type the following commands where `<LatestVersionURL>` is the link to the TAR.GZ archive for the latest version of Go available from [All Releases](https://go.dev/dl/).
+
+```bash
+wget -O go.tar.gz <LatestVersionURL>
+sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go.tar.gz
+echo export PATH=$PATH:/usr/local/go/bin >> $HOME/.bashrc
+source $HOME/.bashrc
+```
+
+To verify that Go is installed, check the version. Also, clean up files.
+
+```bash
+go version
+rm go.tar.gz
+```
+
+To install build dependencies, type:
+
+```bash
+sudo apt-get update
+sudo apt install build-essential git
+```
+
+To build the binary, type:
+
+```bash
+mkdir -p ~/git
+cd ~/git
+git clone -b master https://github.com/ethereum/go-ethereum.git
+cd go-ethereum
+# Get new tags
+git fetch --tags
+# Get latest tag name
+latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
+# Checkout latest tag
+git checkout $latestTag
+# Build
+make geth
+```
+
+To install the binary, type:
+
+```bash
+sudo cp $HOME/git/go-ethereum/build/bin/geth /usr/local/bin
+```
+
+</details>
+
+## 3. Set Up and Configure Automatic Startup
+
+To configure a service, create a systemd unit file named `execution.service`
+
+```bash
+sudo nano /etc/systemd/system/execution.service
+```
+
+In the `execution.service` file, paste the following lines where `<NetworkName>` is the value `hoodi` if you are creating a staking node on Hoodi testnet, or `mainnet` if you are creating a staking node on Mainnet; and, `<HistoryRetention>` is the value `all` if you are staking on Hoodi, or `postmerge` if you are staking on Mainnet.
+
+```bash[Unit]
+Description=Geth Execution Layer Client Service
+Wants=network-online.target
+After=network-online.target
+Documentation=https://ethpillar.coincashew.io/
+
+[Service]
+Type=simple
+User=execution
+Group=execution
+Restart=on-failure
+RestartSec=3
+KillSignal=SIGINT
+TimeoutStopSec=900
+ExecStart=/usr/local/bin/geth \
+    --<NetworkName> \
+    --port 30303 \
+    --http.port 8545 \
+    --authrpc.port 8551 \
+    --maxpeers 50 \
+    --metrics \
+    --http \
+    --datadir=/var/lib/geth \
+    --pprof \
+    --state.scheme=path \
+    --history.chain <HistoryRetention> \
+    --authrpc.jwtsecret=/secrets/jwtsecret
+   
+[Install]
+WantedBy=multi-user.target
+```
+
+To save and exit nano, press `CTRL+X`, then press `Y`, and then press `ENTER`
+
+To enable the service to start automatically when the computer boots, type the following commands:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable execution.service
+```
+
+Lastly, start your execution layer client and check the status.
+
+```bash
+sudo systemctl start execution.service
+sudo systemctl status execution.service
+```
+
+To exit the status display, press `CTRL+C`
+
+## 4. Helpful Execution Client Commands
+
+<Tabs>
+<TabItem value="x" label="View Logs" >
+```bash
+sudo journalctl -fu execution.service | ccze
+```
+
+A properly functioning Geth execution client includes `Imported new potential chain segment` entries in logs. For example:
+
+```
+geth[4531]: INFO [02-04|01:20:48.280] Chain head was updated    number=16000 hash=2317ae..c41107
+geth[4531]: INFO [02-04|01:20:49.648] Imported new potential chain segment       number=16000 hash=ab173f..33a21b
+```
+
+:::important
+Warnings or errors that logs display normally resolve when both the execution and consensus clients are fully synchronized with the Ethereum network.
+:::
+</TabItem>
+
+<TabItem value="a" label="Stop" >
+```bash
+sudo systemctl stop execution.service
+```
+</TabItem>
+
+<TabItem value="b" label="Start" >
+```bash
+sudo systemctl start execution.service
+```
+</TabItem>
+
+<TabItem value="c" label="View Status" >
+```bash
+sudo systemctl status execution.service
+```
+</TabItem>
+
+<TabItem value="d" label="Reset Database" >
+Common reasons to reset the database include:
+
+* Recovering from a corrupted database due to power outage or hardware failure
+* Resynchronizing to reduce disk space usage
+* Upgrading to a new storage format
+
+```bash
+sudo systemctl stop execution.service
+sudo rm -rf /var/lib/geth/*
+sudo systemctl restart execution.service
+```
+
+The execution client may resychronize for a few hours, up to a day.
+</TabItem>
+</Tabs>
+
+Now that your execution client is configured and running, the next step involves [Installing a Consensus Client](/Staking/Manual/ConsensusClient).
 

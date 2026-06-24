@@ -88,7 +88,7 @@ sudo mv ${HOME}/besu /usr/local/bin/besu
 
 <summary>Option 2 - Build from source code</summary>
 
-To build the binary, type the following commands:
+To build the binary, type:
 
 ```bash
 mkdir -p ~/git
@@ -193,7 +193,7 @@ To exit the status display, press `CTRL+C`
 <Tabs>
 <TabItem value="x" label="View Logs" >
 ```bash
-sudo journalctl -fu execution | ccze
+sudo journalctl -fu execution.service | ccze
 ```
 
 A properly functioning Besu execution client includes `fork-choice-update` entries in logs. For example:
