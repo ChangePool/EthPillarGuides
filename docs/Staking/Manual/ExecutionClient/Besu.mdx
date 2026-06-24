@@ -36,9 +36,9 @@ For more details, see:
 * **Documentation**—[Besu Ethereum Client](https://docs.besu-eth.org/)
 * **Releases**—[GitHub](https://github.com/besu-eth/besu/releases)
 
-### 1. Initial Configuration
+## 1. Initial Configuration
 
-Create a service user for the execution service, create a data directory and assign ownership.
+To create a user for the execution service, create a data directory and assign ownership, type:
 
 ```bash
 sudo adduser --system --no-create-home --group execution
@@ -46,13 +46,13 @@ sudo mkdir -p /var/lib/besu
 sudo chown -R execution:execution /var/lib/besu
 ```
 
-Install dependencies.
+To install dependencies, type:
 
 ```bash
 sudo apt install -y openjdk-21-jdk libjemalloc-dev jq
 ```
 
-### 2. Install Binaries
+## 2. Install Binaries
 
 While downloading binaries is often faster and more convenient, building from source code can offer better compatibility and is more aligned with the spirit of free open source software (FOSS).
 
@@ -60,7 +60,7 @@ While downloading binaries is often faster and more convenient, building from so
 
 <summary>Option 1 - Download binaries</summary>
 
-To download the latest Besu release for Linux, extract the archive and clean up, run the following commands:
+To download the latest Besu release for Linux, extract the archive and clean up, type the following commands:
 
 ```bash
 RELEASE_URL="https://api.github.com/repos/besu-eth/besu/releases/latest"
@@ -76,7 +76,7 @@ rm besu.tar.gz
 sudo mv ${HOME}/besu-${TAG} besu
 ```
 
-Install the binaries.
+To install the binary, type:
 
 ```bash
 sudo mv ${HOME}/besu /usr/local/bin/besu
@@ -88,7 +88,7 @@ sudo mv ${HOME}/besu /usr/local/bin/besu
 
 <summary>Option 2 - Build from source code</summary>
 
-Build the binaries.
+To build the binary, type the following commands:
 
 ```bash
 mkdir -p ~/git
@@ -118,7 +118,7 @@ The `besu --version` command displays output similar to the following:
 besu/v23.4.0/linux-x86_64/openjdk-java-17
 ```
 
-Install the binaries.
+To install the binary, type:
 
 ```bash
 sudo cp -a $HOME/git/besu/build/install/besu /usr/local/bin/besu
@@ -126,7 +126,7 @@ sudo cp -a $HOME/git/besu/build/install/besu /usr/local/bin/besu
 
 </details>
 
-### 3. Set Up and Configure Automatic Startup
+## 3. Set Up and Configure Automatic Startup
 
 To configure a service, create a systemd unit file named `execution.service`
 
@@ -138,10 +138,10 @@ In the `execution.service` file, paste the following lines where `<NetworkName>`
 
 ```shell
 [Unit]
-Description=Besu Execution Layer Client service
+Description=Besu Execution Layer Client Service
 Wants=network-online.target
 After=network-online.target
-Documentation=https://docs.coincashew.com
+Documentation=https://ethpillar.coincashew.io/
 
 [Service]
 Type=simple
@@ -188,7 +188,7 @@ sudo systemctl status execution.service
 
 To exit the status display, press `CTRL+C`
 
-### 4. Helpful Execution Client Commands
+## 4. Helpful Execution Client Commands
 
 <Tabs>
 <TabItem value="x" label="View Logs" >
@@ -196,15 +196,15 @@ To exit the status display, press `CTRL+C`
 sudo journalctl -fu execution | ccze
 ```
 
-A properly functioning Besu execution client includes `fork-choice-update` entries in logs. For example,
+A properly functioning Besu execution client includes `fork-choice-update` entries in logs. For example:
 
 ```
 2022-03-19 04:09:36.315+00:00 | vert.x-worker-thread-0 | INFO  | EngineForkchoiceUpdated | Consensus fork-choice-update: head: 0xcd2a_8b32..., finalized: 0xfa22_1142...
 2022-03-19 04:09:48.328+00:00 | vert.x-worker-thread-0 | INFO  | EngineForkchoiceUpdated | Consensus fork-choice-update: head: 0xff1a_f12a..., finalized: 0xfa22_1142...
 ```
 
-:::warning
-Warnings or errors that logs display normally resolve when both the execution and consensus clients are fully synchronized with Ethereum network.
+:::important
+Warnings or errors that logs display normally resolve when both the execution and consensus clients are fully synchronized with the Ethereum network.
 :::
 </TabItem>
 

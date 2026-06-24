@@ -12,6 +12,9 @@ import React from 'react';
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 export function HTMLContent() {
 
   return (
@@ -22,4 +25,232 @@ export function HTMLContent() {
 }
 
 {/* <!-- <HTMLContent /> --> */}
+
+## Overview
+
+Written in Go, Erigon is the designated, more efficient successor to the deprecated OpenEthereum client.
+
+For more details, see:
+
+* **Web Site**—[erigon.tech](https://erigon.tech/)
+* **Documentation**—[Erigon Client Documentation](https://docs.erigon.tech/)
+* **Releases**—[GitHub](https://github.com/erigontech/erigon/releases)
+
+## 1. Initial Configuration
+
+To create a user for the execution service, create a data directory and assign ownership, type:
+
+```bash
+sudo adduser --system --no-create-home --group execution
+sudo mkdir -p /var/lib/erigon
+sudo chown -R execution:execution /var/lib/erigon
+```
+
+To install dependencies, type:
+
+```bash
+sudo apt install curl libsnappy-dev libc6-dev jq libc6 unzip -y
+```
+
+## 2. Install Binaries
+
+While downloading binaries is often faster and more convenient, building from source code can offer better compatibility and is more aligned with the spirit of free open source software (FOSS).
+
+<details>
+
+<summary>Option 1 - Download binaries</summary>
+
+To download the latest Erigon release for Linux and extract the archive, type the following commands:
+
+```bash
+RELEASE_URL="https://api.github.com/repos/erigontech/erigon/releases/latest"
+BINARIES_URL="$(curl -s $RELEASE_URL | jq -r ".assets[] | select(.name) | .browser_download_url" | grep linux_amd64.tar.gz)"
+
+echo Downloading URL: $BINARIES_URL
+
+cd $HOME
+wget -O erigon.tar.gz $BINARIES_URL
+tar -xzvf erigon.tar.gz -C $HOME
+mv erigon_* erigon
+```
+
+To install the binary and clean up, type:
+
+```bash
+sudo mv $HOME/erigon/erigon /usr/local/bin
+rm -rf erigon erigon.tar.gz
+```
+
+</details>
+
+<details>
+
+<summary>Option 2 - Build from source code</summary>
+
+To install Go dependencies, type the following commands where `<LatestVersionURL>` is the link to the TAR.GZ archive for the latest version of Go available from [All Releases](https://go.dev/dl/).
+
+```bash
+wget -O go.tar.gz <LatestVersionURL>
+sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go.tar.gz
+echo export PATH=$PATH:/usr/local/go/bin >> $HOME/.bashrc
+source $HOME/.bashrc
+```
+
+To verify that Go installed, check the version. Also, clean up files.
+
+```bash
+go version
+rm go.tar.gz
+```
+
+To install build dependencies, type:
+
+```bash
+sudo apt-get update
+sudo apt install build-essential git
+```
+
+To build the binary, type the following commands:
+
+```bash
+mkdir -p ~/git
+cd ~/git
+git clone https://github.com/erigontech/erigon.git
+cd erigon
+git fetch --tags
+# Get latest tag name
+latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
+# Checkout latest tag
+git checkout $latestTag
+make erigon
+```
+
+To install the binary, type:
+
+```bash
+sudo cp $HOME/git/erigon/build/bin/erigon /usr/local/bin
+```
+
+</details>
+
+## 3. Set Up and Configure Automatic Startup
+
+To configure a service, create a systemd unit file named `execution.service`
+
+```bash
+sudo nano /etc/systemd/system/execution.service
+```
+
+In the `execution.service` file, paste the following lines where `<NetworkName>` is the value `hoodi` if you are creating a staking node on Hoodi testnet, or `mainnet` if you are creating a staking node on Mainnet.
+
+```shell
+[Unit]
+Description=Erigon Execution Layer Client Service
+Wants=network-online.target
+After=network-online.target
+Documentation=https://ethpillar.coincashew.io/
+
+[Service]
+Type=simple
+User=execution
+Group=execution
+Restart=on-failure
+RestartSec=3
+KillSignal=SIGINT
+TimeoutStopSec=900
+ExecStart=/usr/local/bin/erigon \
+   --datadir /var/lib/erigon \
+   --chain <NetworkName> \
+   --port 30303 \
+   --torrent.port 42069 \
+   --maxpeers 50 \
+   --private.api.addr 127.0.0.1:9099 \
+   --authrpc.port 8551 \
+   --http.api web3,eth,net,engine \
+   --metrics \
+   --pprof \
+   --prune.mode minimal \
+   --authrpc.jwtsecret=/secrets/jwtsecret \
+   --externalcl=true
+
+[Install]
+WantedBy=multi-user.target
+```
+
+To save and exit nano, press `CTRL+X`, then press `Y`, and then press `ENTER`
+
+To enable the service to start automatically when the computer boots, type the following commands:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable execution.service
+```
+
+Lastly, start your execution layer client and check the status.
+
+```bash
+sudo systemctl start execution.service
+sudo systemctl status execution.service
+```
+
+To exit the status display, press `CTRL+C`
+
+## 4. Helpful Execution Client Commands
+
+<Tabs>
+<TabItem value="x" label="View Logs" >
+```bash
+sudo journalctl -fu execution | ccze
+```
+
+A properly functioning Erigon execution client includes `Handling new payload` entries in logs. For example:
+
+```
+erigon[3]: [INFO] [09-29|03:36:24.689] [NewPayload] Handling new payload        height=19999 hash=0xea060...2846a907ceb4
+erigon[3]: [INFO] [09-29|03:36:25.278] [updateForkchoice] Fork choice update: flushing in-memory state (built by previous newPayload)
+erigon[3]: [INFO] [09-29|03:36:25.280] RPC Daemon notified of new headers       from=19998 to=19999 hash=0xeeed..710b597 header sending=13.32µs log sending=290ns
+erigon[3]: [INFO] [09-29|03:36:25.280] head updated                             hash=0xea06098ad5e...5e5f43 number=20000
+```
+
+:::important
+Warnings or errors that logs display normally resolve when both the execution and consensus clients are fully synchronized with the Ethereum network.
+:::
+</TabItem>
+
+<TabItem value="a" label="Stop" >
+```bash
+sudo systemctl stop execution.service
+```
+</TabItem>
+
+<TabItem value="b" label="Start" >
+```bash
+sudo systemctl start execution.service
+```
+</TabItem>
+
+<TabItem value="c" label="View Status" >
+```bash
+sudo systemctl status execution.service
+```
+</TabItem>
+
+<TabItem value="d" label="Reset Database" >
+Common reasons to reset the database include:
+
+* Recovering from a corrupted database due to power outage or hardware failure
+* Resynchronizing to reduce disk space usage
+* Upgrading to a new storage format
+
+```bash
+sudo systemctl stop execution.service
+sudo rm -rf /var/lib/erigon/*
+sudo systemctl restart execution.service
+```
+
+The execution client may resychronize for a few hours, up to a day.
+</TabItem>
+</Tabs>
+
+Now that your execution client is configured and running, the next step involves [Installing a Consensus Client](/Staking/Manual/ConsensusClient).
 
