@@ -12,6 +12,9 @@ import React from 'react';
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 export function HTMLContent() {
 
   return (
@@ -22,4 +25,272 @@ export function HTMLContent() {
 }
 
 {/* <!-- <HTMLContent /> --> */}
+
+## Overview
+
+Reth—short for Rust Ethereum—is an Ethereum full-node implementation focused on being user-friendly, highly modular, fast and efficient.
+
+For more details, see:
+
+* **Web Site**—[Introducing Reth](https://www.paradigm.xyz/2022/12/reth)
+* **Documentation**—[Reth](https://reth.rs/)
+* **Releases**—[GitHub](https://github.com/paradigmxyz/reth/releases)
+
+## 1. Initial Configuration
+
+To create a user for the execution service, create a data directory and assign ownership, type:
+
+```bash
+sudo adduser --system --no-create-home --group execution
+sudo mkdir -p /var/lib/reth
+sudo chown -R execution:execution /var/lib/reth
+```
+
+To install dependencies, type:
+
+```bash
+sudo apt-get update
+sudo apt install -y ccze jq curl
+```
+
+## 2. Install Binaries
+
+While downloading binaries is often faster and more convenient, building from source code can offer better compatibility and is more aligned with the spirit of free open source software (FOSS).
+
+<details>
+
+<summary>Option 1 - Download binaries</summary>
+
+To download the latest Reth release for Linux, extract the archive and clean up, type the following commands:
+
+```bash
+RELEASE_URL="https://api.github.com/repos/paradigmxyz/reth/releases/latest"
+BINARIES_URL="$(curl -s $RELEASE_URL | jq -r '.assets[] | select(.name | startswith ("reth")) | .browser_download_url' | grep x86_64-unknown-linux-gnu.tar.gz$)"
+
+echo Downloading URL: $BINARIES_URL
+
+cd $HOME
+wget -O reth.tar.gz $BINARIES_URL
+tar -xzvf reth.tar.gz -C $HOME
+rm reth.tar.gz
+```
+
+To install the binary, type:
+
+```bash
+sudo mv $HOME/reth /usr/local/bin
+```
+
+</details>
+
+<details>
+
+<summary>Option 2 - Build from source code</summary>
+
+To install Rust, type:
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+When prompted, type `1` to proceed with the default installation.
+
+To update environment variables, type:
+
+```bash
+echo export PATH="$HOME/.cargo/bin:$PATH" >> ~/.bashrc
+source ~/.bashrc
+```
+
+To install dependencies, type:
+
+```bash
+sudo apt-get update
+sudo apt install -y git libclang-dev pkg-config build-essential
+```
+
+To build the binary, type:
+
+```bash
+mkdir -p ~/git
+cd ~/git
+# Clone the repository
+git clone https://github.com/paradigmxyz/reth.git
+cd reth
+# Get new tags
+git fetch --tags
+# Get the latest tag name
+latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
+# Check out the latest tag
+git checkout $latestTag
+# Build the release
+cargo build --release --features jemalloc
+```
+
+If errors display when compiling, type:
+
+```bash
+rustup update
+cargo clean
+cargo build --release --features jemalloc
+```
+
+To verify that Reth compiled successfully, type the following command to display the version:
+
+```bash
+~/git/reth/target/release/reth --version
+```
+
+To install the binary, type:
+
+```bash
+sudo cp ~/git/reth/target/release/reth /usr/local/bin
+```
+
+</details>
+
+## 3. Set Up and Configure Automatic Startup
+
+To configure a service, create a systemd unit file named `execution.service`
+
+```bash
+sudo nano /etc/systemd/system/execution.service
+```
+
+In the `execution.service` file, paste the following lines where `<NetworkName>` is the value `hoodi` if you are creating a staking node on Hoodi testnet, or `mainnet` if you are creating a staking node on Mainnet.
+
+```bash
+[Unit]
+Description=Reth Execution Layer Client Service
+Wants=network-online.target
+After=network-online.target
+Documentation=https://ethpillar.coincashew.io/
+
+[Service]
+Type=simple
+User=execution
+Group=execution
+Restart=on-failure
+RestartSec=3
+KillSignal=SIGINT
+TimeoutStopSec=900
+Environment=RUST_LOG=info
+ExecStart=/usr/local/bin/reth node \
+    --chain <NetworkName> \
+    --full \
+    --datadir=/var/lib/reth \
+    --metrics 127.0.0.1:6060 \
+    --port 30303 \
+    --discovery.port 30303 \
+    --enable-discv5-discovery \
+    --discovery.v5.port 30304 \
+    --http \
+    --http.port 8545 \
+    --http.api="rpc,eth,web3,net,debug" \
+    --log.file.directory=/var/lib/reth/logs \
+    --max-outbound-peers 25 \
+    --max-inbound-peers 25 \
+    --authrpc.jwtsecret=/secrets/jwtsecret
+
+[Install]
+WantedBy=multi-user.target
+```
+
+If you are staking on Mainnet, then edit the `reth node` command that the `ExecStart` directive specifies to include the `--prune.bodies.pre-merge` and --prune.receipts.before` arguments, as follows:
+
+```bash
+ExecStart=/usr/local/bin/reth node \
+    --chain <NetworkName> \
+    --full \
+    --datadir=/var/lib/reth \
+    --metrics 127.0.0.1:6060 \
+    --port 30303 \
+    --discovery.port 30303 \
+    --enable-discv5-discovery \
+    --discovery.v5.port 30304 \
+    --http \
+    --http.port 8545 \
+    --http.api="rpc,eth,web3,net,debug" \
+    --log.file.directory=/var/lib/reth/logs \
+    --max-outbound-peers 25 \
+    --max-inbound-peers 25 \
+    --prune.bodies.pre-merge \
+    --prune.receipts.before 15537394 \
+    --authrpc.jwtsecret=/secrets/jwtsecret
+```
+
+To save and exit nano, press `CTRL+X`, then press `Y`, and then press `ENTER`
+
+To enable the service to start automatically when the computer boots, type the following commands:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable execution.service
+```
+
+Lastly, start your execution layer client and check the status.
+
+```bash
+sudo systemctl start execution.service
+sudo systemctl status execution.service
+```
+
+To exit the status display, press `CTRL+C`
+
+## 4. Helpful Execution Client Commands
+
+<Tabs>
+<TabItem value="x" label="View Logs" >
+```bash
+sudo journalctl -fu execution.service | ccze
+```
+
+A properly functioning Reth execution client includes `Block added to canonical chain` entries in logs. For example:
+```
+INFO reth::node::events: Forkchoice updated head_block_hash=2317ae..c41107 safe_block_hash=ab173f..33a21b finalized_block_hash=ab173f..33a21b status=Valid
+INFO reth::node::events: Block added to canonical chain number=16000 hash=2317ae..c41107
+INFO reth::node::events: Canonical chain committed number=16000 hash=2317ae..c41107 elapsed=12.508272ms
+```
+
+:::important
+Warnings or errors that logs display normally resolve when both the execution and consensus clients are fully synchronized with the Ethereum network.
+:::
+</TabItem>
+
+<TabItem value="a" label="Stop" >
+```bash
+sudo systemctl stop execution.service
+```
+</TabItem>
+
+<TabItem value="b" label="Start" >
+```bash
+sudo systemctl start execution.service
+```
+</TabItem>
+
+<TabItem value="c" label="View Status" >
+```bash
+sudo systemctl status execution.service
+```
+</TabItem>
+
+<TabItem value="d" label="Reset Database" >
+Common reasons to reset the database include:
+
+* Recovering from a corrupted database due to power outage or hardware failure
+* Resynchronizing to reduce disk space usage
+* Upgrading to a new storage format
+
+```bash
+sudo systemctl stop execution.service
+sudo rm -rf /var/lib/reth/*
+sudo systemctl restart execution.service
+```
+
+The execution client may resychronize for a few hours, up to a day.
+</TabItem>
+</Tabs>
+
+Now that your execution client is configured and running, the next step involves [Installing a Consensus Client](/Staking/Manual/ConsensusClient).
 
