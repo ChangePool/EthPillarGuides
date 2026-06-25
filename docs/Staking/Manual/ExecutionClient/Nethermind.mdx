@@ -12,6 +12,9 @@ import React from 'react';
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 export function HTMLContent() {
 
   return (
@@ -22,4 +25,248 @@ export function HTMLContent() {
 }
 
 {/* <!-- <HTMLContent /> --> */}
+
+## Overview
+
+Nethermind is a flagship Ethereum client all about performance and flexibility. Built on the .NET core—a widespread, enterprise-friendly platform—Nethermind makes integration with existing infrastructures simple without losing sight of stability, reliability, data integrity and security.
+
+For more details, see:
+
+* **Web Site**—[Nethermind](https://www.nethermind.io/nethermind-client)
+* **Documentation**—[Get Started](https://docs.nethermind.io/)
+* **Releases**—[GitHub](https://github.com/NethermindEth/nethermind/releases)
+
+## 1. Initial Configuration
+
+To create a user for the execution service, create a data directory and assign ownership, type:
+
+```bash
+sudo adduser --system --no-create-home --group execution
+sudo mkdir -p /var/lib/nethermind
+sudo chown -R execution:execution /var/lib/nethermind
+```
+
+To install dependencies, type:
+
+```bash
+sudo apt update
+sudo apt install ccze curl libsnappy-dev libc6-dev jq libc6 unzip -y
+```
+
+## 2. Install Binaries
+
+While downloading binaries is often faster and more convenient, building from source code can offer better compatibility and is more aligned with the spirit of free open source software (FOSS).
+
+<details>
+
+<summary>Option 1 - Download binaries</summary>
+
+To download the latest Nethermind release for Linux, extract the archive and clean up, type the following commands:
+
+```bash
+RELEASE_URL="https://api.github.com/repos/NethermindEth/nethermind/releases/latest"
+BINARIES_URL="$(curl -s $RELEASE_URL | jq -r ".assets[] | select(.name) | .browser_download_url" | grep linux-x64)"
+
+echo Downloading URL: $BINARIES_URL
+
+cd $HOME
+wget -O nethermind.zip $BINARIES_URL
+unzip -o nethermind.zip -d $HOME/nethermind
+rm nethermind.zip
+```
+
+To install the binary, type:
+
+```bash
+sudo mv $HOME/nethermind /usr/local/bin/nethermind
+```
+
+</details>
+
+<details>
+
+<summary>Option 2 - Build from source code</summary>
+
+To install .NET SDK build dependencies, type:
+
+```bash
+#Get the latest .NET SDK
+curl -L https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh
+chmod +x ./dotnet-install.sh
+./dotnet-install.sh --channel 9.0 --runtime aspnetcore
+```
+
+To build the binary, type:
+
+```bash
+mkdir -p ~/git
+cd ~/git
+# Clone the repository
+git clone https://github.com/NethermindEth/nethermind.git
+cd nethermind
+# Get new tags
+git fetch --tags
+# Get the latest tag name
+latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
+# Check out the latest tag
+git checkout $latestTag
+# Build
+dotnet publish src/Nethermind/Nethermind.Runner -c release -o nethermind
+```
+
+To verify that Nethermind compiled, check the version.
+
+```shell
+./nethermind/nethermind --version
+```
+
+The `nethermind --version` command displays output similar to the following:
+
+```
+Version: 1.25.2+78c7bf5f
+Commit: 78c7bf5f2c0819f23e248ee6d108c17cd053ffd3
+Build Date: 2024-01-23 06:34:53Z
+OS: Linux x64
+Runtime: .NET 8.0.1
+```
+
+To install the binary, type:
+
+```bash
+sudo mv $HOME/git/nethermind/nethermind /usr/local/bin
+```
+
+</details>
+
+## 3. Set Up and Configure Automatic Startup
+
+To configure a service, create a systemd unit file named `execution.service`
+
+```bash
+sudo nano /etc/systemd/system/execution.service
+```
+
+In the `execution.service` file, paste the following lines where `<NetworkName>` is the value `hoodi` if you are creating a staking node on Hoodi testnet, or `mainnet` if you are creating a staking node on Mainnet.
+
+```shell
+[Unit]
+Description=Nethermind Execution Layer Client Service
+Wants=network-online.target
+After=network-online.target
+Documentation=https://ethpillar.coincashew.io/
+
+[Service]
+Type=simple
+User=execution
+Group=execution
+Restart=always
+RestartSec=3
+KillSignal=SIGINT
+TimeoutStopSec=900
+WorkingDirectory=/var/lib/nethermind
+Environment="DOTNET_BUNDLE_EXTRACT_BASE_DIR=/var/lib/nethermind"
+ExecStart=/usr/local/bin/nethermind/nethermind \
+  --config <NetworkName> \
+  --datadir="/var/lib/nethermind" \
+  --Network.DiscoveryPort 30303 \
+  --Network.P2PPort 30303 \
+  --Network.MaxActivePeers 50 \
+  --JsonRpc.Port 8545 \
+  --JsonRpc.EnginePort 8551 \
+  --Metrics.Enabled true \
+  --Metrics.ExposePort 6060 \
+  --JsonRpc.JwtSecretFile /secrets/jwtsecret \
+  --Pruning.Mode=Hybrid \
+  --Pruning.FullPruningTrigger=VolumeFreeSpace \
+  --Pruning.FullPruningThresholdMb=375810 \
+  --Pruning.FullPruningMemoryBudgetMb=16384 \
+  --Pruning.FullPruningMaxDegreeOfParallelism=2 \
+  --Pruning.FullPruningCompletionBehavior=AlwaysShutdown
+
+[Install]
+WantedBy=multi-user.target
+```
+
+:::info
+The example `execution.service` file configures Nethermind to prune the database when disk space is less than approximately 375 GB
+:::
+
+To save and exit nano, press `CTRL+X`, then press `Y`, and then press `ENTER`
+
+To enable the service to start automatically when the computer boots, type the following commands:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable execution.service
+```
+
+Lastly, start your execution layer client and check the status.
+
+```bash
+sudo systemctl start execution.service
+sudo systemctl status execution.service
+```
+
+To exit the status display, press `CTRL+C`
+
+## 4. Helpful Execution Client Commands
+
+<Tabs>
+<TabItem value="x" label="View Logs" >
+```bash
+sudo journalctl -fu execution.service | ccze
+```
+
+A properly functioning Nethermind execution client includes `Received new block` entries in logs. For example:
+
+```
+Nethermind.Runner[2]: 29 Sep 03:00:00 | Received new block:  8372 (0x425ab9...854f4)
+Nethermind.Runner[2]: 29 Sep 03:00:00 | Processed                8372     |      0.17 ms  |  slot     13,001 ms |
+Nethermind.Runner[2]: 29 Sep 03:00:00 | - Block               0.00 MGas   |      0    txs |  calls      0 (  0) | sload       0 | sstore      0 | create   0
+Nethermind.Runner[2]: 29 Sep 03:00:00 | - Block throughput    0.00 MGas/s |      0.00 t/s |       7217.16 Blk/s | recv        0 | proc        0
+Nethermind.Runner[2]: 29 Sep 03:00:00 | Received ForkChoice: Head: 8372 (0x425ab9...854f4), Safe: 8350 (0xfd781...c2e19f), Finalized: 8332 (0x9ccf...88684c)
+Nethermind.Runner[2]: 29 Sep 03:00:00 | Synced chain Head to 8372 (0x425ab9...2881a5)
+```
+
+:::important
+Warnings or errors that logs display normally resolve when both the execution and consensus clients are fully synchronized with the Ethereum network.
+:::
+</TabItem>
+
+<TabItem value="a" label="Stop" >
+```bash
+sudo systemctl stop execution.service
+```
+</TabItem>
+
+<TabItem value="b" label="Start" >
+```bash
+sudo systemctl start execution.service
+```
+</TabItem>
+
+<TabItem value="c" label="View Status" >
+```bash
+sudo systemctl status execution.service
+```
+</TabItem>
+
+<TabItem value="d" label="Reset Database" >
+Common reasons to reset the database include:
+
+* Recovering from a corrupted database due to power outage or hardware failure
+* Resynchronizing to reduce disk space usage
+* Upgrading to a new storage format
+
+```bash
+sudo systemctl stop execution.service
+sudo rm -rf /var/lib/nethermind/*
+sudo systemctl restart execution.service
+```
+
+The execution client may resychronize for a few hours, up to a day.
+</TabItem>
+</Tabs>
+
+Now that your execution client is configured and running, the next step involves [Installing a Consensus Client](/Staking/Manual/ConsensusClient).
 
