@@ -23,3 +23,66 @@ export function HTMLContent() {
 
 {/* <!-- <HTMLContent /> --> */}
 
+
+The _Staking Ethereum_ guide supports the following consensus clients:
+
+* Lighthouse
+* Lodestar
+* Nimbus
+* Prysm
+* Teku
+
+Only one consensus client is required per node.
+
+## Consensus Client Diversity
+
+To strengthen the resilience of Ethereum against potential attacks or consensus bugs, best practices include running a minority client in order to increase client diversity. To find the current distribution of consensus clients, visit [Diversify Now](https://clientdiversity.org/).
+
+<figure>
+  <img src={useBaseUrl('img/ConsensusClientDiversity.png')} />
+  <figcaption>Figure 1 Consensus Client Diversity in June 2026</figcaption>
+</figure>
+
+## Overview of Consensus Clients
+
+Using Teku, Nimbus, or Lodestar is recommended.
+
+### Lighthouse
+
+* **Open Source**—Ethereum 2.0 project by Sigma Prime, following the Ethereum Foundation Research specification
+* **Innovative Features**—Implements advanced blockchain technologies like proof-of-stake consensus, parallel transaction execution and sharding (state separation)
+* **Independently Managed**—Not officially affiliated with Ethereum Foundation, adheres to Ethereum Foundation guidance as long beneficial for the Ethereum protocol and community
+* **Implemented in Rust**—Prioritizes security and efficiency
+
+### Lodestar
+
+* **Open Source**—Ethereum consensus client developed by ChainSafe Systems, known for production-ready beacon chain and validator client
+* **Flagship Product**—Ideal for researchers and developers due to rapid prototyping and browser usage capabilities
+* **TypeScript Implementation**—A distinctive feature, TypeScript is familiar to millions of developers worldwide
+* **Light Client Expertise**—Pioneering research, standardization and implementation of Ethereum light clients
+* **Collaborative Approach**—Coordination with other implementers, researchers and developers to promote trustless data usage from the blockchain
+
+### Nimbus
+
+* **Open Source**—Ethereum client maintained by Status.im compatible with both Ethereum 2.0 and Ethereum 1.0
+* **Lightweight Resource Usage**—Designed for optimal performance on embedded systems and resource-restricted devices
+* **Versatile Application**—Also suitable for running alongside other workloads, beneficial for stakers looking to minimize server costs
+* **Implemented in Nim**—Highly optimized code
+
+### Prysm
+
+* **Open Source**—Full-featured Ethereum 2.0 implementation in Go programming language
+* **Collaborative Approach**—Originally developed by Prysmatic Labs, now maintained and developed by Offchain Labs, adheres to official Ethereum 2.0 specification, evolving collectively through research and development efforts from various Ethereum ecosystem teams including the Ethereum Foundation
+
+### Teku
+
+* **Open Source**—Apache 2.0 License with flexible usage permissions
+* **Enterprise Focus**—Developed by PegaSys, a division of ConsenSys dedicated to creating enterprise-ready Ethereum clients and tools
+* **Written in Java**—Mature and widely used programming language for increased institutional appeal and security requirements
+
+## Comparison of Consensus Clients
+
+<table><thead><tr><th>Client</th><th width="108">CPU Use</th><th width="111">RAM Use</th><th>Database Size</th><th>Time to Sync Head</th></tr></thead><tbody><tr><td>Lighthouse</td><td>Medium</td><td>6 GB</td><td>120 - 150 GB</td><td>Instant via checkpoint</td></tr><tr><td>Lodestar</td><td>Medium</td><td>8 GB</td><td>120 - 150 GB</td><td>Instant via checkpoint</td></tr><tr><td>Teku</td><td>Medium</td><td>10 GB</td><td>120 - 150 GB</td><td>Instant via checkpoint</td></tr><tr><td>Nimbus</td><td>Low</td><td>3 GB</td><td>120 - 150 GB</td><td>Instant via checkpoint</td></tr><tr><td>Prysm</td><td>Medium</td><td>6 GB</td><td>120 - 150 GB</td><td>Instant via checkpoint</td></tr></tbody></table>
+
+Consider that as databases expand beyond 300GB in size over time, checkpoint synchronization allows nodes to efficiently resynchronize and significantly reduce database size while minimizing downtime.
+

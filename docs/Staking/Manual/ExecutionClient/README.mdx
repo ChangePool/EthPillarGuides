@@ -36,11 +36,11 @@ Only one execution client is required per node.
 
 ## Execution Client Diversity
 
-To strengthen the resilience of Ethereum against potential attacks or consensus bugs, best practices include running a minority client in order to increase client diversity. To find the latest distribution of execution clients, visit [Diversify Now](https://clientdiversity.org/).
+To strengthen the resilience of Ethereum against potential attacks or consensus bugs, best practices include running a minority client in order to increase client diversity. To find the current distribution of execution clients, visit [Diversify Now](https://clientdiversity.org/).
 
 <figure>
   <img src={useBaseUrl('img/ExecutionClientDiversity.png')} />
-  <figcaption>Figure 1 Execution Client Diversity in December 2024</figcaption>
+  <figcaption>Figure 1 Execution Client Diversity in June 2026</figcaption>
 </figure>
 
 ## Overview of Execution Clients
@@ -87,7 +87,7 @@ Using Nethermind or Besu is recommended.
 
 <table><thead><tr><th>Client</th><th width="111">RAM Use</th><th>Minimum Database Size</th><th>Database Growth</th><th>Minimum Time to Sync</th></tr></thead><tbody><tr><td>Nethermind</td><td>8 GB</td><td>0.80 TB</td><td>18 GB/week</td><td>2 hours (fastest)</td></tr><tr><td>Besu</td><td>12 GB</td><td>0.80 TB</td><td>10 GB/week</td><td>16 hours (medium)</td></tr><tr><td>Geth</td><td>8 GB</td><td>0.85 TB</td><td>8 GB/week</td><td>8 hours (fast)</td></tr><tr><td>Erigon 3</td><td>8 GB</td><td>0.70 TB</td><td>8 GB/week</td><td>16 hours (medium)</td></tr><tr><td>Reth</td><td>10 GB</td><td>1.0 TB</td><td>4GB/week</td><td>16 hours (medium)</td></tr></tbody></table>
 
-Also, consider that:
+Consider that:
 
 * The time to synchronize to a state capable beginning attestations depends on the speed of your storage drive.
 * Initial sync is always resource intensive. Synchronized operations use relatively light resources.
