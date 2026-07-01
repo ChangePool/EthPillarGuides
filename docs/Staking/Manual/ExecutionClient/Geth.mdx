@@ -144,7 +144,7 @@ To configure a service, create a systemd unit file named `execution.service`
 sudo nano /etc/systemd/system/execution.service
 ```
 
-In the `execution.service` file, paste the following lines where `<NetworkName>` is the value `hoodi` if you are creating a staking node on Hoodi testnet, or `mainnet` if you are creating a staking node on Mainnet; and, `<HistoryRetention>` is the value `all` if you are staking on Hoodi, or `postmerge` if you are staking on Mainnet.
+In the `execution.service` file, paste the following lines where `<NetworkName>` is the value `hoodi` if you are creating a node on Hoodi testnet, or `mainnet` if you are creating a node on Mainnet; and, `<HistoryRetention>` is the value `all` if you are operating on Hoodi, or `postmerge` if you are operating on Mainnet.
 
 ```bash[Unit]
 Description=Geth Execution Layer Client Service
