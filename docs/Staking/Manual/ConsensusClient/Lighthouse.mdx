@@ -12,6 +12,9 @@ import React from 'react';
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 export function HTMLContent() {
 
   return (
@@ -22,4 +25,240 @@ export function HTMLContent() {
 }
 
 {/* <!-- <HTMLContent /> --> */}
+
+
+## Overview
+
+Lighthouse is an Ethereum client with a heavy focus on speed and security. [Sigma Prime](https://sigmaprime.io/)—the development team—is an information security and software engineering firm funding Lighthouse with the Ethereum Foundation, Consensys and private individuals. Lighthouse is built using Rust and is offered under an Apache 2.0 License.
+
+For more details, see:
+
+* **Web Site**—[Lighthouse](https://lighthouse.sigmaprime.io/)
+* **Documentation**—[Lighthouse Book](https://lighthouse-book.sigmaprime.io/)
+* **Releases**—[GitHub](https://github.com/sigp/lighthouse/releases)
+
+## 1. Initial Configuration
+
+To create a user for the consensus service, create a data directory and assign ownership, type:
+
+```bash
+sudo adduser --system --no-create-home --group consensus
+sudo mkdir -p /var/lib/lighthouse
+sudo chown -R consensus:consensus /var/lib/lighthouse
+```
+
+To install dependencies, type:
+
+```bash
+sudo apt install curl ccze jq -y
+```
+
+## 2. Install Binaries
+
+While downloading binaries is often faster and more convenient, building from source code can offer better compatibility and is more aligned with the spirit of free open source software (FOSS).
+
+<details>
+
+<summary>Option 1 - Download binaries</summary>
+
+To download the latest Lighthouse release for Linux, extract the archive and clean up, type the following commands:
+
+```bash
+RELEASE_URL="https://api.github.com/repos/sigp/lighthouse/releases/latest"
+BINARIES_URL="$(curl -s $RELEASE_URL | jq -r ".assets[] | select(.name) | .browser_download_url" | grep x86_64-unknown-linux-gnu.tar.gz$)"
+
+echo Downloading URL: $BINARIES_URL
+
+cd $HOME
+# Download
+wget -O lighthouse.tar.gz $BINARIES_URL
+# Untar
+tar -xzvf lighthouse.tar.gz -C $HOME
+# Clean up
+rm lighthouse.tar.gz
+```
+
+To install the binary, type:
+
+```bash
+sudo mv $HOME/lighthouse /usr/local/bin/lighthouse
+```
+
+</details>
+
+<details>
+
+<summary>Option 2 - Build from source code</summary>
+
+To install Rust, type:
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+When prompted, type **1** to proceed with the default installation.
+
+To update environment variables, type:
+
+```bash
+echo export PATH="$HOME/.cargo/bin:$PATH" >> ~/.bashrc
+source ~/.bashrc
+```
+
+To install dependencies, type:
+
+```bash
+sudo apt-get update
+sudo apt install -y git gcc g++ make cmake pkg-config libssl-dev libclang-dev clang protobuf-compiler
+```
+
+To build the binary, type:
+
+```bash
+mkdir -p ~/git
+cd ~/git
+git clone -b stable https://github.com/sigp/lighthouse.git
+cd lighthouse
+make
+```
+
+If errors display when compiling, type:
+
+```bash
+rustup update
+cargo clean
+make
+```
+
+To verify that Lighthouse compiled successfully, type the following command to display the version:
+
+```
+lighthouse --version
+```
+
+To install the binary, type:
+
+```bash
+sudo cp $HOME/.cargo/bin/lighthouse /usr/local/bin/lighthouse
+```
+
+</details>
+
+## 3. Set Up and Configure Automatic Startup
+
+To configure a service, create a systemd unit file named `consensus.service`
+
+```bash
+sudo nano /etc/systemd/system/consensus.service
+```
+
+In the `consensus.service` file, paste the following lines where `<NetworkName>` is the value `hoodi` if you are creating a node on Hoodi testnet, or `mainnet` if you are creating a node on Mainnet; and, `<CheckpointSyncURL>` is `https://hoodi.beaconstate.ethstaker.cc` if you are running on Hoodi, or `https://beaconstate.ethstaker.cc` if you are running on Mainnet.
+
+
+```shell
+[Unit]
+Description=Lighthouse Consensus Layer Client Service
+Wants=network-online.target
+After=network-online.target
+Documentation=https://ethpillar.coincashew.io/
+
+[Service]
+Type=simple
+User=consensus
+Group=consensus
+Restart=on-failure
+RestartSec=3
+KillSignal=SIGINT
+TimeoutStopSec=900
+ExecStart=/usr/local/bin/lighthouse bn \
+  --datadir /var/lib/lighthouse \
+  --network <NetworkName> \
+  --staking \
+  --validator-monitor-auto \
+  --metrics \
+  --checkpoint-sync-url=<CheckpointSyncURL> \
+  --port 9000 \
+  --quic-port 9001 \
+  --http-port 5052 \
+  --target-peers 100 \
+  --metrics-port 8008 \
+  --execution-endpoint http://127.0.0.1:8551 \
+  --execution-jwt /secrets/jwtsecret
+
+[Install]
+WantedBy=multi-user.target
+```
+
+To save and exit nano, press `CTRL+X`, then press `Y`, and then press `ENTER`
+
+To enable the service to start automatically when the computer boots, type the following commands:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable consensus.service
+```
+
+Lastly, start your consensus layer client and check the status.
+
+```bash
+sudo systemctl start consensus.service
+sudo systemctl status consensus.service
+```
+
+To exit the status display, press `CTRL+C`
+
+## 4. Helpful Consensus Client Commands
+
+<Tabs>
+<TabItem value="x" label="View Logs" >
+```bash
+sudo journalctl -fu consensus.service | ccze
+```
+
+A properly functioning Lighthouse consensus client includes `New block received` entries in logs. For example:
+
+```bash
+Feb 03 01:02:36.000 INFO New block received                      root: 0xb5ccb2f85d981ca9e1c0d904f967403ddf8c47532c195fe213c94a28ffaf6a2e, slot: 2138
+Feb 03 01:02:42.000 INFO Synced                                  slot: 2138, block: 0x1cb281a, epoch: 121, finalized_epoch: 120, finalized_root: 0x1dce0, exec_hash: 0x6827aeb (verified), peers: 50, service: slot_notifier
+```
+</TabItem>
+
+<TabItem value="a" label="Stop" >
+```bash
+sudo systemctl stop consensus.service
+```
+</TabItem>
+
+<TabItem value="b" label="Start" >
+```bash
+sudo systemctl start consensus.service
+```
+</TabItem>
+
+<TabItem value="c" label="View Status" >
+```bash
+sudo systemctl status consensus.service
+```
+</TabItem>
+
+<TabItem value="d" label="Reset Database" >
+Common reasons to reset the database include:
+
+* Recovering from a corrupted database due to power outage or hardware failure
+* Resynchronizing to reduce disk space usage
+* Upgrading to a new storage format
+
+```bash
+sudo systemctl stop consensus.service
+sudo rm -rf /var/lib/lighthouse/beacon
+sudo systemctl restart consensus.service
+```
+
+With checkpoint synchronization enabled, the consensus client resynchronizes in one to two minutes.
+</TabItem>
+</Tabs>
+
+Now that your consensus client is configured and running, you have a full node.
+
+Optionally, if you want to set up a staking node, then the next step involves [Installing a Validator Client](/Staking/Manual/ValidatorClient).
 
