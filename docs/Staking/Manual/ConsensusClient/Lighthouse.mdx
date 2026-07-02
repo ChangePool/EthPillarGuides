@@ -78,7 +78,7 @@ tar -xzvf lighthouse.tar.gz -C $HOME
 rm lighthouse.tar.gz
 ```
 
-To install the binary, type:
+To install the binaries, type:
 
 ```bash
 sudo mv $HOME/lighthouse /usr/local/bin/lighthouse
@@ -112,7 +112,7 @@ sudo apt-get update
 sudo apt install -y git gcc g++ make cmake pkg-config libssl-dev libclang-dev clang protobuf-compiler
 ```
 
-To build the binary, type:
+To build the binaries, type:
 
 ```bash
 mkdir -p ~/git
@@ -136,7 +136,7 @@ To verify that Lighthouse compiled successfully, type the following command to d
 lighthouse --version
 ```
 
-To install the binary, type:
+To install the binaries, type:
 
 ```bash
 sudo cp $HOME/.cargo/bin/lighthouse /usr/local/bin/lighthouse
@@ -260,5 +260,5 @@ With checkpoint synchronization enabled, the consensus client resynchronizes in 
 
 Now that your consensus client is configured and running, you have a full node.
 
-Optionally, if you want to set up a staking node, then the next step involves [Installing a Validator Client](/Staking/Manual/ValidatorClient).
+If you want to set up a staking node, then the next step involves [Installing a Validator Client](/Staking/Manual/ValidatorClient).
 
