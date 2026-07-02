@@ -12,6 +12,9 @@ import React from 'react';
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 export function HTMLContent() {
 
   return (
@@ -22,4 +25,261 @@ export function HTMLContent() {
 }
 
 {/* <!-- <HTMLContent /> --> */}
+
+## Overview
+
+Lodestar is a Typescript implementation of the official Ethereum specification by the ChainSafe team. Supported by funding from the Ethereum Foundation and Moloch DAO, the Lodestar team leads in light client research and development. The team also develops additional [Lodestar / Eth2 Ecosystem Packages](https://hackmd.io/CcsWTnvRS_eiLUajr3gi9g).
+
+For more details, see:
+
+* **Web Site**—[Lodestar](https://lodestar.chainsafe.io/)
+* **Documentation**—[Welcome to the Lodestar Documentation](https://chainsafe.github.io/lodestar/)
+* **Releases**—[GitHub](https://github.com/ChainSafe/lodestar/releases)
+
+## 1. Initial Configuration
+
+To create a user for the consensus service, create a data directory and assign ownership, type:
+
+```bash
+sudo adduser --system --no-create-home --group consensus
+sudo mkdir -p /var/lib/lodestar
+sudo chown -R consensus:consensus /var/lib/lodestar
+```
+
+To install dependencies, type:
+
+```bash
+sudo apt-get install gcc g++ make git curl ccze -y
+```
+
+## 2. Install Binaries
+
+While downloading binaries is often faster and more convenient, building from source code can offer better compatibility and is more aligned with the spirit of free open source software (FOSS).
+
+<details>
+
+<summary>Option 1 - Download binaries</summary>
+
+To download the latest Lodestar release for Linux, extract the archive and clean up, type the following commands:
+
+```bash
+RELEASE_URL="https://api.github.com/repos/ChainSafe/lodestar/releases/latest"
+LATEST_TAG="$(curl -s $RELEASE_URL | jq -r ".tag_name")"
+BINARIES_URL="https://github.com/ChainSafe/lodestar/releases/download/${LATEST_TAG}/lodestar-${LATEST_TAG}-linux-amd64.tar.gz"
+	
+echo Downloading URL: $BINARIES_URL
+
+cd $HOME
+# Download
+wget -O lodestar.tar.gz $BINARIES_URL
+# Untar
+tar -xzvf lodestar.tar.gz -C $HOME
+# Clean up
+rm lodestar.tar.gz
+```
+
+To install the binaries, type:
+
+```bash
+sudo mkdir -p /usr/local/bin/lodestar
+sudo mv $HOME/lodestar /usr/local/bin/lodestar
+```
+
+</details>
+
+<details>
+
+<summary>Option 2 - Build from source code</summary>
+
+To install Yarn, type:
+
+```bash
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+sudo apt update
+sudo apt install yarn -y
+```
+
+To verify that Yarn installed properly, type the following command to display the version:
+
+```bash
+# Ensure that Yarn version >= 1.22.19
+yarn --version
+```
+
+To install Node.js type:
+
+```bash
+# Download and import the NodeSource GPG key
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl gnupg
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+
+# Add DEB repository
+NODE_MAJOR=20
+echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
+
+# Update
+sudo apt-get update
+
+# Install Node.js
+sudo apt-get install nodejs -y
+```
+
+To install dependencies and build the binaries, type:
+
+```bash
+mkdir -p ~/git
+cd ~/git
+git clone -b stable https://github.com/chainsafe/lodestar.git
+cd lodestar
+yarn install
+yarn run build
+```
+
+To verify that Lodestar compiled successfully, type the following command to display the version:
+
+```bash
+./lodestar --version
+```
+
+The `lodestar --version` command displays output similar to:
+
+```
+🌟 Lodestar: TypeScript Implementation of the Ethereum Consensus Beacon Chain.
+* Version: v1.8.0/stable/a4b29cf
+* by ChainSafe Systems, 2018-2022
+```
+
+To install the binaries, type:
+
+```bash
+sudo cp -a $HOME/git/lodestar /usr/local/bin/lodestar
+```
+
+</details>
+
+## 3. Set Up and Configure Automatic Startup
+
+To configure a service, create a systemd unit file named `consensus.service`
+
+```bash
+sudo nano /etc/systemd/system/consensus.service
+```
+
+In the `consensus.service` file, paste the following lines where `<NetworkName>` is the value `hoodi` if you are creating a node on Hoodi testnet, or `mainnet` if you are creating a node on Mainnet; `<CheckpointSyncURL>` is `https://hoodi.beaconstate.ethstaker.cc` if you are operating on Hoodi, or `https://beaconstate.ethstaker.cc` if you are operating on Mainnet; and, `<FeeRecipientAddress>` is an Ethereum wallet address that you control, designated for receiving priority fees and maximal extractable value (MEV) rewards.
+
+```shell
+[Unit]
+Description=Lodestar Consensus Layer Client Service
+Wants=network-online.target
+After=network-online.target
+Documentation=https://ethpillar.coincashew.io/
+
+[Service]
+Type=simple
+User=consensus
+Group=consensus
+Restart=on-failure
+RestartSec=3
+KillSignal=SIGINT
+TimeoutStopSec=900
+WorkingDirectory=/usr/local/bin/lodestar
+ExecStart=/usr/local/bin/lodestar/lodestar beacon \
+  --dataDir /var/lib/lodestar \
+  --network <NetworkName> \
+  --rest.port 5052 \
+  --port 9000 \
+  --targetPeers 100 \
+  --metrics.port 8008 \
+  --metrics true \
+  --checkpointSyncUrl <CheckpointSyncURL> \
+  --jwt-secret /secrets/jwtsecret \
+  --execution.urls http://127.0.0.1:8551 \
+  --suggestedFeeRecipient <FeeRecipientAddress>
+
+[Install]
+WantedBy=multi-user.target
+```
+
+:::info
+Tips sent to `<FeeRecipientAddress>` are spendable immediately.
+
+If you are setting up a full node without staking, then remove the `--suggestedFeeRecipient` option from the `lodestar beacon` command in the `consensus.service` file.
+:::
+
+To save and exit nano, press `CTRL+X`, then press `Y`, and then press `ENTER`
+
+To enable the service to start automatically when the computer boots, type the following commands:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable consensus.service
+```
+
+Lastly, start your consensus layer client and check the status.
+
+```bash
+sudo systemctl start consensus.service
+sudo systemctl status consensus.service
+```
+
+To exit the status display, press `CTRL+C`
+
+## 4. Helpful Consensus Client Commands
+
+<Tabs>
+<TabItem value="x" label="View Logs" >
+```bash
+sudo journalctl -fu consensus.service | ccze
+```
+
+The following example shows logs generated by a properly functioning Lodestar consensus client:
+
+```bash
+Mar-19 04:09:49.000    info: Synced - slot: 3338 - head: 3355 0x5abb_ac30 - execution: valid(0x1a3c_2ca5) - finalized: 0xfa22_1142:3421 - peers: 25
+Mar-19 04:09:52.000    info: Synced - slot: 3339 - head: 3356 0xcd2a_8b32 - execution: valid(0xab34_fa32) - finalized: 0xfa22_1142:3421 - peers: 25
+Mar-19 04:09:04.000    info: Synced - slot: 3340 - head: 3357 0xff1a_f12a - execution: valid(0xfaf1_b35f) - finalized: 0xfa22_1142:3421 - peers: 25
+```
+</TabItem>
+
+<TabItem value="a" label="Stop" >
+```bash
+sudo systemctl stop consensus.service
+```
+</TabItem>
+
+<TabItem value="b" label="Start" >
+```bash
+sudo systemctl start consensus.service
+```
+</TabItem>
+
+<TabItem value="c" label="View Status" >
+```bash
+sudo systemctl status consensus.service
+```
+</TabItem>
+
+<TabItem value="d" label="Reset Database" >
+Common reasons to reset the database include:
+
+* Recovering from a corrupted database due to power outage or hardware failure
+* Resynchronizing to reduce disk space usage
+* Upgrading to a new storage format
+
+```bash
+sudo systemctl stop consensus.service
+sudo rm -rf /var/lib/lodestar/chain-db
+sudo systemctl restart consensus.service
+```
+
+With checkpoint synchronization enabled, the consensus client resynchronizes in one to two minutes.
+</TabItem>
+</Tabs>
+
+Now that your consensus client is configured and running, you have a full node.
+
+If you want to set up a staking node, then the next step involves [Installing a Validator Client](/Staking/Manual/ValidatorClient).
 
