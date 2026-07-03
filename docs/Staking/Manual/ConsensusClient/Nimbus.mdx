@@ -12,6 +12,9 @@ import React from 'react';
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 export function HTMLContent() {
 
   return (
@@ -22,4 +25,310 @@ export function HTMLContent() {
 }
 
 {/* <!-- <HTMLContent /> --> */}
+
+## Overview
+
+Nimbus is a research project and client implementation for Ethereum designed to perform well on embedded systems and personal mobile devices, including older smartphones with resource-restricted hardware. If desired, Nimbus can run both validator client and beacon chain client in one process. [Status](https://status.app/)—the organization that develops Nimbus—is best known for developing an open-source, decentralized wallet and messenger application. Nimbus—licensed under the Apache 2.0 open-source license—is written in Nim, a language with Python-like syntax that compiles to C.
+
+For more details, see:
+
+* **Web Site**—[Nimbus](https://nimbus.team/)
+* **Documentation**—[The Nimbus Guide](https://nimbus.guide/)
+* **Releases**—[GitHub](https://github.com/status-im/nimbus-eth2/releases)
+
+## 1. Initial Configuration
+
+To create a user for the consensus service, create a data directory and assign ownership, type:
+
+```bash
+sudo adduser --system --no-create-home --group consensus
+sudo mkdir -p /var/lib/nimbus
+sudo chown -R consensus:consensus /var/lib/nimbus
+```
+
+To install dependencies, type:
+
+```bash
+sudo apt install curl libsnappy-dev libc6-dev jq libc6 unzip ccze -y
+```
+
+## 2. Install Binaries
+
+While downloading binaries is often faster and more convenient, building from source code can offer better compatibility and is more aligned with the spirit of free open source software (FOSS).
+
+<details>
+
+<summary>Option 1 - Download binaries</summary>
+
+To download the latest Nimbus release for Linux, extract the archive and clean up, type the following commands:
+
+```bash
+RELEASE_URL="https://api.github.com/repos/status-im/nimbus-eth2/releases/latest"
+BINARIES_URL="$(curl -s $RELEASE_URL | jq -r ".assets[] | select(.name) | .browser_download_url" | grep _Linux_amd64.*.tar.gz$)"
+
+echo Downloading URL: $BINARIES_URL
+
+cd $HOME
+# Download
+wget -O nimbus.tar.gz $BINARIES_URL
+# Untar
+tar -xzvf nimbus.tar.gz -C $HOME
+# Rename folder
+mv nimbus-eth2_Linux_amd64_* nimbus
+# Clean up
+rm nimbus.tar.gz
+```
+
+To install the binaries, type:
+
+```bash
+sudo mv nimbus/build/nimbus_beacon_node /usr/local/bin
+sudo mv nimbus/build/nimbus_validator_client /usr/local/bin
+```
+
+To verify that Nimbus installed properly, type the following command to display the version:
+
+```bash
+nimbus_beacon_node --version
+```
+
+To clean up, type:
+
+```bash
+rm -r nimbus
+```
+
+</details>
+
+<details>
+
+<summary>Option 2 - Build from source code</summary>
+
+To install dependencies, type:
+
+```bash
+sudo apt-get update
+sudo apt-get install curl build-essential git -y
+```
+
+To build the binaries, type:
+
+```bash
+mkdir -p ~/git
+cd ~/git
+git clone -b stable https://github.com/status-im/nimbus-eth2
+cd nimbus-eth2
+make -j$(nproc) update
+make -j$(nproc) nimbus_beacon_node
+make -j$(nproc) nimbus_validator_client
+```
+
+To verify that Nimbus compiled successfully, type the following command to display the version:
+
+```bash
+cd $HOME/git/nimbus-eth2/build
+./nimbus_beacon_node --version
+```
+
+To install the binaries, type:
+
+```bash
+sudo cp $HOME/git/nimbus-eth2/build/nimbus_beacon_node /usr/local/bin
+sudo cp $HOME/git/nimbus-eth2/build/nimbus_validator_client /usr/local/bin
+```
+
+</details>
+
+## 3. Set Up and Configure Automatic Startup
+
+To configure a service, create a systemd unit file named `consensus.service`
+
+```bash
+sudo nano /etc/systemd/system/consensus.service
+```
+
+In the `consensus.service` file, paste the following lines where `<NetworkName>` is the value `hoodi` if you are creating a node on Hoodi testnet, or `mainnet` if you are creating a node on Mainnet; and, `<FeeRecipientAddress>` is an Ethereum wallet address that you control, designated for receiving priority fees and maximal extractable value (MEV) rewards.
+
+<Tabs>
+<TabItem value="z" label="Standalone Beacon Node (Recommended)" >
+```shell
+[Unit]
+Description=Nimbus Consensus Layer Client Service
+Wants=network-online.target
+After=network-online.target
+Documentation=https://ethpillar.coincashew.io/
+
+[Service]
+Type=simple
+User=consensus
+Group=consensus
+Restart=on-failure
+RestartSec=3
+KillSignal=SIGINT
+TimeoutStopSec=900
+ExecStart=/usr/local/bin/nimbus_beacon_node \
+  --network=<NetworkName> \
+  --data-dir=/var/lib/nimbus \
+  --tcp-port=9000 \
+  --udp-port=9000 \
+  --max-peers=100 \
+  --rest-port=5052 \
+  --enr-auto-update=true \
+  --non-interactive \
+  --status-bar=false \
+  --in-process-validators=false \
+  --web3-url=http://127.0.0.1:8551 \
+  --rest \
+  --metrics \
+  --metrics-port=8008 \
+  --jwt-secret="/secrets/jwtsecret" \
+  --suggested-fee-recipient=<FeeRecipientAddress>
+
+[Install]
+WantedBy=multi-user.target
+```
+</TabItem>
+
+<TabItem value="x" label="Combined Beacon Node and Validator Client" >
+You can combine the beacon chain and validator into one running service. While simpler to manage and run, a combined configuration is less flexible when running EL+CL failover nodes, or when you need to resynchronize your execution client and temporarily use [Rocket Rescue Node](https://rescuenode.com/docs/how-to-connect/solo) by [Rocket Pool](https://rocketpool.net/).
+
+```shell
+[Unit]
+Description=Nimbus Consensus Layer Client Service
+Wants=network-online.target
+After=network-online.target
+Documentation=https://ethpillar.coincashew.io/
+
+[Service]
+Type=simple
+User=consensus
+Group=consensus
+Restart=on-failure
+RestartSec=3
+KillSignal=SIGINT
+TimeoutStopSec=900
+ExecStart=/usr/local/bin/nimbus_beacon_node \
+  --network=<NetworkName> \
+  --data-dir=/var/lib/nimbus \
+  --tcp-port=9000 \
+  --udp-port=9000 \
+  --max-peers=100 \
+  --rest-port=5052 \
+  --enr-auto-update=true \
+  --web3-url=http://127.0.0.1:8551 \
+  --rest \
+  --metrics \
+  --metrics-port=8008 \
+  --jwt-secret="/secrets/jwtsecret" \
+  --graffiti="🏠🥩🪙🛡️" \
+  --suggested-fee-recipient=<FeeRecipientAddress>
+
+[Install]
+WantedBy=multi-user.target
+```
+</TabItem>
+</Tabs>
+
+:::info
+Tips sent to `<FeeRecipientAddress>` are spendable immediately.
+
+If you are setting up a full node without staking, then use the Standalone Beacon Node configuration in the `consensus.service` file removing the `--suggested-fee-recipient` option.
+:::
+
+To save and exit nano, press `CTRL+X`, then press `Y`, and then press `ENTER`
+
+Using checkpoint synchronization, the consensus client resynchronizes in one to two minutes instead of days.
+
+To perform checkpoint synchronization, type the following command where `<CheckpointSyncURL>` is `https://hoodi.beaconstate.ethstaker.cc` if you are operating on Hoodi, or `https://beaconstate.ethstaker.cc` if you are operating on Mainnet.
+
+```bash
+sudo -u consensus /usr/local/bin/nimbus_beacon_node trustedNodeSync \
+--network=<NetworkName> \
+--trusted-node-url=<CheckpointSyncURL> \
+--data-dir=/var/lib/nimbus \
+--backfill=false
+```
+
+When checkpoint synchronization completes, the following message displays:
+
+```
+> Done, your beacon node is ready to serve you! Don't forget to check that you're on the canonical chain by comparing the checkpoint root with other online sources. See https://nimbus.guide/trusted-node-sync.html for more information.
+```
+
+To enable the consensus service to start automatically when the computer boots, type the following commands:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable consensus.service
+```
+
+Lastly, start your consensus layer client and check the status.
+
+```bash
+sudo systemctl start consensus.service
+sudo systemctl status consensus.service
+```
+
+To exit the status display, press `CTRL+C`
+
+## 4. Helpful Consensus Client Commands
+
+<Tabs>
+<TabItem value="x" label="View Logs" >
+```bash
+sudo journalctl -fu consensus.service | ccze
+```
+
+The following example shows logs generated by a properly functioning Nimbus consensus client:
+
+```bash
+nimbus_beacon_node[292966]: INF 2023-02-05 01:20:00.000+00:00 Slot start       topics="beacnde" slot=31205 epoch=903 sync=synced peers=80 head=13a131:31204 finalized=1111:cdba33411 delay=69us850ns
+nimbus_beacon_node[292966]: INF 2023-02-05 01:20:08.000+00:00 Slot end         topics="beacnde" slot=31205 nextActionWait=7m27s985ms126us530ns nextAttestationSlot=31235 nextProposalSlot=-1 syncCommitteeDuties=none head=13a131:31204
+```
+</TabItem>
+
+<TabItem value="a" label="Stop" >
+```bash
+sudo systemctl stop consensus.service
+```
+</TabItem>
+
+<TabItem value="b" label="Start" >
+```bash
+sudo systemctl start consensus.service
+```
+</TabItem>
+
+<TabItem value="c" label="View Status" >
+```bash
+sudo systemctl status consensus.service
+```
+</TabItem>
+
+<TabItem value="d" label="Reset Database" >
+Common reasons to reset the database include:
+
+* Recovering from a corrupted database due to power outage or hardware failure
+* Resynchronizing to reduce disk space usage
+* Upgrading to a new storage format
+
+```bash
+sudo systemctl stop consensus.service
+sudo rm -rf /var/lib/nimbus/db
+
+# Perform checkpoint synchronization
+sudo -u consensus /usr/local/bin/nimbus_beacon_node trustedNodeSync \
+--network=<NetworkName> \
+--trusted-node-url=<CheckpointSyncURL> \
+--data-dir=/var/lib/nimbus \
+--backfill=false
+
+sudo systemctl restart consensus.service
+```
+</TabItem>
+</Tabs>
+
+Now that your consensus client is configured and running, you have a full node.
+
+If you want to set up a staking node, then the next step involves [Installing a Validator Client](/Staking/Manual/ValidatorClient).
 
