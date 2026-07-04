@@ -196,7 +196,7 @@ ExecStart=/usr/local/bin/reth node \
 WantedBy=multi-user.target
 ```
 
-If you are staking on Mainnet, then edit the `reth node` command that the `ExecStart` directive specifies to include the `--prune.bodies.pre-merge` and `--prune.receipts.before` arguments, as follows:
+If you are creating a node on Mainnet, then edit the `reth node` command that the `ExecStart` directive specifies to include the `--prune.bodies.pre-merge` and `--prune.receipts.before` arguments, as follows:
 
 ```bash
 ExecStart=/usr/local/bin/reth node \

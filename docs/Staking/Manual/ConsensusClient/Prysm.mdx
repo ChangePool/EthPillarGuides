@@ -12,6 +12,9 @@ import React from 'react';
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 export function HTMLContent() {
 
   return (
@@ -23,3 +26,264 @@ export function HTMLContent() {
 
 {/* <!-- <HTMLContent /> --> */}
 
+## Overview
+
+Prysm is a Go implementation of the Ethereum protocol with a focus on usability, security and reliability. Prysm is developed by [Offchain Labs](https://www.offchain.io/) and released under a GPL-3.0 license.
+
+For more details, see:
+
+* **Web Site**—[Prysm](https://www.offchain.io/prysm)
+* **Documentation**—[Prysm Documentation](https://prysm.offchainlabs.com/docs/)
+* **Releases**—[GitHub](https://github.com/OffchainLabs/prysm/releases)
+
+## 1. Initial Configuration
+
+To create a user for the consensus service, create a data directory and assign ownership, type:
+
+```bash
+sudo adduser --system --no-create-home --group consensus
+sudo mkdir -p /var/lib/prysm/beacon
+sudo chown -R consensus:consensus /var/lib/prysm/beacon
+```
+
+To install dependencies, type:
+
+```bash
+sudo apt install curl jq git ccze -y
+```
+
+## 2. Install Binaries
+
+While downloading binaries is often faster and more convenient, building from source code can offer better compatibility and is more aligned with the spirit of free open source software (FOSS).
+
+<details>
+
+<summary>Option 1 - Download binaries</summary>
+
+Run the following to automatically download the latest binaries.
+
+To download the latest Prysm binaries for Linux, type:
+
+```bash
+cd $HOME
+prysm_version=$(curl -f -s https://prysmaticlabs.com/releases/latest)
+file_beacon=beacon-chain-${prysm_version}-linux-amd64
+file_validator=validator-${prysm_version}-linux-amd64
+curl -f -L "https://prysmaticlabs.com/releases/${file_beacon}" -o beacon-chain
+curl -f -L "https://prysmaticlabs.com/releases/${file_validator}" -o validator
+chmod +x beacon-chain validator
+```
+
+To install the binaries, type:
+
+```bash
+sudo mv beacon-chain validator /usr/local/bin
+```
+
+</details>
+
+<details>
+
+<summary>Option 2 - Build from source code</summary>
+
+To install Go dependencies, type the following commands where `<LatestVersionURL>` is the link to the TAR.GZ archive for the latest version of Go available from [All Releases](https://go.dev/dl/).
+
+```bash
+wget -O go.tar.gz <LatestVersionURL>
+sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go.tar.gz
+echo export PATH=$PATH:/usr/local/go/bin >> $HOME/.bashrc
+source $HOME/.bashrc
+```
+
+To verify that Go installed successfully, type the following command to display the version:
+
+```bash
+go version
+```
+
+To clean up files, type:
+
+```bash
+rm go.tar.gz
+```
+
+To install build dependencies, type:
+
+```bash
+sudo apt-get update
+sudo apt install build-essential git
+```
+
+To build the binaries, type:
+
+```bash
+mkdir -p ~/git
+cd ~/git
+git clone https://github.com/OffchainLabs/prysm.git
+cd prysm
+git fetch --tags
+RELEASETAG=$(curl -s https://api.github.com/repos/OffchainLabs/prysm/releases/latest | jq -r .tag_name)
+git checkout tags/$RELEASETAG
+go build -o=./build/beacon-chain ./cmd/beacon-chain
+go build -o=./build/validator ./cmd/validator
+```
+
+To install the binaries, type:
+
+```shell
+sudo cp $HOME/git/prysm/build/beacon-chain /usr/local/bin
+sudo cp $HOME/git/prysm/build/validator /usr/local/bin
+```
+
+</details>
+
+## 3. Set Up and Configure Automatic Startup
+
+To configure a service, create a systemd unit file named `consensus.service`
+
+```bash
+sudo nano /etc/systemd/system/consensus.service
+```
+
+In the `consensus.service` file, paste the following lines where `<NetworkName>` is the value `hoodi` if you are creating a node on Hoodi testnet, or `mainnet` if you are creating a node on Mainnet; `<CheckpointSyncURL>` is `https://hoodi.beaconstate.ethstaker.cc` if you are operating on Hoodi, or `https://beaconstate.ethstaker.cc` if you are operating on Mainnet; and, `<FeeRecipientAddress>` is an Ethereum wallet address that you control, designated for receiving priority fees and maximal extractable value (MEV) rewards.
+
+```bash
+[Unit]
+Description=Prysm Consensus Layer Client Service
+Wants=network-online.target
+After=network-online.target
+Documentation=https://ethpillar.coincashew.io/
+
+[Service]
+Type=simple
+User=consensus
+Group=consensus
+Restart=on-failure
+RestartSec=3
+KillSignal=SIGINT
+TimeoutStopSec=900
+ExecStart=/usr/local/bin/beacon-chain \
+  --<NetworkName> \
+  --datadir=/var/lib/prysm/beacon \
+  --grpc-gateway-port 5052 \
+  --p2p-tcp-port 13000 \
+  --p2p-udp-port 12000 \
+  --p2p-max-peers 80 \
+  --monitoring-port 8008 \
+  --checkpoint-sync-url=<CheckpointSyncURL> \
+  --execution-endpoint=http://localhost:8551 \
+  --jwt-secret=/secrets/jwtsecret \
+  --accept-terms-of-use=true \
+  --suggested-fee-recipient=<FeeRecipientAddress>
+
+[Install]
+WantedBy=multi-user.target
+```
+
+If you are creating a node on Mainnet, then edit the `beacon-chain` command that the `ExecStart` directive specifies to include the `--beacon-db-pruning` argument, as follows:
+
+```bash
+ExecStart=/usr/local/bin/beacon-chain \
+  --<NetworkName> \
+  --datadir=/var/lib/prysm/beacon \
+  --grpc-gateway-port 5052 \
+  --p2p-tcp-port 13000 \
+  --p2p-udp-port 12000 \
+  --p2p-max-peers 80 \
+  --monitoring-port 8008 \
+  --checkpoint-sync-url=<CheckpointSyncURL> \
+  --execution-endpoint=http://localhost:8551 \
+  --jwt-secret=/secrets/jwtsecret \
+  --accept-terms-of-use=true \
+  --beacon-db-pruning \
+  --suggested-fee-recipient=<FeeRecipientAddress>
+```
+
+:::info
+Tips sent to `<FeeRecipientAddress>` are spendable immediately.
+
+If you are setting up a full node without staking, then remove the `--suggested-fee-recipient` option from the `beacon-chain` command in the `consensus.service` file.
+:::
+
+To save and exit nano, press `CTRL+X`, then press `Y`, and then press `ENTER`
+
+To enable the service to start automatically when the computer boots, type the following commands:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable consensus.service
+```
+
+Lastly, start your consensus layer client and check the status.
+
+```bash
+sudo systemctl start consensus.service
+sudo systemctl status consensus.service
+```
+
+To exit the status display, press `CTRL+C`
+
+## 4. Helpful Consensus Client Commands
+
+<Tabs>
+<TabItem value="x" label="View Logs" >
+```bash
+sudo journalctl -fu consensus.service | ccze
+```
+
+The following example shows logs generated by a properly functioning Prysm consensus client:
+
+```bash
+"Peer summary" activePeers=69 inbound=0 outbound=69 prefix=p2p
+"Synced new block" block=0xb5ccb2f85... epoch=1837 finalizedEpoch=1838 finalizedRoot=0x1dce0... prefix=blockchain slot=21338 "Finished applying state transition" attestations=128 payloadHash=0x000000000000 prefix=blockchain slot=2138 syncBitsCount=213 txCount=0"terminal difficulty has not been reached yet" latestDifficulty=10000000 prefix=powchain terminalDifficulty=10000000
+
+...
+
+time="2023-02-02 11:21:00" level=info msg="Peer summary" activePeers=35 inbound=10 outbound=25 prefix=p2p
+time="2023-02-02 11:21:00" level=info msg="Synced new block" block=0xd9ddeza1289... epoch=11795 finalizedEpoch=111794 finalizedRoot=0x462e3275... prefix=blockchain slot=31205
+time="2023-02-02 11:21:00" level=info msg="Finished applying state transition" attestations=64 payloadHash=0x000000000000 prefix=blockchain slot=31205 syncBitsCount=209 txCount=0
+```
+</TabItem>
+
+<TabItem value="a" label="Stop" >
+```bash
+sudo systemctl stop consensus.service
+```
+</TabItem>
+
+<TabItem value="b" label="Start" >
+```bash
+sudo systemctl start consensus.service
+```
+</TabItem>
+
+<TabItem value="c" label="View Status" >
+```bash
+sudo systemctl status consensus.service
+```
+</TabItem>
+
+<TabItem value="d" label="Reset Database" >
+Common reasons to reset the database include:
+
+* Recovering from a corrupted database due to power outage or hardware failure
+* Resynchronizing to reduce disk space usage
+* Upgrading to a new storage format
+
+```bash
+sudo systemctl stop consensus.service
+sudo rm -rf /var/lib/prysm/beacon/beaconchaindata
+sudo systemctl restart consensus.service
+```
+
+With checkpoint synchronization enabled, the consensus client resynchronizes in one to two minutes instead of days.
+</TabItem>
+</Tabs>
+
+Now that your consensus client is configured and started, you have a full node.
+
+Proceed to the next step on setting up your validator client, which turns a full node into a staking node.
+
+:::info
+If you wanted to setup a full node, not a staking node, stop here! Congrats on running your own full node! :tada:
+:::
