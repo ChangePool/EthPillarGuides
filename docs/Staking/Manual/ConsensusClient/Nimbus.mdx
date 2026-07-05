@@ -153,7 +153,7 @@ In the `consensus.service` file, paste the following lines where `<NetworkName>`
 <TabItem value="z" label="Standalone Beacon Node (Recommended)" >
 ```shell
 [Unit]
-Description=Nimbus Consensus Layer Client Service
+Description=Nimbus Beacon Node Consensus Client Service
 Wants=network-online.target
 After=network-online.target
 Documentation=https://ethpillar.coincashew.io/
@@ -194,7 +194,7 @@ You can combine the beacon chain and validator into one running service. While s
 
 ```shell
 [Unit]
-Description=Nimbus Consensus Layer Client Service
+Description=Nimbus Beacon Node + Validator Consensus Layer Client Service
 Wants=network-online.target
 After=network-online.target
 Documentation=https://ethpillar.coincashew.io/

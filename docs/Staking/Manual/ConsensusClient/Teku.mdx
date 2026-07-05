@@ -12,6 +12,9 @@ import React from 'react';
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 export function HTMLContent() {
 
   return (
@@ -22,4 +25,273 @@ export function HTMLContent() {
 }
 
 {/* <!-- <HTMLContent /> --> */}
+
+## Overview
+
+PegaSys Teku—formerly known as Artemis—is a Java-based Ethereum client designed and built to meet institutional needs and security requirements. If desired, Teku can run both validator client and beacon chain client in one process. PegaSys is an arm of [ConsenSys](https://consensys.net), dedicated to building enterprise-ready clients and tools for interacting with the core Ethereum platform. Teku is Apache 2 licensed and written in Java, a language notable for its maturity and ubiquity.
+
+For more details, see:
+
+* **Web Site**—[Teku](https://consensys.io/teku)
+* **Documentation**—[Introduction](https://docs.teku.consensys.net/introduction)
+* **Releases**—[GitHub](https://github.com/ConsenSys/teku/releases)
+
+## 1. Initial Configuration
+
+To create a user for the consensus service, create a data directory and assign ownership, type:
+
+```bash
+sudo adduser --system --no-create-home --group consensus
+sudo mkdir -p /var/lib/teku
+sudo chown -R consensus:consensus /var/lib/teku
+```
+
+To install dependencies, type:
+
+```bash
+sudo apt install curl ccze openjdk-21-jdk libsnappy-dev libc6-dev jq git libc6 unzip -y
+```
+
+## 2. Install Binaries
+
+While downloading binaries is often faster and more convenient, building from source code can offer better compatibility and is more aligned with the spirit of free open source software (FOSS).
+
+<details>
+
+<summary>Option 1 - Download binaries</summary>
+
+To download the latest Teku release for Linux, extract the archive and clean up, type the following commands:
+
+```bash
+RELEASE_URL="https://api.github.com/repos/ConsenSys/teku/releases/latest"
+LATEST_TAG="$(curl -s $RELEASE_URL | jq -r ".tag_name")"
+BINARIES_URL="https://artifacts.consensys.net/public/teku/raw/names/teku.tar.gz/versions/${LATEST_TAG}/teku-${LATEST_TAG}.tar.gz"
+
+echo Downloading URL: $BINARIES_URL
+
+cd $HOME
+# Download
+wget -O teku.tar.gz $BINARIES_URL
+# Untar
+tar -xzvf teku.tar.gz -C $HOME
+# Rename folder
+mv teku-${LATEST_TAG} teku
+# Clean up
+rm teku.tar.gz
+```
+
+To install the binaries, type:
+
+```bash
+sudo mv $HOME/teku /usr/local/bin/teku
+```
+
+</details>
+
+<details>
+
+<summary>Option 2 - Build from source code</summary>
+
+To build the binaries, type:
+
+```bash
+mkdir -p ~/git
+cd ~/git
+git clone https://github.com/ConsenSys/teku.git
+cd teku
+# Get new tags
+git fetch --tags
+RELEASETAG=$(curl -s https://api.github.com/repos/ConsenSys/teku/releases/latest | jq -r .tag_name)
+git checkout tags/$RELEASETAG
+./gradlew distTar installDist
+```
+
+To verify that Teku compiled successfully, type the following command to display the version:
+
+```shell
+cd $HOME/git/teku/build/install/teku/bin
+./teku --version
+```
+
+To install the binaries, type:
+
+```shell
+sudo cp -a $HOME/git/teku/build/install/teku /usr/local/bin/teku
+```
+
+</details>
+
+## 3. Set Up and Configure Automatic Startup
+
+To configure a service, create a systemd unit file named `consensus.service`
+
+```bash
+sudo nano /etc/systemd/system/consensus.service
+```
+
+In the `consensus.service` file, paste the following lines where `<NetworkName>` is the value `hoodi` if you are creating a node on Hoodi testnet, or `mainnet` if you are creating a node on Mainnet; `<CheckpointSyncURL>` is `https://hoodi.beaconstate.ethstaker.cc` if you are operating on Hoodi, or `https://beaconstate.ethstaker.cc` if you are operating on Mainnet; and, `<FeeRecipientAddress>` is an Ethereum wallet address that you control, designated for receiving priority fees and maximal extractable value (MEV) rewards.
+
+<Tabs>
+<TabItem value="z" label="Standalone Beacon Node (Recommended)" >
+```shell
+[Unit]
+Description=Teku Beacon Node Consensus Client Service
+Wants=network-online.target
+After=network-online.target
+Documentation=https://ethpillar.coincashew.io/
+
+[Service]
+Type=simple
+User=consensus
+Group=consensus
+Restart=on-failure
+RestartSec=3
+KillSignal=SIGINT
+TimeoutStopSec=900
+Environment=JAVA_OPTS=-Xmx6g
+Environment=TEKU_OPTS=-XX:-HeapDumpOnOutOfMemoryError
+ExecStart=/usr/local/bin/teku/bin/teku \
+  --network=<NetworkName> \
+  --data-path=/var/lib/teku/ \
+  --data-storage-mode="minimal" \
+  --checkpoint-sync-url="<CheckpointSyncURL>" \
+  --ee-endpoint=http://127.0.0.1:8551 \
+  --ee-jwt-secret-file=/secrets/jwtsecret \
+  --rest-api-enabled=true \
+  --rest-api-port=5052 \
+  --p2p-port=9000 \
+  --p2p-peer-upper-bound=100 \
+  --p2p-peer-lower-bound=60 \
+  --metrics-enabled=true \
+  --metrics-port=8008 \
+  --validators-proposer-default-fee-recipient=<FeeRecipientAddress>
+
+[Install]
+WantedBy=multi-user.target
+```
+</TabItem>
+
+<TabItem value="x" label="Combined Beacon Node and Validator Client" >
+You can combine the beacon chain and validator into one running service. While simpler to manage and run, a combined configuration is less flexible when running EL+CL failover nodes, or when you need to resynchronize your execution client and temporarily use [Rocket Rescue Node](https://rescuenode.com/docs/how-to-connect/solo) by [Rocket Pool](https://rocketpool.net/).
+
+```shell
+[Unit]
+Description=Teku Beacon Node + Validator Consensus Layer Client Service
+Wants=network-online.target
+After=network-online.target
+Documentation=https://ethpillar.coincashew.io/
+
+[Service]
+Type=simple
+User=consensus
+Group=consensus
+Restart=on-failure
+RestartSec=3
+KillSignal=SIGINT
+TimeoutStopSec=900
+Environment=JAVA_OPTS=-Xmx6g
+Environment=TEKU_OPTS=-XX:-HeapDumpOnOutOfMemoryError
+ExecStart=/usr/local/bin/teku/bin/teku \
+  --network=<NetworkName> \
+  --data-path=/var/lib/teku/ \
+  --data-storage-mode="minimal" \
+  --initial-state="<CheckpointSyncURL>" \
+  --ee-endpoint=http://127.0.0.1:8551 \
+  --ee-jwt-secret-file=/secrets/jwtsecret \
+  --rest-api-enabled=true \
+  --rest-api-port=5052 \
+  --p2p-port=9000 \
+  --p2p-peer-upper-bound=100 \
+  --p2p-peer-lower-bound=60 \
+  --metrics-enabled=true \
+  --metrics-port=8008 \
+  --validator-keys=/var/lib/teku/validator_keys:/var/lib/teku/validator_keys \
+  --validators-graffiti="🏠🥩🪙🛡️" \
+  --validators-proposer-default-fee-recipient=<FeeRecipientAddress>
+
+[Install]
+WantedBy=multi-user.target
+```
+
+</TabItem>
+</Tabs>
+
+:::info
+Tips sent to `<FeeRecipientAddress>` are spendable immediately.
+
+If you are setting up a full node without staking, then use the Standalone Beacon Node configuration in the `consensus.service` file removing the `--validators-proposer-default-fee-recipient` option.
+:::
+
+To save and exit nano, press `CTRL+X`, then press `Y`, and then press `ENTER`
+
+To enable the service to start automatically when the computer boots, type the following commands:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable consensus.service
+```
+
+Lastly, start your consensus layer client and check the status.
+
+```bash
+sudo systemctl start consensus.service
+sudo systemctl status consensus.service
+```
+
+To exit the status display, press `CTRL+C`
+
+## 4. Helpful Consensus Client Commands
+
+<Tabs>
+<TabItem value="x" label="View Logs" >
+```bash
+sudo journalctl -fu consensus.service | ccze
+```
+
+The following example shows logs generated by a properly functioning Teku consensus client:
+
+```bash
+teku[64122]: 02:24:28.010 INFO  - Slot Event  *** Slot: 19200, Block: 1468A43F874EDE790DB6B499A51003500B5BA85226E9500A7A187DB9A169DE20, Justified: 1132, Finalized: 1133, Peers: 70
+teku[64122]: 02:24:40.010 INFO  - Slot Event  *** Slot: 19200, Block: 72B092AADFE146F5D3F395A720C0AA3B2354B2095E3F10DC18F0E9716D286DCB, Justified: 1132, Finalized: 1133, Peers: 70
+```
+</TabItem>
+
+<TabItem value="a" label="Stop" >
+```bash
+sudo systemctl stop consensus.service
+```
+</TabItem>
+
+<TabItem value="b" label="Start" >
+```bash
+sudo systemctl start consensus.service
+```
+</TabItem>
+
+<TabItem value="c" label="View Status" >
+```bash
+sudo systemctl status consensus.service
+```
+</TabItem>
+
+<TabItem value="d" label="Reset Database" >
+Common reasons to reset the database include:
+
+* Recovering from a corrupted database due to power outage or hardware failure
+* Resynchronizing to reduce disk space usage
+* Upgrading to a new storage format
+
+```bash
+sudo systemctl stop consensus.service
+sudo rm -rf /var/lib/teku/beacon
+sudo systemctl restart consensus.service
+```
+
+With checkpoint synchronization enabled, the consensus client resynchronizes in one to two minutes instead of days.
+</TabItem>
+</Tabs>
+
+Now that your consensus client is configured and running, you have a full node.
+
+If you are setting up a staking node, then the next step involves [Installing a Validator Client](/Staking/Manual/ValidatorClient).
 
