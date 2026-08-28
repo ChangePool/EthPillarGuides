@@ -27,11 +27,16 @@ export function HTMLContent() {
 
 You need to stake at least 32 ETH for each validator.
 
-Send all funds that you plan to stake to the same wallet address. For example, use [Rabby Wallet](https://rabby.io/) or [MetaMask](https://metamask.io/).
+Send all funds that you plan to stake to the same wallet address. Use [Rabby Wallet](https://rabby.io/) or [MetaMask](https://metamask.io/), for example.
 
-:::note
-If you are creating a staking node on Mainnet, then use a hardware wallet address.
-:::
+<table class="box">
+  <tbody>
+    <tr>
+      <td class="boxLabel"><p class="boxLabel">Important<br /><img src={useBaseUrl('img/BoxImportant.png')} alt="Important" /></p></td>
+      <td class="boxText"><p class="boxText">If you are creating a staking node on Mainnet, then use a hardware wallet address.</p></td>
+    </tr>
+  </tbody>
+</table>
 
 ### :seedling: Obtaining Hoodi ETH
 
@@ -45,9 +50,9 @@ If you are creating a staking node on Hoodi testnet, then you must use Hoodi ETH
 
 1\. Join the EthCoordinate [Discord](https://discord.com/invite/ethstaker) server, and then visit the **#cheap-hoodi-validator** channel.
 
-2\. Type **/cheap-hoodi-deposit** then click the **Send* button, and then follow the instructions that the bot displays in the channel.
+2\. Type **/cheap-hoodi-deposit** then click the **Send** button, and then follow the instructions that the bot displays in the channel.
 
-3\. To use the cheap hoodi validator process and prevent abuse of the service, when [Generating Validator Keys](#key-Generating-Validator-Keys) you must use the withdrawal address `0x4D496CcC28058B1D74B7a19541663E21154f9c84`
+3\. To prevent abuse, when [Generating Validator Keys](#key-Generating-Validator-Keys) you must use the withdrawal address `0x4D496CcC28058B1D74B7a19541663E21154f9c84`
 
 </details>
 
@@ -67,43 +72,46 @@ For example, the following Web sites provide hETH:
 
 ## :money_with_wings: Selecting a Withdrawal Address
 
-For [withdrawals](https://notes.ethereum.org/@launchpad/withdrawals-faq#Q-What-are-the-two-types-of-withdrawals), use a separate hardware or multisig wallet address.
+Ethereum sends automatic or manually requested staking [withdrawals](https://notes.ethereum.org/@launchpad/withdrawals-faq#Q-What-are-the-two-types-of-withdrawals) to the withdrawal address that you designate.
 
-#### Before continuing please have the following:
+Use a separate wallet address for withdrawals. The withdrawal address that you set is permanent. Therefore, verify the withdrawal address carefully.
 
-* [ ] **Hardware wallet address or** **Safe multisig wallet** **address**: This is for your [Withdrawal Address](https://notes.ethereum.org/@launchpad/withdrawals-faq#Q-What-are-the-two-types-of-withdrawals). It must be in checksum format, which means some letters are UPPERCASE. If needed, validate your address's checksum format against a block explorer, such as [https://etherscan.io](https://etherscan.io)
+<table class="box">
+  <tbody>
+    <tr>
+      <td class="boxLabel"><p class="boxLabel">Important<br /><img src={useBaseUrl('img/BoxImportant.png')} alt="Important" /></p></td>
+      <td class="boxText"><p class="boxText">Do NOT use a wallet address on a centralized exchange for withdrawals.</p></td>
+    </tr>
+  </tbody>
+</table>
 
-:::tip
-Safe Multisig Wallet:\
-[Hoodi](https://app.safe.protofire.io/welcome)\
-[Mainnet](https://safe.global/)
-:::
+If you are creating a staking node on Hoodi testnet, then you can use a hot wallet address for withdrawals. Alternately, use a multi-signature wallet such as [Protofire Safe](https://app.safe.protofire.io/welcome).
+
+If you are creating a staking node on Mainnet, then use a hardware wallet address for withdrawals, or use a multi-signature wallet such as [Safe&#123;Wallet&#125;](https://safe.global/).
+
+Your withdrawal address must be in checksum format, which mixes lowercase and uppercase letters. To validate the address format, use a block explorer such as [Etherscan](https://etherscan.io).
 
 <figure>
   <img src={useBaseUrl('img/Checksum.png')} />
   <figcaption>Example Checksum Format</figcaption>
 </figure>
 
-#### Before continuing please understand the following:
-
-* [ ] The **Withdrawal Address** is:
-  * where your ETH is returned upon "voluntary exiting a validator", or also known as full withdrawal.
-  * where you receive partial withdrawals, which is where any excess balance above 32 ETH is periodically scraped and made available for use.
-* [ ] As this is **permanent** once set, **triple check** your address.
-* [ ] DO NOT USE AN 🛑 **EXCHANGE ADDRESS** 🛑 AS WITHDRAWAL ADDRESS.
-* [ ] For **testnet purposes** it's okay to use a browser/hot wallet address.
-
-:::warning
-**Offline Key Generation Best Practices**: The mnemonic seed (24 words) to your validator should be protected by keeping them offline. Use Tails OS (see option 3) or a [Linux Live USB with ethstaker-deposit-cli](https://www.youtube.com/watch?v=oDELXYNSS5w) (Option 1) or Wagyu to generate keys.
-
-If this is not possible, at least physically disconnect from the network by unplugging ethernet cable or disconnecting from Wifi.
-:::
-
 <!-- ----- GENERATING KEYS ----- -->
 
 ## :key: Generating Validator Keys
 
-Ways to create your validator keys:
+If you are creating a staking node on Hoodi testnet, then physically disconnect your computer from the Internet prior to generating the 24-word mnemonic seed for the validator.
+
+If you are creating a staking node on Mainnet, for increased security start your computer using a bootable USB stick to load the operating system, and then disconnect the computer from the Internet prior to generating the mnemonic seed.
+
+<table class="box">
+  <tbody>
+    <tr>
+      <td class="boxLabel"><p class="boxLabel">Important<br /><img src={useBaseUrl('img/BoxImportant.png')} alt="Important" /></p></td>
+      <td class="boxText"><p class="boxText">Store the mnemonic seed that you generate offline.</p></td>
+    </tr>
+  </tbody>
+</table>
 
 <details>
 
@@ -134,10 +142,10 @@ cd ethstaker_deposit-cli
 
 **2. Make a new mnemonic**
 
-Replace `<HARDWARE_WALLET_ADDRESS>` with withdrawal address.
+Type the following command, where `<NetworkName>` is the value `hoodi` if you are creating a node on Hoodi testnet, or `mainnet` if you are creating a node on Mainnet; and, `<WithdrawalAddress>` is your withdrawal address:
 
 ```
-./deposit new-mnemonic --chain hoodi --execution_address <HARDWARE_WALLET_ADDRESS>
+./deposit new-mnemonic --chain <NetworkName> --execution_address <WithdrawalAddress>
 ```
 
 * Choose your language
@@ -305,10 +313,10 @@ sudo chmod +x ./deposit
 
 **9. Make a new mnemonic**
 
-Replace `<HARDWARE_WALLET_ADDRESS>` with withdrawal address.
+Type the following command, where `<NetworkName>` is the value `hoodi` if you are creating a node on Hoodi testnet, or `mainnet` if you are creating a node on Mainnet; and, `<WithdrawalAddress>` is your withdrawal address:
 
 ```
-./deposit new-mnemonic --chain hoodi --execution_address <HARDWARE_WALLET_ADDRESS>
+./deposit new-mnemonic --chain <NetworkName> --execution_address <WithdrawalAddress>
 ```
 
 * Choose your language
