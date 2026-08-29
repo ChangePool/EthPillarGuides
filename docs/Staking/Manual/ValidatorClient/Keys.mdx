@@ -100,14 +100,15 @@ Your withdrawal address must be in checksum format, which mixes lowercase and up
 
 If you are creating a staking node on Hoodi testnet:
 
-1. Physically disconnect the computer that you use to generate the 24-word mnemonic seed from the Internet.
-2. Generate the mnemonic seed.
+1. Download the software that you need to generate the 24-word mnemonic seed to the local computer.
+2. Physically disconnect the computer from the Internet.
+3. Generate the mnemonic seed.
 
 If you are creating a staking node on Mainnet, for increased security:
 
-1. Copy the software that you need to generate the 24-word mnemonic seed to a USB stick.
-2. Start your computer using a bootable USB stick to load the operating system.
-3. Disconnect the computer from the Internet.
+1. Download the software that you need to generate the 24-word mnemonic seed to a USB stick.
+2. Physically disconnect the computer from the Internet.
+3. Start your computer using a bootable USB stick to load the operating system.
 4. Generate the mnemonic seed using the USB stick that you created in step 1
 
 <table class="box">
@@ -121,52 +122,52 @@ If you are creating a staking node on Mainnet, for increased security:
 
 <details>
 
-<summary>Option 1 for Ubuntu - ethstaker_deposit-cli</summary>
+<summary>Option 1 - `ethstaker-deposit-cli` Using Ubuntu</summary>
 
-**1. Download ethstaker_deposit-cli from Github.**
+[ethstaker-deposit-cli](https://github.com/ethstaker/ethstaker-deposit-cli) is a tool for creating keystores and other files required to make staking deposits for an Ethereum validator.
+
+<p class="pi">To generate validator keys using `ethstaker-deposit-cli` on Ubuntu:</p>
+
+
+<ol>
+  <li>Using a terminal window, type the following commands to download `ethstaker-deposit-cli` from GitHub:</li>
 
 ```bash
-#Install dependencies
+# Install dependencies
 sudo apt install jq curl -y
 
-#Setup variables
-RELEASE_URL="https://api.github.com/repos/eth-educators/ethstaker-deposit-cli/releases/latest"
-BINARIES_URL="$(curl -s $RELEASE_URL | jq -r ".assets[] | select(.name) | .browser_download_url" | grep linux-amd64.tar.gz$)"
-BINARY_FILE="ethstaker_deposit-cli.tar.gz"
+# Define variables
+RELEASE_URL="https://api.github.com/repos/ethstaker/ethstaker-deposit-cli/releases/latest"
+BINARY_URL="$(curl -s $RELEASE_URL | jq -r ".assets[] | .browser_download_url" | grep linux-amd64.tar.gz$)"
+BINARY_FILE="ethstaker-deposit-cli.tar.gz"
 
-echo "Downloading URL: $BINARIES_URL"
+echo "Downloading URL: $BINARY_URL"
 
 cd $HOME
-#Download binary
-wget -O $BINARY_FILE $BINARIES_URL
-#Extract archive
-tar -xzvf $BINARY_FILE -C $HOME
-#Rename
-mv ethstaker_deposit*amd64 ethstaker_deposit-cli
-cd ethstaker_deposit-cli
+# Download the archive
+wget -O $BINARY_FILE $BINARY_URL
+# Extract the archive
+tar -xzvf $BINARY_FILE
+# Rename the extracted folder
+mv ethstaker_deposit*amd64 ethstaker-deposit-cli
+# Navigate to the extracted folder
+cd ethstaker-deposit-cli
 ```
 
-**2. Make a new mnemonic**
+  <li>To create a new mnemonic, type the following command where `<NetworkName>` is the value `hoodi` if you are creating a node on Hoodi testnet, or `mainnet` if you are creating a node on Mainnet; and, `<WithdrawalAddress>` is your withdrawal address:</li>
 
-Type the following command, where `<NetworkName>` is the value `hoodi` if you are creating a node on Hoodi testnet, or `mainnet` if you are creating a node on Mainnet; and, `<WithdrawalAddress>` is your withdrawal address:
-
-```
+```bash
 ./deposit new-mnemonic --chain <NetworkName> --execution_address <WithdrawalAddress>
 ```
 
-* Choose your language
-* Repeat your withdrawal/execution address for confirmation
-* Choose the language of the mnemonic word list
-* Choose how many new validators you wish to run
-* Create a **keystore password** that secures your validator keystore files
-* Repeat your **keystore password** for confirmation
-* Answer yes if you want to generate compounding 0x02 validator
-* Write down your 24 word mnemonic seed
-* Type your mnemonic, first 4 letters is enough
+  <li>Follow the prompts on screen.</li>
 
-You will see the following messages after successfully generated the keystore(s) and the deposit(s):
+</ol>
+
+After successfully creating the keystore and deposit files, a message similar to the following displays:
 
 ```bash
+
 
                   #####     #####
                 ##     #####     ##
@@ -189,27 +190,27 @@ You will see the following messages after successfully generated the keystore(s)
                      ##   ## ##        ##   ##    ###
                      ##############          #############
 
-Creating your keys:               [####################################]  <N>/<N>
-Creating your keystores:          [####################################]  <N>/<N>
-Verifying your keystores:         [####################################]  <N>/<N>
-Verifying your deposits:          [####################################]  <N>/<N>
+Creating your keys.
+Creating your keys:               [####################################] 
+Creating your keystore-*.json file(s):    [####################################]
+Creating your deposit_data-*.json file(s):        [####################################]
+Verifying your keystore-*.json file(s):   [####################################]
+Verifying your deposit_data-*.json file(s):       [####################################]
 
 Success!
-Your keys can be found at: /home/username/ethstaker_deposit-cli/validator_keys
 ```
 
 </details>
 
 <details>
 
-<summary>Option 2 for Windows/Linux/Mac - Wagyu GUI</summary>
+<summary>Option 2 - WAGYU Using Linux, Windows or MacOS</summary>
 
-**Wagyu** is an application aimed at lowering the technical bar to staking on Ethereum.
+To simplify creating Ethereum validator keys, [WAGYU](https://wagyu.gg/) uses a graphical user interface (GUI).
 
-As a 'one-click installer', it provides a clean UI automating the setup and management of all the infrastructure necessary to stake without the user needing to have any technical knowledge.
+**To generate validator keys using WAGYU:**
 
-**Download Wagyu**: [https://wagyu.gg](https://wagyu.gg/)
-
+1. Using a Web browser, navigate to **https://wagyu.gg/** and then download WAGYU
 1. Click create new secret recovery phrase
 2. Select your network
 3. Click create
@@ -227,11 +228,13 @@ As a 'one-click installer', it provides a clean UI automating the setup and mana
 
 <details>
 
-<summary>Option 3 - Offline Tails with ethstaker_deposit-cli</summary>
+<summary>Option 3 - `ethstaker-deposit-cli` Using Tails OS</summary>
+
+[Tails OS](https://tails.net/) is an amnesic incognito operating system that protects your privacy and anonymity, leaving no digital footprint when the host computer shuts down.
 
 You will learn how to boot up a windows PC into an airgapped [Tails operating system](https://tails.boum.org/index.en.html).
 
-The Tails OS is an _amnesic_ operating system, meaning it will save nothing and _leave no tracks behind_ each time you boot it.
+
 
 **1. Prerequisites**
 
@@ -573,7 +576,7 @@ Source: [https://twitter.com/AbyssFinance/status/1379732382044069888](https://tw
 * **Stay Offline**—Store your 24-word mnemonic seed for your validator offline, for example using a [metal seed storage device](https://jlopp.github.io/metal-bitcoin-storage-reviews/). Do **not** use e-mail or the cloud.
 * **Hardware Wallet**—Back up the mnemonic for the hardware wallet controlling the ETH that you stake and the withdrawal address that you set.
 * Using a USB key, store copies of:
-  * **`validator_keys` directory**—Contains all the keystore JSON files
-  * **Keystore Password**—Used to encrypt keystore files
+  * **`validator_keys` Directory**—Contains all the keystore JSON files
+  * **Keystore Password**—Required to decrypt keystore files
 * **Multiple Backups**—Store a copy of backups in multiple locations.
 
