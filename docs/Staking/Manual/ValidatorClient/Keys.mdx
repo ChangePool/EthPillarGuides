@@ -120,6 +120,9 @@ If you are creating a staking node on Mainnet, for increased security:
   </tbody>
 </table>
 
+<!-- Create an anchor -->
+<span id="ethstaker-deposit-cli"></span>
+
 <details>
 
 <summary>Option 1 - `ethstaker-deposit-cli` Using Ubuntu</summary>
@@ -233,180 +236,76 @@ To simplify creating Ethereum validator keys, [WAGYU](https://wagyu.gg/) uses a 
 
 [Tails OS](https://tails.net/) is an amnesic incognito operating system that protects your privacy and anonymity, leaving no digital footprint when the host computer shuts down.
 
-You will learn how to boot up a windows PC into an airgapped [Tails operating system](https://tails.boum.org/index.en.html).
+<table class="box">
+  <tbody>
+    <tr>
+      <td class="boxLabel"><p class="boxLabel">Note<br /><img src={useBaseUrl('img/BoxNote.png')} alt="Note" /></p></td>
+      <td class="boxText"><p class="boxText">To use Tails OS when generating validator keys, in addition to your computer you need two USB sticks larger than 8 GB and a different device for displaying Web pages.</p></td>
+    </tr>
+  </tbody>
+</table>
 
+**To generate validator keys using `ethstaker-deposit-cli` on Tails OS:**
 
+<ol>
 
-**1. Prerequisites**
-
-You need:
-
-* 2 storage mediums (can be USB stick, SD cards or external hard drives)
-* One of them must be > 8GB
-* Windows or Mac computer
-* 30 minutes or longer depending on your download speed
-
-**2. Download Tails OS**
-
-Download the official image from the [Tails website](https://tails.boum.org/install/index.en.html). Might take a while, go grab a coffee.
-
-Make sure you follow the guide on the Tails website to verify your download of Tails.
-
-**3. Download and install the software to transfer your Tails image on your USB stick**
-
-For Windows, use one of
-
-* [balenaEtcher](https://etcher.balena.io/)
-* [Win32 Disk Imager](https://win32diskimager.org/#download)
-* [Rufus](https://rufus.ie/en_US/)
-
-For Mac, download [balenaEtcher](https://etcher.balena.io/)
-
-**4. Making your bootable USB stick**
-
-Run the above software. This is an example how it looks like on Mac OS with balenaEtcher, but other software should be similar.
-
-<figure>
-  <img src={useBaseUrl('img/balenaEtcher.png')} />
-  <figcaption>balenaEtcher</figcaption>
-</figure>
-
-Select the Tails OS image that you downloaded as the image. Then select the USB stick (the larger one).
-
-Then flash the image to the larger USB stick.
-
-**5. Download and verify the ethstaker_deposit-cli**
-
-Download the latest ethstaker_deposit-cli binary by referring to Option 1's steps.
-
-Copy the file to the other USB stick.
-
-**6. Reboot your computer and into Tails OS**
-
-After you have done all the above, you can reboot. If you are connected by a LAN cable to the internet, you can disconnect it manually.
-
-Plug in the USB stick that has your Tails OS.
-
-On Mac, press and hold the Option key immediately upon hearing the startup chime. Release the key after Startup Manager appears.
-
-On Windows, it depends on your computer manufacturer. Usually it is by pressing F1 or F12. If it doesn't work, try googling "Enter boot options menu on \[Insert your PC brand]"
-
-Choose the USB stick that you loaded up with Tails OS to boot into Tails.
-
-**7. Welcome to Tails OS**
-
-<figure>
-  <img src={useBaseUrl('img/GRUB.png')} />
-  <figcaption>GRUB</figcaption>
-</figure>
-
-You can boot with all the default settings.
-
-**8. Run the ethstaker_deposit-cli**
-
-Plug in your other USB key with the `ethstaker_deposit-cli` file.
-
-Locate the USB key, mount the drive and add execute permissions.
+  <li>Using a Web browser, [Install Tails](https://tails.net/install/index.en.html). Do NOT start your computer using Tails yet.</li>
+  <li>Follow the steps in [Option 1](#ethstaker-deposit-cli) to download `ethstaker-deposit-cli` Do NOT create a new mnemonic yet.</li>
+  <li>Copy the `ethstaker-deposit-cli` folder that you downloaded in step 2 to a different USB stick than the USB stick where you installed Tails in step 1</li>
+  <li>Physically disconnect the computer where you plan to start Tails from the Internet.</li>
+  <li>Using a different device, visit the [Install Tails](https://tails.net/install/index.en.html) topic, and then scroll down to follow the instructions for starting the computer that you disconnected from the Internet in step 4 using Tails.</li>
+  <li>Connect the USB stick where you copied the `ethstaker-deposit-cli` folder in step 3 to the computer running Tails, and then type the following commands using a terminal window to mount the USB stick and set necessary execute permissions, where `<DevicePath>` is the path to the USB stick that the `fdisk` command displays:</li>
 
 ```bash
-# Locate the usb key
+# Locate the USB stick
 sudo fdisk -l
 # Create a mount point
 sudo mkdir -p /media/usb-drive
-# Mount the usb key. Change device name
-sudo mount /dev/sda1 /media/usb-drive
+# Mount the USB stick
+sudo mount <DevicePath> /media/usb-drive
 # Change directories
-cd /media/usb-drive/ethstaker_deposit-cli
-# Add execute permissions
+cd /media/usb-drive/ethstaker-deposit-cli
+# Set execute permissions
 sudo chmod +x ./deposit
 ```
 
-**9. Make a new mnemonic**
-
-Type the following command, where `<NetworkName>` is the value `hoodi` if you are creating a node on Hoodi testnet, or `mainnet` if you are creating a node on Mainnet; and, `<WithdrawalAddress>` is your withdrawal address:
-
-```
-./deposit new-mnemonic --chain <NetworkName> --execution_address <WithdrawalAddress>
-```
-
-* Choose your language
-* Repeat your withdrawal/execution address for confirmation
-* Choose the language of the mnemonic word list
-* Choose how many new validators you wish to run
-* Create a **keystore password** that secures your validator keystore files
-* Repeat your **keystore password** for confirmation
-* Answer yes if you want to generate compounding 0x02 validator
-* Write down your 24 word mnemonic seed
-* Type your mnemonic, first 4 letters is enough
-
-You will see the following messages after successfully generated the keystore(s) and the deposit(s):
+  <li>Follow the steps in [Option 1](#ethstaker-deposit-cli) to create a new mnemonic.</li>
+  <li>To confirm that the new validator keys are saved on the USB stick containing the `ethstaker-deposit-cli` folder, type:</li>
 
 ```bash
-
-                  #####     #####
-                ##     #####     ##
-    ###         ##   #######     #########################
-    ##  ##      #####               ##                   ##
-    ##     #####                 ##                       ##
-    ##     ##                     ##                      ###
-   ########                        ##                     ####
-   ##        ##   ###         #####                       #####
-   #                          ##                         # #####
-   #                            #                        #  #####
-   ##                             ##                    ##
-   ##                              ##                   ##
-   ##             ###              ##                   ##
-   ###############                 ##                   ##
-   ###               ##                                 ##
-      #############################                    ##
-                     ##                             ###
-                     #######     #################     ###
-                     ##   ## ##        ##   ##    ###
-                     ##############          #############
-
-Creating your keys:               [####################################]  <N>/<N>
-Creating your keystores:          [####################################]  <N>/<N>
-Verifying your keystores:         [####################################]  <N>/<N>
-Verifying your deposits:          [####################################]  <N>/<N>
-
-Success!
-Your keys can be found at: /home/username/ethstaker_deposit-cli/validator_keys
+ls /media/usb-drive/ethstaker-deposit-cli/validator_keys
 ```
-
-**Result**: a folder called `validator_keys` containing keystore-m files and deposit_data.json
-
-If you ran this command directly from your non-Tails USB stick, the validator keys should stay on it.
-
-If it hasn't, copy the directory over to your non-Tails USB stick.
-
-Confirm your validator_keys are on the USB stick before leaving.
-
-```bash
-ls /media/usb-drive/ethstaker_deposit-cli/validator_keys
-```
-
-:fire: Make sure you have saved your validator keys directory in your other USB stick (non Tails OS) before you shutdown Tails. Tails will delete everything saved on it after you shutdown.
-
-:tada: Congrats on learning how to use Tails OS to make an air gapped system.
+  <li>If needed, copy the folder containing the new validator keys to the USB stick containing the `ethstaker-deposit-cli` folder.</li>
+  <table class="box">
+    <tbody>
+      <tr>
+        <td class="boxLabel"><p class="boxLabel">Important<br /><img src={useBaseUrl('img/BoxImportant.png')} alt="Important" /></p></td>
+        <td class="boxText"><p class="boxText">When you shut down the computer, Tails deletes all files that you saved on the USB stick where you installed Tails.</p></td>
+      </tr>
+    </tbody>
+  </table>
+</ol>
 
 </details>
 
-### Result: There are two types of files generated.
+_Table 1_ lists types of files that generating validator keys creates.
 
-| File type                                                           | Purpose                                                                                                                                                                                                                                        |
-| ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <p>Keystore file(s)</p><p>[i.e.. keystore-16945983.json]</p>        | <ul><li>Controls the validator's ability to sign transactions</li><li>Imported and loaded into your validator</li><li>Keep private. Do not share with anyone</li><li>Can be recreated from your mnemonic seed/secret recovery phrase</li></ul> |
-| <p>Deposit data file(s)</p><p>[i.e. deposit_data-16945983.json]</p> | <ul><li>Public information about your validator</li><li>Required to execute your deposit through the Ethereum Launchpad</li><li>Can be recreated from your mnemonic seed/secret recovery phrase</li></ul>                                      |
+_Table 1 Validator Key File Types_
+| File Type | Example File Name | Details |
+| :-------: | :---------------: | ------- |
+| Keystore | keystore-m_12381_3600_0_0_0-1788018800.json | <ul><li>Controls the ability of a validator to sign transactions</li><li>Imported and loaded into the validator</li><li>Keep private—do **not** share with anyone</li><li>Can be recreated using the mnemonic seed / secret recovery phrase</li></ul> |
+| Deposit Data | deposit_data-1788018800.json | <ul><li>Contains public information about a validator</li><li>Required to execute a deposit using the [Staking Launchpad](https://launchpad.ethereum.org/)</li><li>Can be recreated using the mnemonic seed / secret recovery phrase</li></ul> |
 
 <!-- ----- TRANSFERRING KEYS ----- -->
 
 ## :arrow_up: Transferring Validator Keys to the Staking Node
 
-:::tip
-**Local node**: Skip this step if you generated your keys on your node with **ethstaker_deposit-cli**. No need to transfer as they're already there.
-:::
+You need to copy validator keys that you generate to the computer where you are setting up a staking node. If the validator keys are already available on the computer, then skip to the section [Depositing Funds Using the Launchpad](#woman_technologist-Depositing-Funds-Using-the-Launchpad).
 
-After creating the validator keys offline, you'll want to copy these validator keys to your node.
+
+
+
+
 
 To align with this guide's steps, make the default validator_keys path on your node.
 
