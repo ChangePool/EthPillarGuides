@@ -300,40 +300,51 @@ _Table 1 Validator Key File Types_
 
 ## :arrow_up: Transferring Validator Keys to the Staking Node
 
-You need to copy the validator key files to the computer where you are setting up a staking node. If the validator key files are already available on the computer, then skip to the section [Depositing Funds Using the Launchpad](#woman_technologist-Depositing-Funds-Using-the-Launchpad).
+You need to copy the validator key files to the computer where you are setting up a staking node.
 
+<table class="box">
+  <tbody>
+    <tr>
+      <td class="boxLabel"><p class="boxLabel">Note<br /><img src={useBaseUrl('img/BoxNote.png')} alt="Note" /></p></td>
+      <td class="boxText"><p class="boxText">If the validator key files are already available on the computer where you are setting up a staking node, then skip to [Depositing Funds](#woman_technologist-Depositing-Funds).</p></td>
+    </tr>
+  </tbody>
+</table>
 
+**To create the destination folder for the validator key files:**
 
-
-
-
-To align with this guide's steps, make the default validator_keys path on your node.
+<ul class="ss">
+  <li>On the computer where you are setting up a staking node, type the following command using a terminal window:</li>
 
 ```bash
-mkdir -p $HOME/ethstaker_deposit-cli/validator_keys
+mkdir -p $HOME/ethstaker-deposit-cli/validator_keys
 ```
 
-To transfer validator key files to your node from your local computer, consider using:
+</ul>
+
+To transfer validator key files to your node, consider the following options.
 
 <details>
 
-<summary>Option 1 - File Transfer</summary>
+<summary>Option 1 - Network Tools</summary>
 
-* File transfer
-  * Windows OS - use [WinSCP](https://winscp.net) or [FileZilla](https://filezilla-project.org/download.php?type=client)
-  * Mac or Linux - use [FileZilla](https://filezilla-project.org/download.php?type=client) or [SFTP](https://www.digitalocean.com/community/tutorials/how-to-use-sftp-to-securely-transfer-files-with-a-remote-server) or [rsync](https://linuxize.com/post/how-to-use-rsync-for-local-and-remote-data-transfer-and-synchronization/)
+_Table 2_ lists some tools that allow you to transfer files between computers using a network.
 
-Transfer the **keystore-m_xxxxxxxx.json** files to the following location on your node.
+_Table 2 Example Network File Transfer Tools_
+| Tool Name | Supported Platforms |
+| :--: | :-----------------: |
+| [WinSCP](https://winscp.net/) | Windows |
+| [FileZilla](https://filezilla-project.org/) | All |
+| [SFTP](https://www.digitalocean.com/community/tutorials/how-to-use-sftp-to-securely-transfer-files-with-a-remote-server) | All |
+| [rsync](https://linuxize.com/post/how-to-use-rsync-for-local-and-remote-data-transfer-and-synchronization/) | Linux, macOS |
 
-```bash
-$HOME/ethstaker_deposit-cli/validator_keys
-```
+Transfer the files that you created when [Generating Validator Keys](#key-Generating-Validator-Keys) to the `$HOME/ethstaker-deposit-cli/validator_keys` folder on the computer where you are setting up a staking node.
 
 </details>
 
 <details>
 
-<summary>Option 2 - USB Key</summary>
+<summary>Option 2 - USB Stick</summary>
 
 ### **Step 1: From OFFLINE machine, copy validator keys to a USB key.**
 
@@ -423,24 +434,29 @@ sudo umount /media/usb-drive
 
 </details>
 
-After transfering the files, verify that the keystore-m files are in the proper location on your node.
+**To verify that files appear in the correct location:**
+
+<ul class="ss">
+  <li>On the computer where you are setting up a staking node, type the following command using a terminal window:</li>
 
 ```bash
-ls -l $HOME/ethstaker_deposit-cli/validator_keys
+ls -l $HOME/ethstaker-deposit-cli/validator_keys
 ```
 
-Expected sample output:
+</ul>
+
+The command returns results similar to:
 
 ```bash
--r--r----- 1 ethereum ethereum 706 Oct  1 02:33 deposit_data-1696645983.json
--r--r----- 1 ethereum ethereum 710 Oct  1 02:33 keystore-m_12381_3600_0_0_0-161664283.json
+-r-------- 1 ethereum ethereum 704 Aug 29 08:53 deposit_data-1788018800.json
+-r-------- 1 ethereum ethereum 710 Aug 29 08:53 keystore-m_12381_3600_0_0_0-1788018800.json
 ```
 
 <!-- ----- DEPOSITING FUNDS ----- -->
 
-## :woman_technologist: Depositing Funds Using the Launchpad
+## :woman_technologist: Depositing Funds
 
-1. Follow the walkthrough at the Launchpad:
+1. Follow the walkthrough at the Staking Launchpad:
    * [https://hoodi.launchpad.ethstaker.cc](https://hoodi.launchpad.ethstaker.cc)
    * If you used the #cheap-hoodi-validator method, perform your deposit on [https://cheap.hoodi.launchpad.ethstaker.cc](https://cheap.hoodi.launchpad.ethstaker.cc/)
 
