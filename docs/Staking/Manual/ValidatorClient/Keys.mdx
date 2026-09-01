@@ -25,7 +25,9 @@ export function HTMLContent() {
 
 ## :moneybag: Preparing Funds
 
-You need to stake at least 32 ETH for each validator.
+If you are creating a staking node on Hoodi testnet, then you must stake Hoodi ETH (hETH). If you are creating a staking node on Mainnet, then you must stake ETH
+
+For each staking node that you operate, you must stake at least 32 (h)ETH
 
 Send all funds that you plan to stake to the same wallet address. Use [Rabby Wallet](https://rabby.io/) or [MetaMask](https://metamask.io/), for example.
 
@@ -39,8 +41,6 @@ Send all funds that you plan to stake to the same wallet address. Use [Rabby Wal
 </table>
 
 ### :seedling: Obtaining Hoodi ETH
-
-If you are creating a staking node on Hoodi testnet, then you must use Hoodi ETH (hETH).
 
 <details>
 
@@ -85,7 +85,7 @@ Use a separate wallet address for withdrawals. The withdrawal address that you s
 
 If you are creating a staking node on Hoodi testnet, then you can use a hot wallet address for withdrawals. Alternately, use a multi-signature wallet such as [Protofire Safe](https://app.safe.protofire.io/welcome).
 
-If you are creating a staking node on Mainnet, then use a hardware wallet address for withdrawals, or use a multi-signature wallet such as [Safe&#123;Wallet&#125;](https://safe.global/).
+If you are creating a staking node on Mainnet, then use a hardware wallet address for withdrawals, or use a multi-signature wallet such as [Safe&#123;Wallet&#125;](https://safe.global/)
 
 Your withdrawal address must be in checksum format, which mixes lowercase and uppercase letters. To validate the address format, use a block explorer such as [Etherscan](https://etherscan.io).
 
@@ -166,7 +166,7 @@ cd ethstaker-deposit-cli
 
   </ol>
 
-  After successfully creating the keystore and deposit files, a message similar to the following displays:
+  After successfully creating keystore and deposit files, a message similar to the following displays:
 
 ```bash
 
@@ -289,25 +289,25 @@ ls /media/usb-drive/ethstaker-deposit-cli/validator_keys
 
 </details>
 
-_Table 1_ lists types of files that generating validator keys creates.
+_Table 1_ lists the types of files that generating validator keys creates.
 
 _Table 1 Validator Key File Types_
 | File Type | Example File Name | Details |
 | :-------: | :---------------: | ------- |
 | Keystore | keystore-m_12381_3600_0_0_0-1788018800.json | <ul><li>Controls the ability of a validator to sign transactions</li><li>Imported and loaded into the validator</li><li>Keep private—do **not** share with anyone</li><li>Can be recreated using the mnemonic seed / secret recovery phrase</li></ul> |
-| Deposit Data | deposit_data-1788018800.json | <ul><li>Contains public information about a validator</li><li>Required to execute a deposit using the [Staking Launchpad](https://launchpad.ethereum.org/)</li><li>Can be recreated using the mnemonic seed / secret recovery phrase</li></ul> |
+| Deposit Data | deposit_data-1788018800.json | <ul><li>Contains public information about a validator</li><li>Required to execute a deposit using a Staking Launchpad</li><li>Can be recreated using the mnemonic seed / secret recovery phrase</li></ul> |
 
 <!-- ----- TRANSFERRING KEYS ----- -->
 
 ## :arrow_up: Transferring Validator Keys to the Staking Node
 
-You need to copy the validator key files to the computer where you are setting up a staking node.
+You need to copy the validator key files to the computer where you are creating a staking node.
 
 <table class="box">
   <tbody>
     <tr>
       <td class="boxLabel"><p class="boxLabel">Note<br /><img src={useBaseUrl('img/BoxNote.png')} alt="Note" /></p></td>
-      <td class="boxText"><p class="boxText">If the validator key files are already available on the computer where you are setting up a staking node, then skip to [Depositing Funds](#woman_technologist-Depositing-Funds).</p></td>
+      <td class="boxText"><p class="boxText">If the validator key files are already available on the computer where you are creating a staking node, then skip to [Depositing Funds](#woman_technologist-Depositing-Funds).</p></td>
     </tr>
   </tbody>
 </table>
@@ -315,7 +315,7 @@ You need to copy the validator key files to the computer where you are setting u
 **To create the destination folder for the validator key files:**
 
 <ul class="ss">
-  <li>On the computer where you are setting up a staking node, type the following command using a terminal window:</li>
+  <li>On the computer where you are creating a staking node, type the following command using a terminal window:</li>
 
 ```bash
 mkdir -p $HOME/ethstaker-deposit-cli/validator_keys
@@ -339,7 +339,7 @@ _Table 2 Example Network File Transfer Tools_
 | [SFTP](https://www.digitalocean.com/community/tutorials/how-to-use-sftp-to-securely-transfer-files-with-a-remote-server) | All |
 | [rsync](https://linuxize.com/post/how-to-use-rsync-for-local-and-remote-data-transfer-and-synchronization/) | Linux, macOS |
 
-  Transfer the files that you created when [Generating Validator Keys](#key-Generating-Validator-Keys) to the `$HOME/ethstaker-deposit-cli/validator_keys` folder on the computer where you are setting up a staking node.
+  Transfer the files that you created when [Generating Validator Keys](#key-Generating-Validator-Keys) to the `$HOME/ethstaker-deposit-cli/validator_keys` folder on the computer where you are creating a staking node.
 
 </details>
 
@@ -375,10 +375,10 @@ sudo umount /media/usb-drive
 
   </ol>
 
-  ** To copy validator keys from the USB stick to the staking node:**
+  **To copy validator keys from the USB stick to the staking node:**
 
   <ol>
-    <li>Connect the USB stick to the computer where you are setting up a staking node, and then type the following commands using a terminal window to mount the USB stick, where `<DevicePath>` is the path to the partition on the USB stick that the `fdisk` command displays:</li>
+    <li>Connect the USB stick to the computer where you are creating a staking node, and then type the following commands using a terminal window to mount the USB stick, where `<DevicePath>` is the path to the partition on the USB stick that the `fdisk` command displays:</li>
 
 ```bash
 # Locate the USB stick
@@ -407,7 +407,7 @@ sudo umount /media/usb-drive
 **To verify that files appear in the correct location:**
 
 <ul class="ss">
-  <li>On the computer where you are setting up a staking node, type the following command using a terminal window:</li>
+  <li>On the computer where you are creating a staking node, type the following command using a terminal window:</li>
 
 ```bash
 ls -l $HOME/ethstaker-deposit-cli/validator_keys
@@ -434,7 +434,7 @@ If you are making deposits for multiple validators, then consider using the [Aby
   <tbody>
     <tr>
       <td class="boxLabel"><p class="boxLabel">Important<br /><img src={useBaseUrl('img/BoxImportant.png')} alt="Important" /></p></td>
-      <td class="boxText"><p class="boxText">In the Abyss Ethereum Depositor, ensure that you select the network where you are setting up a staking node.</p></td>
+      <td class="boxText"><p class="boxText">In the Abyss Ethereum Depositor, ensure that you select the network where you are creating a staking node.</p></td>
     </tr>
   </tbody>
 </table>
@@ -443,7 +443,7 @@ If you are making deposits for multiple validators, then consider using the [Aby
 
 <ol>
 
-  <li>Using a Web browser on the computer where you are setting up a staking node, visit the Staking Launchpad for the network and staking method that you use: [Hoodi Testnet](https://hoodi.launchpad.ethstaker.cc), [Hoodi Testnet Using EthCoordinate](https://cheap.hoodi.launchpad.ethstaker.cc/) or [Mainnet](https://launchpad.ethereum.org/).</li>
+  <li>Using a Web browser on the computer where you are creating a staking node, visit the Staking Launchpad for the network and staking method that you use: [Hoodi Testnet](https://hoodi.launchpad.ethstaker.cc), [Hoodi Testnet Using EthCoordinate](https://cheap.hoodi.launchpad.ethstaker.cc/) or [Mainnet](https://launchpad.ethereum.org/).</li>
 
   <li>On the Staking Launchpad, accept the terms of use as needed.</li>
 
@@ -455,7 +455,7 @@ If you are making deposits for multiple validators, then consider using the [Aby
       <tbody>
         <tr>
           <td class="boxLabel"><p class="boxLabel">Important<br /><img src={useBaseUrl('img/BoxImportant.png')} alt="Important" /></p></td>
-          <td class="boxText"><p class="boxText">If you are setting up a staking node on the Hoodi testnet, then ensure that your wallet is connected to the Hoodi network.</p></td>
+          <td class="boxText"><p class="boxText">If you are creating a staking node on the Hoodi testnet, then ensure that your wallet is connected to the Hoodi network.</p></td>
         </tr>
       </tbody>
     </table>
@@ -467,8 +467,8 @@ If you are making deposits for multiple validators, then consider using the [Aby
         <tr>
           <td class="boxLabel"><p class="boxLabel">Important<br /><img src={useBaseUrl('img/BoxImportant.png')} alt="Important" /></p></td>
           <td class="boxText">
+            <p class="boxText">If you are creating a staking node on Hoodi testnet, do NOT use ETH—use only hETH—and ensure that you are connected to the Hoodi network.</p>
             <p class="boxText">For each validator, you need to make one deposit transaction of at least 32 (h)ETH For example, if you want to set up three validators then you need 32 x 3 = 96 (h)ETH plus some extra to cover gas fees.</p>
-            <p class="boxText">If you are setting up a staking node on Hoodi testnet, do NOT use ETH—use only hETH—and ensure that you are connected to the Hoodi network.</p>
             <p class="boxText">Transactions deposit (h)ETH to the Deposit Contract address. Carefully verify that the address is correct. For both Hoodi testnet and Mainnet, the [official Deposit Contract address](https://etherscan.io/address/0x00000000219ab540356cbb839cbe05303d7705fa) is `0x00000000219ab540356cBB839Cbe05303d7705Fa` For more details, see the Ethereum Foundation Blog entry [eth2 quick update no. 19](https://blog.ethereum.org/2020/11/04/eth2-quick-update-no-19)</p>
             <p class="boxText">If you use a Ledger hardware wallet and encounter difficulty submitting a transaction, then enable Blind Signing—previously called Contract Data—in the Ethereum app.</p>
         </td>
@@ -486,10 +486,10 @@ If you are making deposits for multiple validators, then consider using the [Aby
 :fire: **Critical Crypto Reminder**—Keep your mnemonics, keep your ETH
 :::
 
-* **Stay Offline**—Store your 24-word mnemonic seed for your validator offline, for example using a [metal seed storage device](https://jlopp.github.io/metal-bitcoin-storage-reviews/). Do **not** use e-mail or the cloud.
+* **Stay Offline**—Store the 24-word mnemonic seed for the staking node(s) that you operate offline, for example using a [metal seed storage device](https://jlopp.github.io/metal-bitcoin-storage-reviews/). Do **not** use e-mail or the cloud.
 * **Hardware Wallet**—Back up the mnemonic for the hardware wallet controlling the ETH that you stake and the withdrawal address that you set.
-* Using a USB key, store copies of:
-  * **`validator_keys` Directory**—Contains all the keystore JSON files
-  * **Keystore Password**—Required to decrypt keystore files
+* Using a USB stick, store copies of:
+  * **`validator_keys`**—The directory containing the Keystore and Deposit Data JSON files
+  * **Keystore Password**—Required to decrypt Keystore files
 * **Multiple Backups**—Store a copy of backups in multiple locations.
 
