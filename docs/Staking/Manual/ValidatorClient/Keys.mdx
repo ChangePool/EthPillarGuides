@@ -426,30 +426,57 @@ The command returns results similar to:
 
 ## :woman_technologist: Depositing Funds
 
-1. Follow the walkthrough at the Staking Launchpad:
-   * [https://hoodi.launchpad.ethstaker.cc](https://hoodi.launchpad.ethstaker.cc)
-   * If you used the #cheap-hoodi-validator method, perform your deposit on [https://cheap.hoodi.launchpad.ethstaker.cc](https://cheap.hoodi.launchpad.ethstaker.cc/)
+Prior to depositing funds, ensure that your staking node is fully synchronized. On Mainnet, synchronizing takes approximately one day.
 
-:::danger
-**Do not send real mainnet ETH during this process!** 🛑 Use only Hoodi ETH.
-:::
+If you are making deposits for multiple validators, then consider using the [Abyss Ethereum Depositor](https://abyss.finance/eth2depositor) to batch multiple deposits into one transaction and save gas fees.
 
-2. Upload your`deposit_data-#########.json` found in the `validator_keys` directory.
-3. Connect the launchpad with your wallet, review and accept terms. Ensure you're connected to **Hoodi** network.
+<table class="box">
+  <tbody>
+    <tr>
+      <td class="boxLabel"><p class="boxLabel">Important<br /><img src={useBaseUrl('img/BoxImportant.png')} alt="Important" /></p></td>
+      <td class="boxText"><p class="boxText">In the Abyss Ethereum Depositor, ensure that you select the network where you are setting up a staking node.</p></td>
+    </tr>
+  </tbody>
+</table>
 
-:::tip
-:whale: **Batch Depositing Tip**: If you have many deposits to make for many validators, consider using [Abyss.finance's eth2depositor tool.](https://abyss.finance/eth2depositor) This greatly improves the deposit experience as multiple deposits can be batched into one transaction, thereby saving gas fees and saving your fingers by minimizing Metamask clicking.
+**To deposit stakes for your node(s):**
 
-On the tool's dropdown box, select **Hoodi** network.
+<ol>
 
-Source: [https://twitter.com/AbyssFinance/status/1379732382044069888](https://twitter.com/AbyssFinance/status/1379732382044069888)
-:::
+  <li>Using a Web browser on the computer where you are setting up a staking node, visit the Staking Launchpad for the network and staking method that you use: [Hoodi Testnet](https://hoodi.launchpad.ethstaker.cc), [Hoodi Testnet Using EthCoordinate](https://cheap.hoodi.launchpad.ethstaker.cc/) or [Mainnet](https://launchpad.ethereum.org/).</li>
 
-4. Confirm the transaction(s). There's one deposit transaction of 32 ETH (or more for compounding) for each validator.
+  <li>On the Staking Launchpad, accept the terms of use as needed.</li>
 
-* **Deposit Example**: If you want to run 3 validators you will need to have (32 x 3) = 96 Hoodi ETH plus some extra to cover the gas fees.
-* **Verify Deposit Contract:** Your transaction is depositing your ETH to the Hoodi Deposit Contract address.**Check**, _double-check_, _**triple-check**_ that the Hoodi Deposit Contract address is correct. 0x00000000219ab540356cBB839Cbe05303d7705Fa
-* **Ledger Nano Hardware wallet users**: If you encounter difficulty making the deposit transaction, enable blind signing and contract data.
+  <li>Upload the `deposit_data-*.json` file that you generated, located in the `validator_keys` folder.</li>
+
+  <li>Connect your wallet to the Staking Launchpad.</li>
+
+  <table class="box">
+      <tbody>
+        <tr>
+          <td class="boxLabel"><p class="boxLabel">Important<br /><img src={useBaseUrl('img/BoxImportant.png')} alt="Important" /></p></td>
+          <td class="boxText"><p class="boxText">If you are setting up a staking node on the Hoodi testnet, then ensure that your wallet is connected to the Hoodi network.</p></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <li>Confirm and complete the transaction(s).</li>
+
+    <table class="box">
+      <tbody>
+        <tr>
+          <td class="boxLabel"><p class="boxLabel">Important<br /><img src={useBaseUrl('img/BoxImportant.png')} alt="Important" /></p></td>
+          <td class="boxText">
+            <p class="boxText">For each validator, you need to make one deposit transaction of at least 32 (h)ETH For example, if you want to set up three validators then you need 32 x 3 = 96 (h)ETH plus some extra to cover gas fees.</p>
+            <p class="boxText">If you are setting up a staking node on Hoodi testnet, do NOT use ETH—use only hETH—and ensure that you are connected to the Hoodi network.</p>
+            <p class="boxText">Transactions deposit (h)ETH to the Deposit Contract address. Carefully verify that the address is correct. For both Hoodi testnet and Mainnet, the [official Deposit Contract address](https://etherscan.io/address/0x00000000219ab540356cbb839cbe05303d7705fa) is `0x00000000219ab540356cBB839Cbe05303d7705Fa` For more details, see the Ethereum Foundation Blog entry [eth2 quick update no. 19](https://blog.ethereum.org/2020/11/04/eth2-quick-update-no-19)</p>
+            <p class="boxText">If you use a Ledger hardware wallet and encounter difficulty submitting a transaction, then enable Blind Signing—previously called Contract Data—in the Ethereum app.</p>
+        </td>
+        </tr>
+      </tbody>
+    </table>
+
+</ol>
 
 <!-- ----- CREATING BACKUPS ----- -->
 
