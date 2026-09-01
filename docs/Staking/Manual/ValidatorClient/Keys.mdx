@@ -44,25 +44,25 @@ If you are creating a staking node on Hoodi testnet, then you must use Hoodi ETH
 
 <details>
 
-<summary>Option 1: EthCoordinate</summary>
+  <summary>Option 1: EthCoordinate</summary>
 
-**To receive Hoodi ETH:**
+  **To receive Hoodi ETH:**
 
-1. Join the EthCoordinate [Discord](https://discord.com/invite/ethstaker) server, and then visit the **#cheap-hoodi-validator** channel.
-2. Type **/cheap-hoodi-deposit** then click the **Send** button, and then follow the instructions that the bot displays in the channel.
-3. To prevent abuse, when [Generating Validator Keys](#key-Generating-Validator-Keys) you must use the withdrawal address `0x4D496CcC28058B1D74B7a19541663E21154f9c84`
+  1. Join the EthCoordinate [Discord](https://discord.com/invite/ethstaker) server, and then visit the **#cheap-hoodi-validator** channel.
+  2. Type **/cheap-hoodi-deposit** then click the **Send** button, and then follow the instructions that the bot displays in the channel.
+  3. To prevent abuse, when [Generating Validator Keys](#key-Generating-Validator-Keys) you must use the withdrawal address `0x4D496CcC28058B1D74B7a19541663E21154f9c84`
 
 </details>
 
 <details>
 
-<summary>Option 2: Faucets</summary>
+  <summary>Option 2: Faucets</summary>
 
-For example, the following Web sites provide hETH:
+  For example, the following Web sites provide hETH:
 
-* [PoWFaucet](https://hoodi-faucet.pk910.de/)
-* [Quicknode](https://faucet.quicknode.com/ethereum/hoodi)
-<!-- * [Google Cloud Web3](https://cloud.google.com/application/web3/faucet/ethereum/hoodi) -->
+  * [PoWFaucet](https://hoodi-faucet.pk910.de/)
+  * [Quicknode](https://faucet.quicknode.com/ethereum/hoodi)
+  <!-- * [Google Cloud Web3](https://cloud.google.com/application/web3/faucet/ethereum/hoodi) -->
 
 </details>
 
@@ -125,15 +125,14 @@ If you are creating a staking node on Mainnet, for increased security:
 
 <details>
 
-<summary>Option 1 - `ethstaker-deposit-cli` Using Ubuntu</summary>
+  <summary>Option 1 - `ethstaker-deposit-cli` Using Ubuntu</summary>
 
-[ethstaker-deposit-cli](https://github.com/ethstaker/ethstaker-deposit-cli) is a tool for creating keystores and other files required to make staking deposits for an Ethereum validator.
+  [ethstaker-deposit-cli](https://github.com/ethstaker/ethstaker-deposit-cli) is a tool for creating keystores and other files required to make staking deposits for an Ethereum validator.
 
-<p class="pi">To generate validator keys using `ethstaker-deposit-cli` on Ubuntu:</p>
+  <p class="pi">To generate validator keys using `ethstaker-deposit-cli` on Ubuntu:</p>
 
-
-<ol>
-  <li>Using a terminal window, type the following commands to download `ethstaker-deposit-cli` from GitHub:</li>
+  <ol>
+    <li>Using a terminal window, type the following commands to download `ethstaker-deposit-cli` from GitHub:</li>
 
 ```bash
 # Install dependencies
@@ -157,17 +156,17 @@ mv ethstaker_deposit*amd64 ethstaker-deposit-cli
 cd ethstaker-deposit-cli
 ```
 
-  <li>To create a new mnemonic, type the following command where `<NetworkName>` is the value `hoodi` if you are creating a node on Hoodi testnet, or `mainnet` if you are creating a node on Mainnet; and, `<WithdrawalAddress>` is your withdrawal address:</li>
+    <li>To create a new mnemonic, type the following command where `<NetworkName>` is the value `hoodi` if you are creating a node on Hoodi testnet, or `mainnet` if you are creating a node on Mainnet; and, `<WithdrawalAddress>` is your withdrawal address:</li>
 
 ```bash
 ./deposit new-mnemonic --chain <NetworkName> --execution_address <WithdrawalAddress>
 ```
 
-  <li>Follow the prompts on screen.</li>
+    <li>Follow the prompts on screen.</li>
 
-</ol>
+  </ol>
 
-After successfully creating the keystore and deposit files, a message similar to the following displays:
+  After successfully creating the keystore and deposit files, a message similar to the following displays:
 
 ```bash
 
@@ -207,54 +206,54 @@ Success!
 
 <details>
 
-<summary>Option 2 - WAGYU Using Linux, Windows or MacOS</summary>
+  <summary>Option 2 - WAGYU Using Linux, Windows or MacOS</summary>
 
-To simplify creating Ethereum validator keys, [WAGYU](https://wagyu.gg/) uses a graphical user interface (GUI).
+  To simplify creating Ethereum validator keys, [WAGYU](https://wagyu.gg/) uses a graphical user interface (GUI).
 
-**To generate validator keys using WAGYU:**
+  **To generate validator keys using WAGYU:**
 
-1. Using a Web browser, navigate to https://wagyu.gg/ then download WAGYU for your operating system, and then install WAGYU as may be needed.
-2. Run WAGYU, and then click the **Create New Secret Recovery Phrase** button.
-3. In the **Network** dialog, select the Ethereum network where you are creating one or more staking nodes, and then click **OK**
-4. Click the **Create** button.
-5. Write down the 24-word secret recovery phrase, then click **Next**, and then click **I'm Sure**
-6. Retype the secret recovery phrase, and then click **Check**
-7. In the **Ethereum Withdrawal Address** field, paste your withdrawal address.
-8. In the **Deposit Amount** field, type the total number of hETH or ETH to stake.
-9. If you want to create one or more compounding validators, then select the **Compounding Credentials (0x02)** checkbox.
-10. In the **Number of New Keys** field, type how many staking nodes you want to create.
-11. In the **Password** field, type a password to secure the validator keystore(s), and then click **Next**
-12. When prompted, retype the keystore password, and then click **Next**
-13. Click the **Browse** button, then navigate to the folder where you want to save the new validator keys, then click **Select Folder**, and then click **Create**
-14. When WAGYU finishes creating the keystore and deposit data file(s), click the **Close** button.
+  1. Using a Web browser, navigate to https://wagyu.gg/ then download WAGYU for your operating system, and then install WAGYU as may be needed.
+  2. Run WAGYU, and then click the **Create New Secret Recovery Phrase** button.
+  3. In the **Network** dialog, select the Ethereum network where you are creating one or more staking nodes, and then click **OK**
+  4. Click the **Create** button.
+  5. Write down the 24-word secret recovery phrase, then click **Next**, and then click **I'm Sure**
+  6. Retype the secret recovery phrase, and then click **Check**
+  7. In the **Ethereum Withdrawal Address** field, paste your withdrawal address.
+  8. In the **Deposit Amount** field, type the total number of hETH or ETH to stake.
+  9. If you want to create one or more compounding validators, then select the **Compounding Credentials (0x02)** checkbox.
+  10. In the **Number of New Keys** field, type how many staking nodes you want to create.
+  11. In the **Password** field, type a password to secure the validator keystore(s), and then click **Next**
+  12. When prompted, retype the keystore password, and then click **Next**
+  13. Click the **Browse** button, then navigate to the folder where you want to save the new validator keys, then click **Select Folder**, and then click **Create**
+  14. When WAGYU finishes creating the keystore and deposit data file(s), click the **Close** button.
 
 </details>
 
 <details>
 
-<summary>Option 3 - `ethstaker-deposit-cli` Using Tails OS</summary>
+  <summary>Option 3 - `ethstaker-deposit-cli` Using Tails OS</summary>
 
-[Tails OS](https://tails.net/) is an amnesic incognito operating system that protects your privacy and anonymity, leaving no digital footprint when the host computer shuts down.
+  [Tails OS](https://tails.net/) is an amnesic incognito operating system that protects your privacy and anonymity, leaving no digital footprint when the host computer shuts down.
 
-<table class="box">
-  <tbody>
-    <tr>
-      <td class="boxLabel"><p class="boxLabel">Note<br /><img src={useBaseUrl('img/BoxNote.png')} alt="Note" /></p></td>
-      <td class="boxText"><p class="boxText">To use Tails OS when generating validator keys, in addition to your computer you need two USB sticks larger than 8 GB and a different device for displaying Web pages.</p></td>
-    </tr>
-  </tbody>
-</table>
+  <table class="box">
+    <tbody>
+      <tr>
+        <td class="boxLabel"><p class="boxLabel">Note<br /><img src={useBaseUrl('img/BoxNote.png')} alt="Note" /></p></td>
+        <td class="boxText"><p class="boxText">To use Tails OS when generating validator keys, in addition to your computer you need two USB sticks larger than 8 GB and a different device for displaying Web pages.</p></td>
+      </tr>
+    </tbody>
+  </table>
 
-**To generate validator keys using `ethstaker-deposit-cli` on Tails OS:**
+  **To generate validator keys using `ethstaker-deposit-cli` on Tails OS:**
 
-<ol>
+  <ol>
 
-  <li>Using a Web browser, [Install Tails](https://tails.net/install/index.en.html). Do NOT start your computer using Tails yet.</li>
-  <li>Follow the steps in [Option 1](#ethstaker-deposit-cli) to download `ethstaker-deposit-cli` Do NOT create a new mnemonic yet.</li>
-  <li>Copy the `ethstaker-deposit-cli` folder that you downloaded in step 2 to a different USB stick than the USB stick where you installed Tails in step 1</li>
-  <li>Physically disconnect the computer where you plan to start Tails from the Internet.</li>
-  <li>Using a different device, visit the [Install Tails](https://tails.net/install/index.en.html) topic, and then scroll down to follow the instructions for starting the computer that you disconnected from the Internet in step 4 using Tails.</li>
-  <li>Connect the USB stick where you copied the `ethstaker-deposit-cli` folder in step 3 to the computer running Tails, and then type the following commands using a terminal window to mount the USB stick and set necessary execute permissions, where `<DevicePath>` is the path to the USB stick that the `fdisk` command displays:</li>
+    <li>Using a Web browser, [Install Tails](https://tails.net/install/index.en.html). Do NOT start your computer using Tails yet.</li>
+    <li>Follow the steps in [Option 1](#ethstaker-deposit-cli) to download `ethstaker-deposit-cli` Do NOT create a new mnemonic yet.</li>
+    <li>Copy the `ethstaker-deposit-cli` folder that you downloaded in step 2 to a different USB stick than the USB stick where you installed Tails in step 1</li>
+    <li>Physically disconnect the computer where you plan to start Tails from the Internet.</li>
+    <li>Using a different device, visit the [Install Tails](https://tails.net/install/index.en.html) topic, and then scroll down to follow the instructions for starting the computer that you disconnected from the Internet in step 4 using Tails.</li>
+    <li>Connect the USB stick where you copied the `ethstaker-deposit-cli` folder in step 3 to the computer running Tails, and then type the following commands using a terminal window to mount the USB stick and set necessary execute permissions, where `<DevicePath>` is the path to the partition on the USB stick that the `fdisk` command displays:</li>
 
 ```bash
 # Locate the USB stick
@@ -268,23 +267,25 @@ cd /media/usb-drive/ethstaker-deposit-cli
 # Set execute permissions
 sudo chmod +x ./deposit
 ```
+<!-- Resource: https://askubuntu.com/questions/37767/how-to-access-a-usb-flash-drive-from-the-terminal -->
 
-  <li>Follow the steps in [Option 1](#ethstaker-deposit-cli) to create a new mnemonic.</li>
-  <li>To confirm that the new validator keys are saved on the USB stick containing the `ethstaker-deposit-cli` folder, type:</li>
+    <li>Follow the steps in [Option 1](#ethstaker-deposit-cli) to create a new mnemonic.</li>
+   <li>To confirm that the new validator keys are saved on the USB stick containing the `ethstaker-deposit-cli` folder, type:</li>
 
 ```bash
 ls /media/usb-drive/ethstaker-deposit-cli/validator_keys
 ```
-  <li>If needed, copy the folder containing the new validator keys to the USB stick containing the `ethstaker-deposit-cli` folder.</li>
-  <table class="box">
-    <tbody>
-      <tr>
-        <td class="boxLabel"><p class="boxLabel">Important<br /><img src={useBaseUrl('img/BoxImportant.png')} alt="Important" /></p></td>
-        <td class="boxText"><p class="boxText">When you shut down the computer, Tails deletes all files that you saved on the USB stick where you installed Tails.</p></td>
-      </tr>
-    </tbody>
-  </table>
-</ol>
+    <li>If needed, copy the folder containing the new validator keys to the USB stick containing the `ethstaker-deposit-cli` folder.</li>
+
+    <table class="box">
+      <tbody>
+        <tr>
+          <td class="boxLabel"><p class="boxLabel">Important<br /><img src={useBaseUrl('img/BoxImportant.png')} alt="Important" /></p></td>
+          <td class="boxText"><p class="boxText">When you shut down the computer, Tails deletes all files that you saved on the USB stick where you installed Tails.</p></td>
+       </tr>
+      </tbody>
+   </table>
+  </ol>
 
 </details>
 
@@ -326,9 +327,9 @@ To transfer validator key files to your node, consider the following options.
 
 <details>
 
-<summary>Option 1 - Network Tools</summary>
+  <summary>Option 1 - Network Tools</summary>
 
-_Table 2_ lists some tools that allow you to transfer files between computers using a network.
+  _Table 2_ lists some tools that allow you to transfer files between computers using a network.
 
 _Table 2 Example Network File Transfer Tools_
 | Tool Name | Supported Platforms |
@@ -338,99 +339,68 @@ _Table 2 Example Network File Transfer Tools_
 | [SFTP](https://www.digitalocean.com/community/tutorials/how-to-use-sftp-to-securely-transfer-files-with-a-remote-server) | All |
 | [rsync](https://linuxize.com/post/how-to-use-rsync-for-local-and-remote-data-transfer-and-synchronization/) | Linux, macOS |
 
-Transfer the files that you created when [Generating Validator Keys](#key-Generating-Validator-Keys) to the `$HOME/ethstaker-deposit-cli/validator_keys` folder on the computer where you are setting up a staking node.
+  Transfer the files that you created when [Generating Validator Keys](#key-Generating-Validator-Keys) to the `$HOME/ethstaker-deposit-cli/validator_keys` folder on the computer where you are setting up a staking node.
 
 </details>
 
 <details>
 
-<summary>Option 2 - USB Stick</summary>
+  <summary>Option 2 - USB Stick</summary>
 
-### **Step 1: From OFFLINE machine, copy validator keys to a USB key.**
+  **To copy validator keys from an offline computer to a USB stick:**
 
-Plug the USB key into offline machine, then locate the device name.
+  <ol>
+
+    <li>Connect the USB stick to the offline computer, and then type the following commands using a terminal window to mount the USB stick, where `<DevicePath>` is the path to the partition on the USB stick that the `fdisk` command displays:</li>
 
 ```bash
-# Locate the usb key
+# Locate the USB stick
 sudo fdisk -l
-```
-
-Upon executing the above command you will get an output similar to the one below:
-
-```bash
-Disk /dev/sdc: 7.4 GiB, 7948206080 bytes, 15523840 sectors
-Units: sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disklabel type: dos
-Disk identifier: 0x00000000
-
-Device     Boot Start      End  Sectors  Size Id Type
-/dev/sdc1  *     8192 15555555 25555555 7.4G  b W95 FAT32
-```
-
-Mount the key. Change the device name accordingly.
-
-```bash
 # Create a mount point
 sudo mkdir -p /media/usb-drive
-# Mount the usb key
-sudo mount /dev/sdc1 /media/usb-drive
+# Mount the USB stick
+sudo mount <DevicePath> /media/usb-drive
 ```
 
-Copy the keys. Adjust the path names if needed.
+    <li>To copy the validator keys from the offline computer to the USB stick, type:</li>
 
 ```bash
-# Create a directory on the usb drive to copy the keys into
-sudo mkdir -p /media/usb-drive/ethstaker_deposit-cli/validator_keys
-# Copy the keys to the usb drive
-sudo cp $HOME/ethstaker_deposit-cli/validator_keys/*.json /media/usb-drive/ethstaker_deposit-cli/validator_keys
-# Cleanup
+# Create a directory on the USB stick for storing the validator key files
+sudo mkdir -p /media/usb-drive/ethstaker-deposit-cli/validator_keys
+# Copy the validator keys to the USB stick
+sudo cp $HOME/ethstaker-deposit-cli/validator_keys/*.json /media/usb-drive/ethstaker-deposit-cli/validator_keys
+# Safely disconnect the USB stick from the computer
 sudo umount /media/usb-drive
 ```
 
-### **Step 2: From a USB key,  copy validator keys to the NODE.**
+  </ol>
 
-Plug the USB key into node, then locate the device name.
+  ** To copy validator keys from the USB stick to the staking node:**
+
+  <ol>
+    <li>Connect the USB stick to the computer where you are setting up a staking node, and then type the following commands using a terminal window to mount the USB stick, where `<DevicePath>` is the path to the partition on the USB stick that the `fdisk` command displays:</li>
 
 ```bash
-# Locate the usb key
+# Locate the USB stick
 sudo fdisk -l
-```
-
-Upon executing the above command you will get an output similar to the one below:
-
-```bash
-Disk /dev/sdc: 7.4 GiB, 7948206080 bytes, 15523840 sectors
-Units: sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disklabel type: dos
-Disk identifier: 0x00000000
-
-Device     Boot Start      End  Sectors  Size Id Type
-/dev/sdc1  *     8192 15555555 25555555 7.4G  b W95 FAT32
-```
-
-Mount the key. Change the device name accordingly.
-
-```bash
 # Create a mount point
 sudo mkdir -p /media/usb-drive
-# Mount the usb key
-sudo mount /dev/sdc1 /media/usb-drive
+# Mount the USB stick
+sudo mount <DevicePath> /media/usb-drive
 ```
 
-Copy the keys. Adjust the path names if needed.
+   <li>To copy the validator keys from the USB stick to the staking node, type:</li>
 
 ```bash
-# Create a directory copy the keys into
-sudo mkdir -p $HOME/ethstaker_deposit-cli/validator_keys
-# Copy the keys to the default path
-sudo cp /media/usb-drive/ethstaker_deposit-cli/validator_keys/*.json $HOME/ethstaker_deposit-cli/validator_keys
-# Cleanup
+# Create a directory on the staking node for storing the validator key files
+sudo mkdir -p $HOME/ethstaker-deposit-cli/validator_keys
+# Copy the validator keys to the staking node
+sudo cp /media/usb-drive/ethstaker-deposit-cli/validator_keys/*.json $HOME/ethstaker-deposit-cli/validator_keys
+# Safely disconnect the USB stick from the computer
 sudo umount /media/usb-drive
 ```
+
+  </ol>
 
 </details>
 
