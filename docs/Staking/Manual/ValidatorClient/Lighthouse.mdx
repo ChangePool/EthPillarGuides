@@ -23,3 +23,168 @@ export function HTMLContent() {
 
 {/* <!-- <HTMLContent /> --> */}
 
+**To install a Lighthouse validator client:**
+
+<ol>
+  <li>To create a user for the validator service and create a data director, type:</li>
+
+```bash
+sudo adduser --system --no-create-home --group validator
+sudo mkdir -p /var/lib/lighthouse_validator
+```
+
+  <li>To import validator keys using the Keystore file, type the following command where `<NetworkName>` is the value `hoodi` if you are creating a node on Hoodi testnet, or `mainnet` if you are creating a node on Mainnet. When prompted, type the password for the Keystore file:</li>
+
+```bash
+sudo lighthouse account validator import \
+  --network <NetworkName> \
+  --datadir /var/lib/lighthouse_validator \
+  --directory=$HOME/ethstaker-deposit-cli/validator_keys \
+  --reuse-password
+```
+
+<table class="box">
+  <tbody>
+    <tr>
+      <td class="boxLabel"><p class="boxLabel">Important<br /><img src={useBaseUrl('img/BoxImportant.png')} alt="Important" /></p></td>
+      <td class="boxText"><p class="boxText"></p>If you import and run the same validator keys using multiple validator clients at the same time, then the staking node may get slashed. Prior to moving a validator to a new setup or different validator client, delete the validator keys from the old setup.</td>
+    </tr>
+  </tbody>
+</table>
+
+  <li>To verify that the Keystore file imported successfully, type:</li>
+
+```bash
+sudo lighthouse account_manager validator list \
+  --network <NetworkName> \
+  --datadir /var/lib/lighthouse_validator
+```
+
+  <table class="box">
+    <tbody>
+      <tr>
+        <td class="boxLabel"><p class="boxLabel">Note<br /><img src={useBaseUrl('img/BoxNote.png')} alt="Note" /></p></td>
+        <td class="boxText"><p class="boxText"></p>If the Keystore file imported successfully, then the public key for the validator displays. For example, `0x8d9138fcf5676e2031dc4eae30a2c92e3306903eeec83ca83f4f851afbd4cb3b33f710e6f4ac516b4598697b30b04302`</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <li>To set ownership permissions and secure the folder where Lighthouse stores validator keys, type:</li>
+
+```bash
+sudo chown -R validator:validator /var/lib/lighthouse_validator
+sudo chmod 700 /var/lib/lighthouse_validator
+```
+
+  <li>To configure automatic startup, create a systemd unit file named `validator.service`</li>
+
+```bash
+sudo nano /etc/systemd/system/validator.service
+```
+
+  <li>In the `validator.service` file, paste the following lines where `<NetworkName>` is the value `hoodi` if you are creating a node on Hoodi testnet, or `mainnet` if you are creating a node on Mainnet; and, `<FeeRecipientAddress>` is an Ethereum wallet address that you control, designated for receiving priority fees and maximal extractable value (MEV) rewards:</li>
+
+```bash
+[Unit]
+Description=Lighthouse Validator Client Service
+Wants=network-online.target
+After=network-online.target
+Documentation=https://ethpillar.coincashew.io/
+
+[Service]
+Type=simple
+User=validator
+Group=validator
+Restart=on-failure
+RestartSec=3
+KillSignal=SIGINT
+TimeoutStopSec=900
+ExecStart=/usr/local/bin/lighthouse vc \
+  --network <NetworkName> \
+  --beacon-nodes http://localhost:5052 \
+  --datadir /var/lib/lighthouse_validator \
+  --graffiti="🏠🥩🛡️" \
+  --metrics \
+  --metrics-port 8009 \
+  --suggested-fee-recipient=<FeeRecipientAddress>
+
+[Install]
+WantedBy=multi-user.target
+```
+
+  <table class="box">
+    <tbody>
+      <tr>
+        <td class="boxLabel"><p class="boxLabel">Note<br /><img src={useBaseUrl('img/BoxNote.png')} alt="Note" /></p></td>
+        <td class="boxText">
+          <p class="boxText">Optionally, assign a custom message that is permanently recorded on the blockchain when the validator proposes a block to the `--graffiti` option. The maximum length is 16 characters.</p>
+          <p class="boxText">Tips sent to `<FeeRecipientAddress>` are spendable immediately.</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <li>To save and exit nano, press `CTRL+X`, then press `Y`, and then press `ENTER`</li>
+
+
+  <li>To enable the service to start automatically when the computer boots, type the following commands:</li>
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable validator.service
+```
+
+  <li>Lastly, start the validator client and check the status.</li>
+
+```bash
+sudo systemctl start validator.service
+sudo systemctl status validator.service
+```
+
+  <li>To display logs in order to confirm that a validator client is functioning properly, type:</li>
+
+```bash
+sudo journalctl -fu validator.service | ccze
+```
+
+</ol>
+
+For example, when running two validators, logs include entries similar to the following:
+
+```bash
+INFO Enabled validator          voting_pubkey: 0x82b225f66476962b161ed015786df00a0b7b28231915e6d09e81ba8d5c4ae8502b6d5337e3bf101ad72741dc69f0a7cf, signing_method: local_keystore
+INFO Enabled validator          voting_pubkey: 0x95d39860a0d6ea3b92cba78069d21f3a987988f3b8417b14f0945353d79ed9e338bbe6e9d63d487abc044a710ce34866, signing_method: local_keystore
+INFO Initialized validators     enabled: 2, disabled: 0
+```
+
+**Example of Synced Lighthouse Validator Client Logs**
+
+When a validator has proceeded through the activation queue, logs include `Successfully published attestations` entries. For example: 
+
+```
+Feb 08 01:01:0 INFO Successfully published attestations type: unaggregated, slot: 12422, committee_index: 3, head_block: 0xabc111daedf1281..., validator_indices: [12345], count:1, service: attestation 
+Feb 08 01:01:30 INFO Connected to beacon node(s) synced: 1, available: 1, total: 1, service: notifier
+```
+
+**To clean up the `validator_keys` directory:**
+
+<ol>
+
+  <li>Confirm that you have backed up the `validator_keys` directory, including the Keystore and Deposit Data files.</li>
+
+  <table class="box">
+    <tbody>
+      <tr>
+        <td class="boxLabel"><p class="boxLabel">Note<br /><img src={useBaseUrl('img/BoxNote.png')} alt="Note" /></p></td>
+        <td class="boxText"><p class="boxText">Having backup copies of the `validator_keys` directory on a USB stick simplifies recovering from issues on the staking node. If needed, you can always regenerate validator keys using the 24-word mnemonic seed.</p></td>
+      </tr>
+   </tbody>
+  </table>
+
+  <li>On the computer where you are creating a staking node, type the following command to remove the `validator_keys` directory:</li>
+
+```bash
+sudo rm -r $HOME/ethstaker-deposit-cli/validator_keys
+```
+
+</ol>
