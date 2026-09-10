@@ -12,6 +12,9 @@ import React from 'react';
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 export function HTMLContent() {
 
   return (
@@ -22,4 +25,232 @@ export function HTMLContent() {
 }
 
 {/* <!-- <HTMLContent /> --> */}
+
+Select a configuration for Nimbus. To increase modularity and redundancy, running a standalone validator configuration is recommended.
+
+<Tabs>
+  <TabItem value="z" label="Standalone Validator (Recommended)" >
+
+    The following procedure assumes that you created a standalone beacon node when [Installing a Nimbus Consensus Client](/Staking/Manual/ConsensusClient/Nimbus).
+
+    **To install a Nimbus validator client:**
+
+    <ol>
+
+      <li>To create a user for the validator service and create a data directory, type:</li>
+
+```bash
+sudo adduser --system --no-create-home --group validator
+sudo mkdir -p /var/lib/nimbus_validator
+```
+
+      <li>To import validator keys using the Keystore file, type the following command. When prompted, type the password for the Keystore file:</li>
+
+```bash
+sudo /usr/local/bin/nimbus_beacon_node deposits import \
+  --data-dir=/var/lib/nimbus_validator $HOME/ethstaker-deposit-cli/validator_keys
+```
+
+      <table class="box">
+        <tbody>
+          <tr>
+            <td class="boxLabel"><p class="boxLabel">Important<br /><img src={useBaseUrl('img/BoxImportant.png')} alt="Important" /></p></td>
+           <td class="boxText"><p class="boxText"></p>If you import and run the same validator keys using multiple validator clients at the same time, then the staking node may get slashed. Prior to moving a validator to a new setup or different validator client, delete the validator keys from the old setup.</td>
+          </tr>
+       </tbody>
+      </table>
+
+     <li>To verify that the Keystore file imported successfully, type:</li>
+
+```bash
+sudo ls -l /var/lib/nimbus_validator/validators
+```
+
+      <table class="box">
+        <tbody>
+          <tr>
+            <td class="boxLabel"><p class="boxLabel">Note<br /><img src={useBaseUrl('img/BoxNote.png')} alt="Note" /></p></td>
+           <td class="boxText"><p class="boxText">Listing the directory contents displays a folder named using each validator public key.</p></td>
+         </tr>
+        </tbody>
+     </table>
+
+     <li>To set ownership permissions and secure the folder where Nimbus stores validator keys, type:</li>
+
+```bash
+sudo chown -R validator:validator /var/lib/nimbus_validator
+sudo chmod -R 700 /var/lib/nimbus_validator
+```
+
+      <li>To configure automatic startup, create a systemd unit file named `validator.service`</li>
+
+```bash
+sudo nano /etc/systemd/system/validator.service
+```
+
+      <li>In the `validator.service` file, paste the following lines where `<FeeRecipientAddress>` is an Ethereum wallet address that you control, designated for receiving priority fees and maximal extractable value (MEV) rewards:</li>
+
+```bash
+[Unit]
+Description=Nimbus Validator Client Service
+Wants=network-online.target
+After=network-online.target
+Documentation=https://ethpillar.coincashew.io/
+
+[Service]
+Type=simple
+User=validator
+Group=validator
+Restart=on-failure
+RestartSec=3
+KillSignal=SIGINT
+TimeoutStopSec=900
+ExecStart=/usr/local/bin/nimbus_validator_client \
+  --data-dir=/var/lib/nimbus_validator \
+  --metrics \
+  --metrics-port=8009 \
+  --beacon-node=http://127.0.0.1:5052 \
+  --graffiti="🏠🥩🛡️" \
+  --suggested-fee-recipient=<FeeRecipientAddress>
+  
+[Install]
+WantedBy=multi-user.target
+```
+
+     <table class="box">
+        <tbody>
+          <tr>
+            <td class="boxLabel"><p class="boxLabel">Note<br /><img src={useBaseUrl('img/BoxNote.png')} alt="Note" /></p></td>
+           <td class="boxText">
+              <p class="boxText">Optionally, assign a custom message that is permanently recorded on the blockchain when the validator proposes a block to the `--graffiti` option. The maximum length is 16 characters.</p>
+             <p class="boxText">Tips sent to `<FeeRecipientAddress>` are spendable immediately.</p>
+            </td>
+          </tr>
+        </tbody>
+     </table>
+
+      <li>To save and exit nano, press `CTRL+X`, then press `Y`, and then press `ENTER`</li>
+
+      <li>To enable the service to start automatically when the computer boots, type the following commands:</li>
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable validator.service
+```
+
+      <li>To start the validator client and check the status, type:</li>
+
+```bash
+sudo systemctl start validator.service
+sudo systemctl status validator.service
+```
+
+      <li>To display logs in order to confirm that the validator client is functioning correctly, type:</li>
+
+```bash
+sudo journalctl -fu validator.service | ccze
+```
+
+    </ol>
+
+  </TabItem>
+
+  <TabItem value="x" label="Combined Beacon Node and Validator Client" >
+
+    The following procedure assumes that you combined the beacon node and validator client into one running service when [Installing a Nimbus Consensus Client](/Staking/Manual/ConsensusClient/Nimbus).
+
+    **To import validator keys using the Keystore file:**
+
+    <ol>
+
+      <li>Using a terminal window, type the following command. When prompted, type the password for the Keystore file:</li>
+
+```bash
+sudo /usr/local/bin/nimbus_beacon_node deposits import \
+  --data-dir=/var/lib/nimbus $HOME/staking-deposit-cli/validator_keys
+```
+      <table class="box">
+        <tbody>
+          <tr>
+            <td class="boxLabel"><p class="boxLabel">Important<br /><img src={useBaseUrl('img/BoxImportant.png')} alt="Important" /></p></td>
+           <td class="boxText"><p class="boxText"></p>If you import and run the same validator keys using multiple validator clients at the same time, then the staking node may get slashed. Prior to moving a validator to a new setup or different validator client, delete the validator keys from the old setup.</td>
+         </tr>
+       </tbody>
+     </table>
+
+     <li>To verify that the Keystore file imported successfully, type:</li>
+
+```bash
+sudo ls -l /var/lib/nimbus/validators
+```
+
+     <table class="box">
+        <tbody>
+          <tr>
+            <td class="boxLabel"><p class="boxLabel">Note<br /><img src={useBaseUrl('img/BoxNote.png')} alt="Note" /></p></td>
+            <td class="boxText"><p class="boxText">Listing the directory contents displays a folder named using each validator public key.</p></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <li>To set ownership permissions and secure the folder where Nimbus stores validator keys, type:</li>
+
+```bash
+sudo chown -R consensus:consensus /var/lib/nimbus
+sudo chmod -R 700 /var/lib/nimbus
+```
+
+      <li>To restart Nimbus to use the new validators, type:</li>
+
+```bash
+sudo systemctl restart consensus.service
+```
+
+      <li>To display logs in order to confirm that the validator client is functioning correctly, type:</li>
+
+```bash
+sudo journalctl -fu consensus.service | ccze
+```
+
+    </ol>
+
+  </TabItem>
+</Tabs>
+
+For example, when running two validators, logs include entries similar to the following:
+
+```bash
+Loading validators             topics="beacval" validatorsDir=/var/lib/nimbus/validators keystore_cache_available=true
+Local validator attached       topics="val_pool" pubkey=95d39860a0d6ea3b92cba78069d21f3a validator=95d39860 initial_fee_recipient=81ba8d5c4ae850
+Local validator attached       topics="val_pool" pubkey=82b225f66476962b161ed015786df00f validator=82b225f6 initial_fee_recipient=81ba8d5c4ae850
+```
+
+When a Nimbus validator has synchronized and proceeded through the activation queue, logs include `Attestation sent` entries. For example:
+
+```bash
+nimbus_beacon_node[292966]: INF 2023-02-05 01:25:26.263+00:00 Attestation sent      attestation="(aggregation_bits: 0b00000000000000000000000000000000000000000000000000000000, data: (slot: 31235, index: 3, beacon_block_root: \"ca3213f1\", source: \"1901:9deza1289\", target: \"1901:6ab1fafff\"), signature: \"32173064\")" delay=46ms543us294ns subnet_id=20
+```
+
+**To clean up validator keys:**
+
+<ol>
+
+  <li>Confirm that you have backed up the `$HOME/ethstaker-deposit-cli/validator_keys` directory on the computer where you are creating a staking node, including the Keystore and Deposit Data files.</li>
+
+  <table class="box">
+    <tbody>
+      <tr>
+        <td class="boxLabel"><p class="boxLabel">Important<br /><img src={useBaseUrl('img/BoxImportant.png')} alt="Important" /></p></td>
+        <td class="boxText"><p class="boxText">Having backup copies of the `validator_keys` directory on a USB stick simplifies recovering from issues on the staking node. If needed, you can always regenerate validator keys using the 24-word mnemonic seed.</p></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <li>On the computer where you are creating a staking node, type the following command to remove the `validator_keys` directory:</li>
+
+```bash
+sudo rm -r $HOME/ethstaker-deposit-cli/validator_keys
+```
+
+</ol>
 
