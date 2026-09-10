@@ -23,3 +23,171 @@ export function HTMLContent() {
 
 {/* <!-- <HTMLContent /> --> */}
 
+**To install a Lodestar validator client:**
+
+<ol>
+  <li>To create a user for the validator service and create a data directory, type:</li>
+
+```bash
+sudo adduser --system --no-create-home --group validator
+sudo mkdir -p /var/lib/lodestar_validator
+```
+
+  <li>To import validator keys using the Keystore file, type the following command where `<NetworkName>` is the value `hoodi` if you are creating a node on Hoodi testnet, or `mainnet` if you are creating a node on Mainnet. When prompted, type the password for the Keystore file:</li>
+
+```bash
+cd /usr/local/bin/lodestar
+sudo ./lodestar validator import \
+  --network <NetworkName> \
+  --dataDir="/var/lib/lodestar_validator" \
+  --keystore=$HOME/ethstaker_deposit-cli/validator_keys
+```
+
+  <table class="box">
+    <tbody>
+      <tr>
+        <td class="boxLabel"><p class="boxLabel">Important<br /><img src={useBaseUrl('img/BoxImportant.png')} alt="Important" /></p></td>
+        <td class="boxText"><p class="boxText"></p>If you import and run the same validator keys using multiple validator clients at the same time, then the staking node may get slashed. Prior to moving a validator to a new setup or different validator client, delete the validator keys from the old setup.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <li>To verify that the Keystore file imported successfully, type:</li>
+
+```bash
+sudo ./lodestar validator list \
+  --network hoodi \
+  --dataDir="/var/lib/lodestar_validator"
+```
+
+  <table class="box">
+    <tbody>
+      <tr>
+        <td class="boxLabel"><p class="boxLabel">Note<br /><img src={useBaseUrl('img/BoxNote.png')} alt="Note" /></p></td>
+       <td class="boxText"><p class="boxText"></p>If the Keystore file imported successfully, then the public key for the validator displays. For example, `0x8d9138fcf5676e2031dc4eae30a2c92e3306903eeec83ca83f4f851afbd4cb3b33f710e6f4ac516b4598697b30b04302`</td>
+      </tr>
+   </tbody>
+  </table>
+
+    <li>To set ownership permissions and secure the folder where Lodestar stores validator keys, type:</li>
+
+```bash
+sudo chown -R validator:validator /var/lib/lodestar_validator
+sudo chmod 700 /var/lib/lodestar_validator
+```
+
+  <li>To configure automatic startup, create a systemd unit file named `validator.service`</li>
+
+```bash
+sudo nano /etc/systemd/system/validator.service
+```
+
+  <li>In the `validator.service` file, paste the following lines where `<NetworkName>` is the value `hoodi` if you are creating a node on Hoodi testnet, or `mainnet` if you are creating a node on Mainnet; and, `<FeeRecipientAddress>` is an Ethereum wallet address that you control, designated for receiving priority fees and maximal extractable value (MEV) rewards:</li>
+
+```bash
+[Unit]
+Description=Lodestar Validator Client Service
+Wants=network-online.target
+After=network-online.target
+Documentation=https://ethpillar.coincashew.io/
+
+[Service]
+Type=simple
+User=validator
+Group=validator
+Restart=on-failure
+RestartSec=3
+KillSignal=SIGINT
+TimeoutStopSec=300
+WorkingDirectory=/usr/local/bin/lodestar
+ExecStart=/usr/local/bin/lodestar/lodestar validator \
+  --network <NetworkName> \
+  --dataDir /var/lib/lodestar_validator \
+  --beaconNodes http://127.0.0.1:5052 \
+  --metrics true \
+  --metrics.port 8009 \
+  --graffiti "🏠🥩🛡️" \
+  --suggestedFeeRecipient <FeeRecipientAddress>
+  
+[Install]
+WantedBy=multi-user.target
+```
+
+  <table class="box">
+    <tbody>
+      <tr>
+        <td class="boxLabel"><p class="boxLabel">Note<br /><img src={useBaseUrl('img/BoxNote.png')} alt="Note" /></p></td>
+        <td class="boxText">
+          <p class="boxText">Optionally, assign a custom message that is permanently recorded on the blockchain when the validator proposes a block to the `--graffiti` option. The maximum length is 16 characters.</p>
+          <p class="boxText">Tips sent to `<FeeRecipientAddress>` are spendable immediately.</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <li>To save and exit nano, press `CTRL+X`, then press `Y`, and then press `ENTER`</li>
+
+  <li>To enable the service to start automatically when the computer boots, type the following commands:</li>
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable validator.service
+```  
+
+  <li>To start the validator client and check the status, type:</li>
+
+```bash
+sudo systemctl start validator.service
+sudo systemctl status validator.service
+```
+
+  <li>To display logs in order to confirm that a validator client is functioning correctly, type:</li>
+
+```bash
+sudo journalctl -fu validator.service | ccze
+```
+
+</ol>
+
+For example, when running two validators, logs include entries similar to the following:
+
+```bash
+info: 100% of local keystores imported. current=2 total=2 rate=975.61keys/m
+info: 2 local keystores
+info: 0x82b225f66476962b161ed015786df00a0b7b28231915e6d09e81ba8d5c4ae8502b6d5337e3bf101ad72741dc69f0a7cf
+info: 0x95d39860a0d6ea3b92cba78069d21f3a987988f3b8417b14f0945353d79ed9e338bbe6e9d63d487abc044a710ce34866
+```
+
+When a Lodestar validator has synchronized and proceeded through the activation queue, logs include `info: Published attestations` entries. For example: 
+
+```bash
+Feb-1  03:33:30.228     info: Published aggregateAndProofs slot=2662, index=13, count=1
+Feb-1  03:37:48.393     info: Published attestations slot=2699, index=20, count=1
+Feb-1  03:46:36.450     info: Published attestations slot=2713, index=2, count=1
+Feb-1  03:53:48.944     info: Published attestations slot=2765, index=21, count=1
+Feb-1  04:01:48.812     info: Published attestations slot=2809, index=17, count=1
+```
+
+**To clean up validator keys:**
+
+<ol>
+
+  <li>Confirm that you have backed up the `$HOME/ethstaker-deposit-cli/validator_keys` directory on the computer where you are creating a staking node, including the Keystore and Deposit Data files.</li>
+
+  <table class="box">
+    <tbody>
+      <tr>
+        <td class="boxLabel"><p class="boxLabel">Important<br /><img src={useBaseUrl('img/BoxImportant.png')} alt="Important" /></p></td>
+        <td class="boxText"><p class="boxText">Having backup copies of the `validator_keys` directory on a USB stick simplifies recovering from issues on the staking node. If needed, you can always regenerate validator keys using the 24-word mnemonic seed.</p></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <li>On the computer where you are creating a staking node, type the following command to remove the `validator_keys` directory:</li>
+
+```bash
+sudo rm -r $HOME/ethstaker-deposit-cli/validator_keys
+```
+
+</ol>
+
