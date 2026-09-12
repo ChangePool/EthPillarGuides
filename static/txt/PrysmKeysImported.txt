@@ -1,0 +1,8 @@
+Showing 2 validator accounts
+View the eth1 deposit transaction data for your accounts by running `validator accounts list --show-deposit-data`
+          
+Account 0 | gently-learning-chamois
+[validating public key] 0x95d39860a0d6ea3b92cba78069d21f3a987988f3b8417b14f0945353d79ed9e338bbe6e9d63d487abc044a710ce34866
+
+Account 1 | presumably-powerful-lynx
+[validating public key] 0x82b225f66476962b161ed015786df00a0b7b28231915e6d09e81ba8d5c4ae8502b6d5337e3bf101ad72741dc69f0a7cf
