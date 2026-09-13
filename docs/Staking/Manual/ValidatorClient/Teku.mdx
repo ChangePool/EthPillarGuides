@@ -12,6 +12,13 @@ import React from 'react';
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
+import ValidatorFiles from '!!raw-loader!/static/txt/TekuValidatorFiles.txt';
+
+import CodeBlock from '@theme/CodeBlock';
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 export function HTMLContent() {
 
   return (
@@ -22,4 +29,261 @@ export function HTMLContent() {
 }
 
 {/* <!-- <HTMLContent /> --> */}
+
+In the directory storing validator keys, for each Keystore file Teku requires a file having the same file name containing the corresponding password. For example, a file named `keystore-m_12221_3600_1_0_0-11222333.txt` contains the password for `keystore-m_12221_3600_1_0_0-11222333.json`
+
+Teku uses the Keystore password to load validators automatically.
+
+**To create password files:**
+
+<ol>
+  <li>To create a temporary text file storing your Keystore password, type:</li>
+
+```bash
+sudo nano $HOME/validators-password.txt
+```
+
+  <li>In the `validators-password.txt` file, type your Keystore password, then press `CTRL+X`, then press `Y`, and then press `ENTER` to save the file and exit nano.</li>
+
+  <li>To verify the password, type:</li>
+
+```bash
+sudo cat $HOME/validators-password.txt
+```
+
+  <li>To create a password file for each validator, type:</li>
+
+```bash
+for f in $HOME/ethstaker-deposit-cli/validator_keys/keystore*.json;
+do
+  sudo cp $HOME/validators-password.txt $HOME/ethstaker-deposit-cli/validator_keys/$(basename $f .json).txt;
+done
+```
+
+</ol>
+
+Select a configuration for Teku. To increase modularity and redundancy, running a standalone validator configuration is recommended.
+
+<Tabs>
+  <TabItem value="z" label="Standalone Validator (Recommended)" >
+
+    The following procedure presumes that you created a standalone beacon node when [Installing a Teku Consensus Client](/Staking/Manual/ConsensusClient/Teku).
+
+    **To install a Teku validator client:**
+
+    <ol>
+
+      <li>To create a user for the validator service, type:</li>
+
+```bash
+sudo adduser --system --no-create-home --group validator
+```
+
+      <li>To copy your validator keys to Teku, type:</li>
+
+```bash
+sudo mkdir -p /var/lib/teku_validator/validator_keys
+sudo cp $HOME/ethstaker-deposit-cli/validator_keys/keystore* /var/lib/teku_validator/validator_keys
+```
+
+      <table class="box">
+       <tbody>
+          <tr>
+            <td class="boxLabel"><p class="boxLabel">Important<br /><img src={useBaseUrl('img/BoxImportant.png')} alt="Important" /></p></td>
+            <td class="boxText"><p class="boxText">If you import and run the same validator keys using multiple validator clients at the same time, then the staking node may get slashed. Prior to moving a validator to a new setup or different validator client, delete the validator keys from the old setup.</p></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <li>To verify that the validator keys copied successfully, type:</li>
+
+```bash
+sudo ls -l /var/lib/teku_validator/validator_keys
+```
+
+      <table class="box">
+        <tbody>
+          <tr>
+            <td class="boxLabel"><p class="boxLabel">Note<br /><img src={useBaseUrl('img/BoxNote.png')} alt="Note" /></p></td>
+           <td class="boxText"><p class="boxText">Listing the contents of the `validator_keys` directory displays results similar to:<CodeBlock language="bash">{ValidatorFiles}</CodeBlock></p></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <li>To set ownership permissions and secure the folder where Teku stores validator keys, type:</li>
+
+```bash
+sudo chown -R validator:validator /var/lib/teku_validator
+sudo chmod -R 700 /var/lib/teku_validator
+```
+
+      <li>To configure automatic startup, create a systemd unit file named `validator.service`</li>
+
+```bash
+sudo nano /etc/systemd/system/validator.service
+```
+
+      <li>In the `validator.service` file, paste the following lines where `<NetworkName>` is the value `hoodi` if you are creating a node on Hoodi testnet, or `mainnet` if you are creating a node on Mainnet; and, `<FeeRecipientAddress>` is an Ethereum wallet address that you control, designated for receiving priority fees and maximal extractable value (MEV) rewards:</li>
+
+```bash
+[Unit]
+Description=Teku Validator Client Service
+Wants=network-online.target
+After=network-online.target
+Documentation=https://ethpillar.coincashew.io/
+
+[Service]
+Type=simple
+User=validator
+Group=validator
+Restart=on-failure
+RestartSec=3
+KillSignal=SIGINT
+TimeoutStopSec=900
+ExecStart=/usr/local/bin/teku/bin/teku validator-client \
+  --network=<NetworkName> \
+  --data-path=/var/lib/teku_validator \
+  --validator-keys=/var/lib/teku_validator/validator_keys:/var/lib/teku_validator/validator_keys \
+  --beacon-node-api-endpoint=http://localhost:5052 \
+  --validators-proposer-default-fee-recipient=<FeeRecipientAddress> \
+  --validators-graffiti="🏠🥩🛡️" \
+  --metrics-enabled=true \
+  --metrics-port=8009
+
+[Install]
+WantedBy=multi-user.target
+```
+
+      <table class="box">
+        <tbody>
+          <tr>
+            <td class="boxLabel"><p class="boxLabel">Note<br /><img src={useBaseUrl('img/BoxNote.png')} alt="Note" /></p></td>
+           <td class="boxText">
+              <p class="boxText">Optionally, assign a custom message that is permanently recorded on the blockchain when the validator proposes a block to the `--graffiti` option. The maximum length is 16 characters.</p>
+             <p class="boxText">Tips sent to `<FeeRecipientAddress>` are spendable immediately.</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <li>To save and exit nano, press `CTRL+X`, then press `Y`, and then press `ENTER`</li>
+
+      <li>To enable the service to start automatically when the computer boots, type the following commands:</li>
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable validator.service
+```
+
+      <li>To start the validator client and check the status, type:</li>
+
+```bash
+sudo systemctl start validator.service
+sudo systemctl status validator.service
+```
+
+      <li>To display logs in order to confirm that a validator client is functioning correctly, type:</li>
+
+```bash
+sudo journalctl -fu validator.service | ccze
+```
+
+    </ol>
+
+  </TabItem>
+
+  <TabItem value="x" label="Combined Beacon Node and Validator Client" >
+
+    The following procedure presumes that you combined the beacon node and validator client into one running service when [Installing a Teku Consensus Client](/Staking/Manual/ConsensusClient/Teku).
+
+    **To import validator keys using the Keystore file:**
+
+    <ol>
+      <li>To copy your validator keys to Teku, type:</li>
+
+```bash
+sudo mkdir -p /var/lib/teku/validator_keys
+sudo cp $HOME/ethstaker-deposit-cli/validator_keys/keystore* /var/lib/teku/validator_keys
+```
+
+      <li>To verify that the validator keys copied successfully, type:</li>
+
+```bash
+sudo ls -l /var/lib/teku/validator_keys
+```
+
+      <table class="box">
+        <tbody>
+          <tr>
+            <td class="boxLabel"><p class="boxLabel">Note<br /><img src={useBaseUrl('img/BoxNote.png')} alt="Note" /></p></td>
+            <td class="boxText"><p class="boxText">Listing the contents of the `validator_keys` directory displays results similar to:<CodeBlock language="bash">{ValidatorFiles}</CodeBlock></p></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <li>To secure the folder where Teku stores validator keys, type:</li>
+
+```bash
+sudo chmod -R 700 /var/lib/teku/validator_keys
+```
+
+      <li>To restart Teku to use the new validators, type:</li>
+
+```bash
+sudo systemctl restart consensus.service
+```
+
+      <li>To display logs in order to confirm that the validator client is functioning correctly, type:</li>
+
+```bash
+sudo journalctl -fu consensus.service | ccze
+```
+
+    </ol>
+
+  </TabItem>
+</Tabs>
+
+For example, when running two validators, logs include entries similar to the following:
+
+```bash
+INFO  - Loading 2 validator keys...
+INFO  - Loaded 2 Validators: 95d3986, 82b225f
+```
+
+When a Teku validator has synchronized and proceeded through the activation queue, logs include `Validator *** Published attestation` entries. For example:
+
+```bash
+teku[65367]: 03:50:51.761 INFO  - Validator cc1f3ade status is active_ongoing.
+teku[65367]: 03:50:52.203 INFO  - Validator   *** Published attestation        Count: 1, Slot: 31362, Root: 90FC0DF4D5958E469134A015203B53B3FB94A0FC1038FB2462882906D4A729A2
+```
+
+**To clean up validator keys:**
+
+<ol>
+
+  <li>To delete the temporary text file storing your Keystore password, type:</li>
+
+```bash
+sudo rm $HOME/validators-password.txt
+```
+
+  <li>Confirm that you have backed up the `$HOME/ethstaker-deposit-cli/validator_keys` directory on the computer where you are creating a staking node, including the Keystore and Deposit Data files.</li>
+
+  <table class="box">
+    <tbody>
+      <tr>
+        <td class="boxLabel"><p class="boxLabel">Important<br /><img src={useBaseUrl('img/BoxImportant.png')} alt="Important" /></p></td>
+        <td class="boxText"><p class="boxText">Having backup copies of the `validator_keys` directory on a USB stick simplifies recovering from issues on the staking node. If needed, you can always regenerate validator keys using the 24-word mnemonic seed.</p></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <li>On the computer where you are creating a staking node, type the following command to remove the `validator_keys` directory:</li>
+
+```bash
+sudo rm -r $HOME/ethstaker-deposit-cli/validator_keys
+```
+
+</ol>
 

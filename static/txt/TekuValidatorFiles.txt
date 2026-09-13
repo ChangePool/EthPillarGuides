@@ -1,0 +1,4 @@
+-rwx------ 1 validator validator 710 Sep 19 23:39 keystore-m_12381_3600_1_0_0-1695165818.json
+-rwx------ 1 validator validator  43 Sep 19 23:39 keystore-m_12381_3600_1_0_0-1695165818.txt
+-rwx------ 1 validator validator 710 Sep 19 23:39 keystore-m_12381_3600_2_0_0-1695165819.json
+-rwx------ 1 validator validator  43 Sep 19 23:39 keystore-m_12381_3600_2_0_0-1695165819.txt
