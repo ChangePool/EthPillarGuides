@@ -1,0 +1,46 @@
+---
+title: "Verifying Synchronization Status"
+sidebar_label: "Verifying Synchronization Status"
+slug: /Staking/Manual/Maintaining/Synchronization
+hide_title: false
+hide_table_of_contents: true
+sidebar_position: 20
+description: ""
+---
+
+import React from 'react';
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+export function HTMLContent() {
+
+  return (
+    <div>
+
+    </div>
+  );
+}
+
+{/* <!-- <HTMLContent /> --> */}
+
+**To verify synchronization status for a staking node:**
+
+<ol>
+  <li>To verify the synchronization status for an execution client, using a terminal window type:</li>
+
+```bash
+journalctl -fu execution.service
+```
+
+  <li>Compare the highest block number that the logs for your execution client display with the most recent slot on Etherscan for [Hoodi testnet](https://hoodi.etherscan.io/) or [Mainnet](https://etherscan.io/).</li>
+
+  <li>To verify the synchronization for a consensus client, type:</li>
+
+```bash
+journalctl -fu consensus.service
+```
+
+  <li>Compare the highest slot number that the logs for your consensus client display with the most recent slot on beaconcha.in for [Hoodi testnet](https://hoodi.beaconcha.in/) or [Mainnet](https://beaconcha.in/).</li>
+
+</ol>
+

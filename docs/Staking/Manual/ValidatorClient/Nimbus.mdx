@@ -227,6 +227,17 @@ Local validator attached       topics="val_pool" pubkey=95d39860a0d6ea3b92cba780
 Local validator attached       topics="val_pool" pubkey=82b225f66476962b161ed015786df00f validator=82b225f6 initial_fee_recipient=81ba8d5c4ae850
 ```
 
+Now, wait for activation. The process may take 24 hours or more. Only 900 new validators may join per day.
+
+<table class="box">
+  <tbody>
+    <tr>
+      <td class="boxLabel"><p class="boxLabel">Note<br /><img src={useBaseUrl('img/BoxNote.png')} alt="Note" /></p></td>
+      <td class="boxText"><p class="boxText">To check the queue length, visit [Wenmerge](https://wenmerge.com/).</p></td>
+    </tr>
+  </tbody>
+</table>
+
 When a Nimbus validator has synchronized and proceeded through the activation queue, logs include `Attestation sent` entries. For example:
 
 ```bash
@@ -255,4 +266,11 @@ sudo rm -r $HOME/ethstaker-deposit-cli/validator_keys
 ```
 
 </ol>
+
+Congratulations! You are an Ethereum staker.
+
+<figure>
+  <img src={useBaseUrl('img/Leslie.png')} />
+  <figcaption>Figure 1 Leslie, the Official Mascot of Ethereum Staking</figcaption>
+</figure>
 
